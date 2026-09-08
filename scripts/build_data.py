@@ -91,7 +91,7 @@ for p in out:
         p['idea_html'] = r.get('idea_html') or p['essence_html']
         p['pitfalls_html'] = r.get('pitfalls_html') or p['tempting_html']
         p['solutions'] = r.get('solutions') or {}
-        p['verified_on'] = r.get('verified_on')
+        p['verified_on'] = r.get('verified_on') if (r.get('idea_html') and r.get('pitfalls_html')) else None
     else:
         p['idea_html'] = p['essence_html']; p['pitfalls_html'] = p['tempting_html']; p['solutions'] = {}; p['verified_on'] = None
 out.sort(key=lambda p: (-(p['rate'] or 0), p['id']))
