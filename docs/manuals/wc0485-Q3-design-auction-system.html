@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Auction System -- Manual</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 1. HEADER CARD ===== -->
+<div class="header-card">
+  <div class="header-top">
+    <h1>Design Auction System</h1>
+    <span class="badge">Medium</span>
+  </div>
+  <div class="sig-block">
+    <span class="sig-lang">Python 3:</span>
+    class AuctionSystem -- __init__(self); addBid(self, userId:int, itemId:int, bidAmount:int) -&gt; None;
+    updateBid(self, userId:int, itemId:int, newAmount:int) -&gt; None;
+    removeBid(self, userId:int, itemId:int) -&gt; None;
+    getHighestBidder(self, itemId:int) -&gt; int<br>
+    <span class="sig-lang">C++:</span>
+    AuctionSystem(); void addBid(int userId,int itemId,int bidAmount);
+    void updateBid(int userId,int itemId,int newAmount);
+    void removeBid(int userId,int itemId); int getHighestBidder(int itemId);<br>
+    <span class="sig-lang">Java:</span>
+    AuctionSystem(); void addBid(int,int,int); void updateBid(int,int,int);
+    void removeBid(int,int); int getHighestBidder(int);<br>
+    <span class="sig-lang">Go:</span>
+    Constructor() AuctionSystem; AddBid(userId,itemId,bidAmount int);
+    UpdateBid(userId,itemId,newAmount int); RemoveBid(userId,itemId int); GetHighestBidder(itemId int) int<br>
+    <span class="sig-lang">Rust:</span>
+    fn new() -&gt; Self; fn add_bid(&amp;mut self,user_id:i32,item_id:i32,bid_amount:i32);
+    fn update_bid(&amp;mut self,...); fn remove_bid(&amp;mut self,...);
+    fn get_highest_bidder(&amp;self,item_id:i32) -&gt; i32
+  </div>
+  <div class="accepted-tag">Accepted solutions: 20</div>
+</div>
+
+<!-- ===== 2. PROVENANCE ===== -->
+<h2>Provenance</h2>
+<table class="prov">
+  <tr><td>problem_id</td><td>wc0485-Q3-design-auction-system</td></tr>
+  <tr><td>generator_tool</td><td>claude</td></tr>
+  <tr><td>generator_model</td><td>claude-sonnet-4-6</td></tr>
+  <tr><td>generated_at_utc</td><td>2026-05-19T05:03:59.084512+00:00</td></tr>
+  <tr><td>accepted_count</td><td>20</td></tr>
+</table>
+
+<!-- ===== 3. PROBLEM ESSENCE ===== -->
+<h2>Problem Essence</h2>
+<p>
+Design a class that manages per-item auction bids. Each (userId, itemId) pair has at most one
+active bid; addBid replaces an existing bid if one already exists. updateBid and removeBid are
+guaranteed to target existing bids. getHighestBidder returns the userId with the largest bid
+for a given item, breaking ties by largest userId, or -1 if no bids exist.
+</p>
+<p>
+The challenge is supporting O(log n) updates and deletes alongside O(log n) max queries.
+A plain dict gives O(1) add/remove but O(n) max; a sorted structure inverts this.
+The accepted solutions use two synchronized structures: a hash map as the source of truth
+and an ordered set or lazy-deletion heap for efficient max queries.
+</p>
+
+<!-- ===== 4. WORKED EXAMPLE ===== -->
+<h2>Worked Example</h2>
+<p>
+Note: stats.json sample_io is empty (expected -- this is a class-design problem unsupported by
+the local verifier). The example below is from the official problem statement.
+</p>
+<p>
+Trace of the single official example, tracking the bid state for <strong>item 7</strong>
+after each call:
+</p>
+<table class="data">
+  <thead>
+    <tr><th>#</th><th>Call</th><th>item 7 bids: {userId: amount}</th><th>Return</th><th>Reasoning</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>AuctionSystem()</td><td>{}</td><td>null</td><td>Empty system initialized</td></tr>
+    <tr><td>2</td><td>addBid(1, 7, 5)</td><td>{1: 5}</td><td>null</td><td>User 1 adds bid of 5 on item 7</td></tr>
+    <tr><td>3</td><td>addBid(2, 7, 6)</td><td>{1: 5, 2: 6}</td><td>null</td><td>User 2 adds bid of 6 on item 7</td></tr>
+    <tr><td>4</td><td>getHighestBidder(7)</td><td>{1: 5, 2: 6}</td><td><strong>2</strong></td><td>Max bid is 6 (user 2); 6 &gt; 5</td></tr>
+    <tr><td>5</td><td>updateBid(1, 7, 8)</td><td>{1: 8, 2: 6}</td><td>null</td><td>User 1 raises bid from 5 to 8</td></tr>
+    <tr><td>6</td><td>getHighestBidder(7)</td><td>{1: 8, 2: 6}</td><td><strong>1</strong></td><td>Max bid is now 8 (user 1); 8 &gt; 6</td></tr>
+    <tr><td>7</td><td>removeBid(2, 7)</td><td>{1: 8}</td><td>null</td><td>User 2's bid removed</td></tr>
+    <tr><td>8</td><td>getHighestBidder(7)</td><td>{1: 8}</td><td><strong>1</strong></td><td>Only user 1 remains</td></tr>
+    <tr><td>9</td><td>getHighestBidder(3)</td><td>item 3: {}</td><td><strong>-1</strong></td><td>No bids exist for item 3</td></tr>
+  </tbody>
+</table>
+<p>
+<strong>Tie-breaking (not triggered here):</strong> if users 3 and 5 both bid 8 on item 7,
+getHighestBidder(7) returns 5 because 5 &gt; 3. The sort key (bidAmount, userId) with both
+ascending means the lexicographically largest pair (8, 5) beats (8, 3) and the max element
+of the ordered structure correctly resolves the tie.
+</p>
+
+<!-- ===== 5. DECISION RULE / ALGORITHM ===== -->
+<h2>Decision Rule / Algorithm</h2>
+<p>
+<strong>Precondition:</strong> userId and itemId are both in [1, 5*10^4]; up to 5*10^4 total
+calls across all four operations.
+</p>
+<p>
+<strong>Core rule:</strong> For each itemId, maintain two synchronized structures:
+</p>
+<ol>
+  <li>A hash map <code>cur[itemId][userId] = amount</code> -- ground truth for active bids, O(1) read/write.</li>
+  <li>An ordered structure (sorted set or max-heap) keyed by <code>(amount, userId)</code> per item -- O(log n) insert, remove, and max query.</li>
+</ol>
+<p>
+<strong>addBid:</strong> Look up whether userId already has a bid in <code>cur</code>. If so,
+remove the old <code>(old_amt, userId)</code> pair from the ordered structure. Then insert
+<code>(new_amt, userId)</code> and update <code>cur</code>. O(log n).
+</p>
+<p>
+<strong>updateBid:</strong> Identical to addBid, except the existence check is omitted because
+the bid is guaranteed to exist. O(log n).
+</p>
+<p>
+<strong>removeBid:</strong> Look up the current amount from <code>cur</code>, remove
+<code>(amt, userId)</code> from the ordered structure, and delete from <code>cur</code>. O(log n).
+</p>
+<p>
+<strong>getHighestBidder:</strong> Return the userId of the maximum <code>(amount, userId)</code>
+entry -- that is, <code>set.last().userId</code> for a sorted set, or the validated heap top for
+a lazy-deletion heap. Return -1 if empty. O(log n) amortized.
+</p>
+<p>
+<strong>Lazy-deletion variant (no O(log n) targeted delete required):</strong> On add/update,
+always push a fresh <code>(-amount, -userId)</code> entry to the heap without removing the old
+one. On remove, delete from <code>cur</code> only. On getHighestBidder, pop heap entries until
+the top matches <code>cur</code>. This works because each push carries the amount at push time;
+after a later update the dict changes but the old heap entry's amount no longer matches
+<code>cur[item][user]</code>, making it detectably stale. The total stale entries ever pushed
+is bounded by the total number of operations (5*10^4), so amortized cost per call is O(log n).
+This variant is important for Python because <code>heapq</code> has no O(log n) remove-by-value.
+</p>
+
+<h3>Data Structure Layout (SVG Diagram)</h3>
+<div class="diagram-wrap">
+<svg width="510" height="170" viewBox="0 0 510 170" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arR" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#7eb8f7"/>
+    </marker>
+    <marker id="arO" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#f4a261"/>
+    </marker>
+  </defs>
+  <!-- left box -->
+  <rect x="8" y="55" width="175" height="95" rx="5" fill="#0e1e2e" stroke="#3a86ff" stroke-width="1.5"/>
+  <text x="95" y="76" text-anchor="middle" font-size="12" fill="#7eb8f7" font-family="monospace" font-weight="bold">cur[itemId]</text>
+  <line x1="8" y1="82" x2="183" y2="82" stroke="#1e3e5e" stroke-width="1"/>
+  <text x="95" y="100" text-anchor="middle" font-size="11" fill="#a0c0e0" font-family="monospace">{userId -&gt; amount}</text>
+  <text x="95" y="117" text-anchor="middle" font-size="10" fill="#5878a0" font-family="monospace">source of truth</text>
+  <text x="95" y="133" text-anchor="middle" font-size="10" fill="#5878a0" font-family="monospace">HashMap / dict  O(1)</text>
+  <!-- sync arrows -->
+  <line x1="185" y1="93" x2="232" y2="93" stroke="#7eb8f7" stroke-width="1.5" marker-end="url(#arR)"/>
+  <line x1="232" y1="108" x2="185" y2="108" stroke="#7eb8f7" stroke-width="1.5" marker-end="url(#arR)"/>
+  <text x="208" y="104" text-anchor="middle" font-size="9" fill="#7eb8f7" font-family="monospace">sync</text>
+  <!-- right box -->
+  <rect x="234" y="55" width="195" height="95" rx="5" fill="#0e2010" stroke="#06d6a0" stroke-width="1.5"/>
+  <text x="331" y="76" text-anchor="middle" font-size="12" fill="#06d6a0" font-family="monospace" font-weight="bold">heap/set[itemId]</text>
+  <line x1="234" y1="82" x2="429" y2="82" stroke="#0a4020" stroke-width="1"/>
+  <text x="331" y="100" text-anchor="middle" font-size="11" fill="#a0d0b0" font-family="monospace">(amount, userId)</text>
+  <text x="331" y="117" text-anchor="middle" font-size="10" fill="#508060" font-family="monospace">ordered ascending</text>
+  <text x="331" y="133" text-anchor="middle" font-size="10" fill="#508060" font-family="monospace">TreeSet / BTreeSet / heap</text>
+  <!-- getHighestBidder arrow -->
+  <line x1="429" y1="100" x2="498" y2="100" stroke="#f4a261" stroke-width="1.5" marker-end="url(#arO)"/>
+  <text x="463" y="93" text-anchor="middle" font-size="9" fill="#f4a261" font-family="monospace">.last()</text>
+  <text x="500" y="115" text-anchor="start" font-size="9" fill="#f4a261" font-family="monospace">uid</text>
+  <!-- operation labels -->
+  <text x="95" y="42" text-anchor="middle" font-size="10" fill="#8898b8" font-family="monospace">addBid / updateBid / removeBid</text>
+  <text x="331" y="42" text-anchor="middle" font-size="10" fill="#c08040" font-family="monospace">getHighestBidder</text>
+  <!-- lazy note -->
+  <text x="8" y="165" font-size="9" fill="#608060" font-family="monospace">* lazy heap: removeBid skips the ordered structure; stale entries filtered on read</text>
+</svg>
+</div>
+
+<!-- ===== 6. IMPLEMENTATION SKELETON ===== -->
+<h2>Implementation Skeleton</h2>
+<p>Python 3 -- lazy-deletion heap (most widely used pattern in accepted solutions):</p>
+<pre><code>import heapq
+from collections import defaultdict
+
+class AuctionSystem:
+
+    def __init__(self):
+        # cur[itemId][userId] = current active bid amount (source of truth)
+        self.cur = defaultdict(dict)
+        # heap[itemId] = max-heap via negation: entries are (-amount, -userId)
+        self.heap = defaultdict(list)
+
+    def addBid(self, userId: int, itemId: int, bidAmount: int) -&gt; None:
+        # Overwrite existing bid; old heap entry becomes stale automatically
+        self.cur[itemId][userId] = bidAmount
+        heapq.heappush(self.heap[itemId], (-bidAmount, -userId))
+
+    def updateBid(self, userId: int, itemId: int, newAmount: int) -&gt; None:
+        # Guaranteed to exist; push new entry, old becomes stale
+        self.cur[itemId][userId] = newAmount
+        heapq.heappush(self.heap[itemId], (-newAmount, -userId))
+
+    def removeBid(self, userId: int, itemId: int) -&gt; None:
+        # Delete from ground-truth dict only; heap entry silently becomes stale
+        del self.cur[itemId][userId]
+
+    def getHighestBidder(self, itemId: int) -&gt; int:
+        h = self.heap[itemId]
+        d = self.cur[itemId]
+        while h:
+            neg_amt, neg_uid = h[0]        # peek at heap top
+            uid = -neg_uid
+            if uid in d and d[uid] == -neg_amt:   # top is still valid?
+                return uid
+            heapq.heappop(h)               # discard stale entry
+        return -1
+</code></pre>
+
+<!-- ===== 7. REIMPLEMENTATION CHECKLIST ===== -->
+<h2>Reimplementation Checklist</h2>
+<ul class="checklist">
+  <li>Initialize two structures per item on first use: a hash map (userId -&gt; amount) and an ordered structure keyed by (amount, userId).</li>
+  <li>In addBid, check if the user already has a bid; if so, remove the old (amount, userId) pair from the ordered structure before inserting the new one. (Lazy heap: skip removal, just push new entry.)</li>
+  <li>In updateBid, look up the old amount from the dict, remove the old ordered-structure entry, then insert the new one and update the dict. (Lazy heap: just push new entry and update dict.)</li>
+  <li>In removeBid, look up the current amount, remove (amount, userId) from the ordered structure, and delete from the dict. (Lazy heap: delete from dict only -- the heap entry will be filtered on the next query.)</li>
+  <li>In getHighestBidder (sorted-set variant), return the max element's userId directly via set.last() / set.rbegin(). (Lazy heap: pop stale entries until top matches dict, then return its userId.)</li>
+  <li>Tie-breaking: ensure the sort key is (bidAmount, userId) both ascending so that the maximum key correctly resolves ties by highest userId. A comparator that sorts only by amount, or sorts userId descending, will produce wrong answers.</li>
+  <li>Return -1 when the ordered structure for itemId is empty, or when itemId has never been seen.</li>
+  <li>In statically-typed languages (Java, C++, Rust, Go), ensure the comparator is a strict total order -- no two distinct (amount, userId) pairs should compare as equal, or the TreeSet/BTreeSet/std::set will silently drop one.</li>
+</ul>
+
+<!-- ===== 8. WRONG BUT TEMPTING ===== -->
+<h2>Wrong But Tempting</h2>
+<div class="warn-box">
+  <strong>1. Linear scan for getHighestBidder</strong><br>
+  Keep a plain dict {userId: amount} per item, scan all entries on each query to find the max.
+  addBid/removeBid are O(1), but getHighestBidder is O(n) where n = active bidders per item.
+  Worst case: 5e4 getHighestBidder calls, each scanning up to 5e4 entries =
+  <strong>5e4 * 5e4 = 2.5e9 comparisons</strong>. TLE.
+</div>
+<div class="warn-box">
+  <strong>2. Sorted array with bisect insert</strong><br>
+  Maintain a sorted list per item so getHighestBidder reads the last element in O(1).
+  Python's bisect.insort finds the insertion point in O(log n) but then shifts the list,
+  making each insert O(n). Worst case: 5e4 addBid calls, each O(n) shift =
+  <strong>5e4 * 5e4 = 2.5e9 element moves</strong>. TLE. The same applies to C++ vector::insert.
+</div>
+<div class="warn-box">
+  <strong>3. Calling heap.remove() directly in Python</strong><br>
+  Python's heapq module has no O(log n) remove-by-value. The only way to remove a specific
+  element is to scan the list for it (O(n)) and then call heapify (O(n)).
+  With 5e4 updateBid and removeBid calls each costing O(n) =
+  <strong>5e4 * 5e4 = 2.5e9 ops</strong>. TLE. The lazy-deletion pattern avoids this entirely
+  by never removing stale entries until they naturally surface at the heap top.
+</div>
+
+<!-- ===== 9. ACCEPTED ALGORITHM FAMILIES ===== -->
+<h2>Accepted Algorithm Families</h2>
+
+<div class="fam-card">
+  <h3>Family 1 -- Ordered Set / Sorted Structure</h3>
+  <p>
+  Maintain a sorted set per item keyed by (bidAmount, userId) in ascending order.
+  addBid/updateBid erase the old pair then insert the new one; removeBid erases the pair;
+  getHighestBidder reads the maximum (last) element. Every operation is O(log n) with no
+  amortization required. Used by: C++ (<code>std::set</code>), Java (<code>TreeSet</code>),
+  Python (<code>SortedList</code>), Rust (<code>BTreeSet</code>).
+  Languages: C++ (1), Java (5), Python (1), Rust (2). Total: 9 solutions.
+  </p>
+  <div class="file-attr">Excerpt from: accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</div>
+<pre><code>void addBid(int userId, int itemId, int bidAmount) {
+    auto&amp; userMap = userBids[itemId];
+    auto&amp; bSet    = bidSets[itemId];
+    auto it = userMap.find(userId);
+    if (it != userMap.end())
+        bSet.erase({it-&gt;second, userId});   // remove old (amount, userId)
+    userMap[userId] = bidAmount;
+    bSet.insert({bidAmount, userId});        // insert new (amount, userId)
+}
+int getHighestBidder(int itemId) {
+    auto it = bidSets.find(itemId);
+    if (it == bidSets.end() || it-&gt;second.empty()) return -1;
+    return it-&gt;second.rbegin()-&gt;second;     // max element -&gt; userId
+}</code></pre>
+</div>
+
+<div class="fam-card">
+  <h3>Family 2 -- Lazy-Deletion Heap (amount-based staleness)</h3>
+  <p>
+  Maintain a max-heap per item. addBid/updateBid always push a new entry without removing the
+  old one. removeBid only deletes from the dict. getHighestBidder pops stale heap entries
+  (those whose stored amount no longer matches the dict) until a valid top is found.
+  The heap may accumulate stale entries, but the total stale entries across all operations is
+  bounded by the total call count (5*10^4), so the amortized cost per operation is O(log n).
+  Used by: Python (<code>heapq</code>, 6 solutions), Go (<code>container/heap</code>, 3 solutions),
+  JavaScript (custom heap, 1 solution). Total: 10 solutions.
+  </p>
+  <div class="file-attr">Excerpt from: accepted__qwen3.5-cloud-t1.0__python3.py</div>
+<pre><code>def addBid(self, userId, itemId, bidAmount):
+    self.bids[itemId][userId] = bidAmount
+    heapq.heappush(self.heaps[itemId], (-bidAmount, -userId))
+
+def updateBid(self, userId, itemId, newAmount):
+    self.bids[itemId][userId] = newAmount
+    heapq.heappush(self.heaps[itemId], (-newAmount, -userId))
+
+def removeBid(self, userId, itemId):
+    del self.bids[itemId][userId]          # heap entry silently becomes stale
+
+def getHighestBidder(self, itemId):
+    heap, bids = self.heaps[itemId], self.bids[itemId]
+    while heap:
+        neg_amount, neg_userId = heap[0]
+        userId = -neg_userId
+        if userId in bids and bids[userId] == -neg_amount:
+            return userId
+        heapq.heappop(heap)
+    return -1</code></pre>
+</div>
+
+<div class="fam-card">
+  <h3>Family 3 -- Version-Tagged Lazy Heap (version-based staleness)</h3>
+  <p>
+  A variant of Family 2 used by one Go solution (minimax-m2.7-cloud-t0.0-golang). Each item
+  carries a monotonically increasing version counter. On every add/update the counter is
+  incremented; the new version is stored both in the heap entry and in a per-user version map.
+  On getHighestBidder, a heap entry is stale if its stored version does not match the per-user
+  version map. This is more robust than amount-based staleness and would correctly handle
+  the edge case where a user updates back to a previously used amount (though the problem
+  constraints do not require this). One solution; extra per-user version map increases memory
+  slightly vs. plain Family 2.
+  </p>
+  <div class="file-attr">Excerpt from: accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</div>
+<pre><code>func (this *AuctionSystem) AddBid(userId int, itemId int, bidAmount int) {
+    data := this.getOrCreateItem(itemId)
+    data.userBid[userId] = bidAmount
+    data.version++
+    data.userVer[userId] = data.version
+    heap.Push(&amp;data.Heap, Entry{Bid: bidAmount, User: userId, Ver: data.version})
+}
+func (this *AuctionSystem) GetHighestBidder(itemId int) int {
+    for data.Heap.Len() &gt; 0 {
+        top := data.Heap[0]
+        ver, ok := data.userVer[top.User]
+        if !ok || ver != top.Ver { heap.Pop(&amp;data.Heap); continue }
+        return top.User
+    }
+    return -1
+}</code></pre>
+</div>
+
+<!-- ===== 10. LANGUAGE AND PERFORMANCE NOTES ===== -->
+<h2>Language and Performance Notes</h2>
+
+<div class="note-box">
+No accepted solution in this benchmark qualifies as a strict 3x outlier (runtime or memory &gt;= 3x
+the median of its algorithm-family peers). The most notable relative differences are documented
+below; all inferred causes use "likely" or "possibly."
+</div>
+
+<table class="data">
+  <thead>
+    <tr>
+      <th>Language</th><th>Count</th><th>Runtime range</th><th>Memory range</th><th>Notes tied to specific files</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Python 3</td><td>7</td><td>213 -- 348 ms</td><td>51.5 -- 58.6 MB</td>
+      <td>
+        <code>accepted__claude-sonnet-4-6__python3.py</code> is the slowest Python solution at
+        348 ms and highest memory at 58.6 MB. It uses <code>sortedcontainers.SortedList</code>
+        (Family 1) while the other 6 Python solutions use <code>heapq</code> (Family 2) and run
+        213-288 ms at 51-56 MB. The SortedList approach is likely slower per call because
+        SortedList maintains internal sublists with O(log n) rebalancing, whereas heapq's lazy
+        approach pays cost only during getHighestBidder. The memory difference (7 MB vs. 51 MB
+        baseline) is possibly from SortedList's internal array-of-arrays bookkeeping.
+        The fastest Python solution is <code>accepted__kimi-k2.5-cloud__python3.py</code> at
+        213 ms, using heapq with a simple dict-of-dict design.
+      </td>
+    </tr>
+    <tr>
+      <td>Java</td><td>5</td><td>114 -- 147 ms</td><td>206.1 -- 233.3 MB</td>
+      <td>
+        All five Java solutions use TreeSet (Family 1).
+        <code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code> is the fastest
+        (114 ms, 206.1 MB) with a compact inner Bid class that has only <code>compareTo</code>
+        and no <code>equals</code>/<code>hashCode</code> override. In contrast,
+        <code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code> adds both overrides,
+        reaching 208.8 MB -- likely because the JVM allocates extra object header space for
+        hashed instances. <code>accepted__glm-5-cloud-t0.8-java__java.java</code> and
+        <code>accepted__qwen3.5-cloud-t1.0-java__java.java</code> both reach 233 MB, possibly
+        because they use an extra outer HashMap layer separating itemUserBids from itemBids.
+        Java's 200+ MB baseline reflects normal JVM heap reservation, not problem-specific data.
+      </td>
+    </tr>
+    <tr>
+      <td>Go</td><td>4</td><td>153 -- 250 ms</td><td>33.7 -- 56.9 MB</td>
+      <td>
+        <code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code> is the slowest Go
+        solution at 250 ms and highest memory at 56.9 MB. It uses the version-tagged lazy heap
+        (Family 3) with an extra <code>userVer map[int]int</code> per item, which is likely the
+        source of the additional overhead vs. the other three Go solutions (153-198 ms, 33-46 MB).
+        <code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code> is the most memory-efficient
+        at 33.7 MB, possibly because it avoids the version map and uses the simpler amount-match
+        staleness check. Go solutions are the most memory-efficient of any language with an ordered
+        structure or heap approach.
+      </td>
+    </tr>
+    <tr>
+      <td>C++</td><td>1</td><td>190 ms</td><td>383.7 MB</td>
+      <td>
+        <code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code> uses nested
+        <code>unordered_map</code>s plus a <code>std::set</code> per item. At 383.7 MB it is
+        notably higher than Java's 206-233 MB range and Rust's ~40 MB range despite all three
+        using ordered sets. This is likely because each <code>std::set</code> node is individually
+        heap-allocated (typically 32-48 bytes of metadata per node) and
+        <code>unordered_map</code> has high per-bucket overhead for small load factors. With
+        no custom allocator, every small allocation goes through the system allocator separately.
+      </td>
+    </tr>
+    <tr>
+      <td>Rust</td><td>2</td><td>90 ms (both)</td><td>40.5 -- 40.7 MB</td>
+      <td>
+        Both Rust solutions use <code>BTreeSet</code> (Family 1) and share the fastest runtime
+        (90 ms) and near-identical memory (~40.6 MB) across all languages, consistent with
+        Rust's zero-cost abstractions and compact BTreeSet node packing.
+        <code>accepted__glm-5-cloud-t0.0-rust__rust.rs</code> stores plain
+        <code>(amount, userId)</code> tuples and calls <code>bids_set.last()</code> for the max.
+        <code>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</code> wraps values in
+        <code>Reverse()</code> and calls <code>.iter().next()</code> for the min of the reversed
+        set -- both approaches are equivalent but the Reverse pattern is slightly more verbose.
+      </td>
+    </tr>
+    <tr>
+      <td>JavaScript</td><td>1</td><td>334 ms</td><td>102.8 MB</td>
+      <td>
+        <code>accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</code> implements a
+        custom binary max-heap in pure JS (~50 lines of heapPush/heapPop logic) since JavaScript
+        has no built-in priority queue. At 102.8 MB it uses roughly twice the memory of
+        comparable Python lazy-heap solutions (51-52 MB), possibly because V8 stores each heap
+        entry as a two-element JS array object with full object header and GC metadata rather
+        than a compact Python tuple.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== 11. FAILURE PATTERNS FROM STATS ===== -->
+<h2>Failure Patterns From Stats</h2>
+
+<table class="data">
+  <thead>
+    <tr><th>Status</th><th>Count</th><th>Likely Root Cause (inferred from accepted code invariants)</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Wrong Answer</td><td>2</td>
+      <td>
+        Likely a broken tie-breaking rule. The accepted code invariant is: the sort key is
+        <code>(bidAmount, userId)</code> with <em>both</em> components ascending, so that
+        <code>max</code> naturally picks the higher userId on equal amounts. A comparator
+        that sorts only by amount would return an arbitrary userId on ties. Alternatively,
+        sorting userId <em>descending</em> within the comparator inverts the tie-break.
+        A second possible cause: failing to remove the old ordered-structure entry when a user
+        rebids, leaving a phantom duplicate; the structure then holds two entries for the same
+        user, possibly returning an outdated amount as the winner.
+      </td>
+    </tr>
+    <tr>
+      <td>Runtime Error</td><td>4</td>
+      <td>
+        Likely a null-pointer or missing-key access. Accepted code guards every read with
+        existence checks: Python uses <code>if itemId not in self.item_bids</code> or
+        <code>defaultdict</code>; Java uses <code>items.computeIfAbsent</code> or a null check
+        before <code>item.bidSet.first()</code>; Go checks <code>if !ok</code> on map lookup.
+        A solution that calls <code>items.get(itemId).bidSet.first()</code> in Java without a
+        null guard, or indexes <code>self.item_bids[itemId]</code> in Python without checking
+        itemId's existence, would crash on the first getHighestBidder(unknownItem) call.
+        Also possibly: a Rust <code>.unwrap()</code> panic in remove_bid if the existence
+        guarantee is not relied upon and a missing key is not handled.
+      </td>
+    </tr>
+    <tr>
+      <td>Time Limit Exceeded</td><td>3</td>
+      <td>
+        Likely an O(n) operation in a hot path. The most common trap: calling
+        <code>heap.remove(old_entry)</code> in Python (O(n) scan + O(n) heapify) instead of
+        using lazy deletion. A second trap: linear scan over all bids per item to find the
+        maximum (O(n) per getHighestBidder call). Accepted code uses O(log n) ordered
+        structures throughout; any solution that falls back to iteration inside any of the
+        four operations would TLE on dense call sequences.
+      </td>
+    </tr>
+    <tr>
+      <td>Compile Error</td><td>1</td>
+      <td>
+        Likely a type or import error in a statically-typed language. Common causes: missing
+        <code>import java.util.*</code> for TreeSet, wrong generic type parameters in Java
+        generics, or a Rust solution that uses <code>&amp;self</code> on mutating methods
+        (the LeetCode starter snippet incorrectly specifies <code>&amp;self</code> instead of
+        <code>&amp;mut self</code> for add_bid/update_bid/remove_bid, which requires correction
+        before the code will compile). A Go solution missing <code>import "container/heap"</code>
+        would also fail to compile.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== 12. ALL ACCEPTED SOLUTIONS ===== -->
+<h2>All Accepted Solutions</h2>
+
+<h3>Canonical (most representative -- one per family/language combination)</h3>
+<table class="data">
+  <thead>
+    <tr><th>File</th><th>Model</th><th>Lang</th><th>Family</th><th>Runtime</th><th>Memory</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>accepted__claude-sonnet-4-6__python3.py</td>
+      <td>claude-sonnet-4-6</td><td>python3</td><td>1 -- Ordered Set</td>
+      <td>348 ms</td><td>58.6 MB</td>
+      <td>Only Python solution using SortedList; clean reference for Family 1 in Python</td>
+    </tr>
+    <tr>
+      <td>accepted__qwen3.5-cloud-t1.0__python3.py</td>
+      <td>qwen3.5-cloud-t1.0</td><td>python3</td><td>2 -- Lazy Heap</td>
+      <td>269 ms</td><td>51.5 MB</td>
+      <td>Most compact Python solution (32 lines); cleanest lazy-heap pattern</td>
+    </tr>
+    <tr>
+      <td>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</td>
+      <td>deepseek-v4-flash-cloud-t0.0</td><td>java</td><td>1 -- Ordered Set</td>
+      <td>114 ms</td><td>206.1 MB</td>
+      <td>Fastest Java; compact Bid inner class; lowest Java memory</td>
+    </tr>
+    <tr>
+      <td>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</td>
+      <td>kimi-k2.5-cloud-t0.0</td><td>cpp</td><td>1 -- Ordered Set</td>
+      <td>190 ms</td><td>383.7 MB</td>
+      <td>Only C++ solution; unordered_map + std::set; notably high memory vs. other languages</td>
+    </tr>
+    <tr>
+      <td>accepted__glm-5-cloud-t0.0-rust__rust.rs</td>
+      <td>glm-5-cloud-t0.0</td><td>rust</td><td>1 -- Ordered Set</td>
+      <td>90 ms</td><td>40.7 MB</td>
+      <td>Fastest overall; BTreeSet with natural (amount, userId) tuple ordering; .last() for max</td>
+    </tr>
+    <tr>
+      <td>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</td>
+      <td>minimax-m2.7-cloud-t0.0</td><td>golang</td><td>3 -- Version Heap</td>
+      <td>250 ms</td><td>56.9 MB</td>
+      <td>Only version-counter heap variant; most robust staleness detection of all 20 solutions</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Variants (all remaining accepted files)</h3>
+<table class="data">
+  <thead>
+    <tr><th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</td><td>deepseek-v4-flash-cloud-t0.0</td><td>python3</td><td>234 ms</td><td>51.6 MB</td></tr>
+    <tr><td>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</td><td>deepseek-v4-pro-cloud-t0.0</td><td>python3</td><td>243 ms</td><td>52.9 MB</td></tr>
+    <tr><td>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</td><td>deepseek-v4-pro-cloud-t1.0</td><td>python3</td><td>249 ms</td><td>52.7 MB</td></tr>
+    <tr><td>accepted__glm-5-cloud-t0.0__python3.py</td><td>glm-5-cloud-t0.0</td><td>python3</td><td>288 ms</td><td>55.5 MB</td></tr>
+    <tr><td>accepted__kimi-k2.5-cloud__python3.py</td><td>kimi-k2.5-cloud</td><td>python3</td><td>213 ms</td><td>52.1 MB</td></tr>
+    <tr><td>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</td><td>deepseek-v4-pro-cloud-t0.0</td><td>java</td><td>122 ms</td><td>208.8 MB</td></tr>
+    <tr><td>accepted__glm-5-cloud-t0.8-java__java.java</td><td>glm-5-cloud-t0.8</td><td>java</td><td>147 ms</td><td>233.3 MB</td></tr>
+    <tr><td>accepted__kimi-k2.5-cloud-t0.0-java__java.java</td><td>kimi-k2.5-cloud-t0.0</td><td>java</td><td>117 ms</td><td>210 MB</td></tr>
+    <tr><td>accepted__qwen3.5-cloud-t1.0-java__java.java</td><td>qwen3.5-cloud-t1.0</td><td>java</td><td>144 ms</td><td>233.2 MB</td></tr>
+    <tr><td>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</td><td>kimi-k2.5-cloud-t0.0</td><td>rust</td><td>90 ms</td><td>40.5 MB</td></tr>
+    <tr><td>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</td><td>kimi-k2.5-cloud-t0.0</td><td>golang</td><td>198 ms</td><td>33.7 MB</td></tr>
+    <tr><td>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</td><td>minimax-m2.7-cloud-t1.0</td><td>golang</td><td>171 ms</td><td>40.7 MB</td></tr>
+    <tr><td>accepted__qwen3.5-cloud-t1.0-golang__golang.go</td><td>qwen3.5-cloud-t1.0</td><td>golang</td><td>153 ms</td><td>45.5 MB</td></tr>
+    <tr><td>accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</td><td>kimi-k2.5-cloud-t0.0</td><td>javascript</td><td>334 ms</td><td>102.8 MB</td></tr>
+  </tbody>
+</table>
+
+</body>
+</html>

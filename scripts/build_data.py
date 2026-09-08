@@ -7,18 +7,31 @@ BENCH = os.environ.get('BENCH', '/mnt/c/Users/CoderA/benchmark')
 MANUALS_URL = 'manuals/'  # vendored copies under docs/manuals/, self-contained HTML
 import shutil
 os.makedirs('docs/manuals', exist_ok=True)
-LADDER = [  # chosen by model acceptance rate, easiest first (set 1, richest submission data)
-    'wc0482-Q3-smallest-all-ones-multiple',
-    'wc0484-Q3-count-caesar-cipher-pairs',
-    'wc0486-Q3-pythagorean-distance-nodes-in-a-tree',
+LADDER = [  # set 1 problems on which at least one model submission failed; sorted by acceptance rate below
     'wc0483-Q3-minimum-cost-to-make-two-binary-strings-equal',
-    'wc0482-Q4-number-of-balanced-integers-in-a-range',
-    'wc0483-Q4-minimum-cost-to-merge-sorted-lists',
+    'wc0486-Q4-find-nth-smallest-integer-with-k-one-bits',
     'wc0487-Q4-longest-alternating-subarray-after-removing-at-most-one-element',
+    'wc0482-Q4-number-of-balanced-integers-in-a-range',
+    'wc0487-Q3-design-ride-sharing-system',
+    'wc0483-Q4-minimum-cost-to-merge-sorted-lists',
     'wc0484-Q4-maximum-bitwise-and-after-increment-operations',
+    'wc0485-Q3-design-auction-system',
     'wc0489-Q3-longest-almost-palindromic-substring',
     'wc0485-Q4-lexicographically-smallest-string-after-deleting-duplicate-characters',
 ]
+# Passages in the generated "Wrong But Tempting" sections found wrong by the 2026-09-08 review
+# (review/CONSOLIDATED.md). Applied to the lifted text only; the vendored manuals are untouched.
+CORRECTIONS = {
+    'wc0489-Q3-longest-almost-palindromic-substring': [
+        ('Brute-force O(n^3) check', 'Brute-force O(n^4) check'),
+        ('With n=2500: 2500^4 / something... even O(n^3) = 2500^3 = 15.6e9 ops, far over the ~10^8 limit.',
+         'With n=2500 that is about 3.9e13 operations; even O(n^3) = 2500^3 = 1.56e10 is far over the ~10^8 limit.'),
+    ],
+    'wc0484-Q4-maximum-bitwise-and-after-increment-operations': [
+        ('AND(7, 8) = 0, and one increment cannot help. But with a targeted approach, no meaningful AND is achievable anyway -- but in larger examples, alignment-aware subset selection changes the winner entirely.',
+         'AND(7, 8) = 0. One increment on the <em>smaller</em> element gives [8, 8] and AND 8, so spending the increment by raw value rather than by bit alignment is exactly the mistake; in larger examples, alignment-aware subset selection changes the winner entirely. <small>(Passage corrected after review: the original text claimed one increment could not help.)</small>'),
+    ],
+}
 FAMILIES = ['claude', 'codex', 'deepseek', 'glm', 'qwen', 'minimax', 'kimi', 'gemini', 'gpt', 'llama', 'mistral']
 def family(slug):
     s = slug.lower()
@@ -31,6 +44,12 @@ def section(page, heading):
     body = re.sub(r'<(script|style).*?</\1>', '', body, flags=re.S)
     body = re.sub(r'\s+on\w+="[^"]*"', '', body)
     return body.strip()
+def apply_corrections(pid, htmltext):
+    for old, new in CORRECTIONS.get(pid, []):
+        pat = re.compile(r'\s+'.join(re.escape(w) for w in old.split()))
+        assert pat.search(htmltext), 'correction anchor missing for %s: %s' % (pid, old[:40])
+        htmltext = pat.sub(lambda m: new, htmltext, count=1)
+    return htmltext
 manuals = {os.path.basename(f)[:-5]: f for f in glob.glob(BENCH + '/docs/set*/wc*.html')}
 out = []
 for rank, pid in enumerate(LADDER, 1):
@@ -56,7 +75,7 @@ for rank, pid in enumerate(LADDER, 1):
         'tags': [t.get('name', t) if isinstance(t, dict) else t for t in prob.get('topicTags', [])],
         'statement_html': prob['content'],
         'essence_html': section(page, 'Problem Essence'),
-        'tempting_html': section(page, 'Wrong But Tempting'),
+        'tempting_html': apply_corrections(pid, section(page, 'Wrong But Tempting')),
         'manual_url': MANUALS_URL + pid + '.html',
         'models': fams, 'accepted': tot_a, 'attempts': tot_n,
         'rate': round(tot_a / tot_n, 3) if tot_n else None,

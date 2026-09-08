@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wc0487-Q3 -- Design Ride Sharing System</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- 1. HEADER CARD                                               -->
+<!-- ============================================================ -->
+<section id="header-card">
+<div class="header-card">
+  <div class="title-line">Design Ride Sharing System <span class="badge">Medium</span></div>
+  <div class="meta">Problem ID: wc0487-Q3-design-ride-sharing-system &nbsp;|&nbsp; Accepted solutions: 24</div>
+  <div class="meta">Topic tags: hash-table, design, queue, data-stream</div>
+  <div class="meta" style="margin-top:10px;">Function signature (Python 3, from stats.json):</div>
+  <div class="sig-box">class RideSharingSystem:
+
+    def __init__(self):                          ...
+
+    def addRider(self, riderId: int) -> None:    ...
+
+    def addDriver(self, driverId: int) -> None:  ...
+
+    def matchDriverWithRider(self) -> List[int]: ...  # returns [driverId, riderId] or [-1, -1]
+
+    def cancelRider(self, riderId: int) -> None: ...</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 2. PROVENANCE                                                -->
+<!-- ============================================================ -->
+<section id="provenance">
+<h2>Provenance</h2>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>problem_id</td><td>wc0487-Q3-design-ride-sharing-system</td></tr>
+  <tr><td>generator_tool</td><td>claude</td></tr>
+  <tr><td>generator_model</td><td>claude-sonnet-4-6</td></tr>
+  <tr><td>generated_at_utc</td><td>2026-05-21T06:04:41.246889+00:00</td></tr>
+  <tr><td>accepted_count</td><td>24</td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- 3. PROBLEM ESSENCE                                           -->
+<!-- ============================================================ -->
+<section id="problem-essence">
+<h2>Problem Essence</h2>
+<p>
+  Implement a ride-sharing dispatcher backed by two independent FIFO queues -- one for waiting
+  riders and one for available drivers. The <code>matchDriverWithRider</code> operation always
+  pairs the <em>earliest-added</em> driver with the <em>earliest-added non-canceled</em> rider,
+  removes both from the system, and returns <code>[driverId, riderId]</code>. Riders may call
+  <code>cancelRider</code> at any time before being matched; a canceled rider must be skipped
+  silently during matching rather than surfaced as an error. If either queue has no eligible
+  member at match time, return <code>[-1, -1]</code>.
+</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- 4. WORKED EXAMPLE                                            -->
+<!-- ============================================================ -->
+<section id="worked-example">
+<h2>Worked Example</h2>
+<div class="section-note">
+  stats.json.sample_io is empty for this class-design problem -- the local benchmark verifier
+  skips arity-0 class-design problems. Examples below come directly from the problem statement.
+</div>
+
+<div class="card">
+<strong>Example 1 -- step-by-step trace</strong>
+<pre>
+ops  = ["RideSharingSystem","addRider","addDriver","addRider",
+        "matchDriverWithRider","addDriver","cancelRider",
+        "matchDriverWithRider","matchDriverWithRider"]
+args = [[], [3], [2], [1], [], [5], [3], [], []]
+</pre>
+<table>
+  <tr>
+    <th>#</th>
+    <th>Call</th>
+    <th>Rider Queue (front..back)</th>
+    <th>Driver Queue</th>
+    <th>Active Set</th>
+    <th>Returns</th>
+  </tr>
+  <tr>
+    <td>0</td><td>RideSharingSystem()</td>
+    <td>[]</td><td>[]</td><td>{}</td><td>null</td>
+  </tr>
+  <tr>
+    <td>1</td><td>addRider(3)</td>
+    <td>[3]</td><td>[]</td><td>{3}</td><td>null</td>
+  </tr>
+  <tr>
+    <td>2</td><td>addDriver(2)</td>
+    <td>[3]</td><td>[2]</td><td>{3}</td><td>null</td>
+  </tr>
+  <tr>
+    <td>3</td><td>addRider(1)</td>
+    <td>[3, 1]</td><td>[2]</td><td>{3, 1}</td><td>null</td>
+  </tr>
+  <tr>
+    <td>4</td><td>matchDriverWithRider()</td>
+    <td>[1]</td><td>[]</td><td>{1}</td>
+    <td class="ok">[2, 3]</td>
+  </tr>
+  <tr>
+    <td>5</td><td>addDriver(5)</td>
+    <td>[1]</td><td>[5]</td><td>{1}</td><td>null</td>
+  </tr>
+  <tr>
+    <td>6</td><td>cancelRider(3)</td>
+    <td>[1]</td><td>[5]</td><td>{1}</td>
+    <td class="dim">null -- rider 3 already matched; no-op</td>
+  </tr>
+  <tr>
+    <td>7</td><td>matchDriverWithRider()</td>
+    <td>[]</td><td>[]</td><td>{}</td>
+    <td class="ok">[5, 1]</td>
+  </tr>
+  <tr>
+    <td>8</td><td>matchDriverWithRider()</td>
+    <td>[]</td><td>[]</td><td>{}</td>
+    <td class="warn">[-1, -1]</td>
+  </tr>
+</table>
+
+<p><strong>Step 4 reasoning:</strong> Rider queue front = 3. Check: is 3 in active set? Yes.
+Driver queue front = 2. Pop driver 2 and rider 3. Remove 3 from active set. Return [2, 3].
+Note that rider 3 is matched before rider 1 even though 3 &gt; 1, because 3 was enqueued first
+(arrival order, not ID order).</p>
+
+<p><strong>Step 6 reasoning:</strong> riderId=3 is not in the active set -- it was removed at
+step 4. The problem says cancel affects a rider only "if the rider exists and has not yet been
+matched." Since 3 no longer exists as a waiting rider, this call is a silent no-op. The rider
+queue still holds [1].</p>
+
+<p><strong>Step 8 reasoning:</strong> Step 7 consumed the last driver (5) and last rider (1).
+Both queues are now empty. Return [-1, -1].</p>
+</div>
+
+<h3>Other Official Examples</h3>
+<div class="card">
+<p><strong>Example 2 confirmation:</strong></p>
+<pre>
+ops  = ["RideSharingSystem","addRider","addDriver","addDriver",
+        "matchDriverWithRider","addRider","cancelRider","matchDriverWithRider"]
+args = [[], [8], [8], [6], [], [2], [2], []]
+expected output = [null, null, null, null, [8, 8], null, null, [-1, -1]]
+</pre>
+<p>Sequence: rider 8 and driver 8 are enqueued, then driver 6. First match pairs the earliest
+driver (8) with the earliest rider (8) -- same integer value, different queues -- returning [8, 8].
+Rider 2 is then added and immediately canceled. The second match finds no active rider (rider 2
+is canceled; driver 6 is still in the driver queue but there is no rider to pair with), so it
+returns [-1, -1]. Matches expected output.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 5. DECISION RULE / ALGORITHM                                 -->
+<!-- ============================================================ -->
+<section id="decision-rule-algorithm">
+<h2>Decision Rule / Algorithm</h2>
+
+<p><strong>Core rule:</strong> maintain three structures -- a rider deque, a driver deque, and a
+hash set of "active" rider IDs (those added but not yet matched or canceled).</p>
+
+<ol>
+  <li><strong>addRider(id):</strong> append to rider deque AND insert into active set. O(1).</li>
+  <li><strong>addDriver(id):</strong> append to driver deque. O(1).</li>
+  <li><strong>cancelRider(id):</strong> remove id from active set only. The ID stays as a
+      tombstone in the deque. O(1). No need to physically touch the deque.</li>
+  <li><strong>matchDriverWithRider():</strong> drain tombstones from the rider deque front
+      (pop any ID not in the active set). Then check if both deques are non-empty; if not,
+      return [-1, -1]. Otherwise pop one driver and one rider, remove the rider from the
+      active set, and return [driverId, riderId].</li>
+</ol>
+
+<p><strong>Complexity:</strong> Each rider ID enters the deque once and leaves once (either
+drained as a tombstone or popped as a successful match). Total tombstone drains across all
+<code>matchDriverWithRider</code> calls is O(n) amortized. Cancel is O(1). Space is O(n)
+for n riders and n drivers.</p>
+
+<p><strong>Why active set instead of physical removal?</strong> Deque internal removal is O(n)
+per call. For 1000 riders all canceled and then 1000 match calls the eager approach costs
+1000*1000 = 1e6 comparisons; the lazy approach costs n total drain steps regardless of cancel
+pattern. Both are within the n=1000 constraint, but the lazy approach is the idiomatic
+production pattern.</p>
+
+<p><strong>Precondition on IDs:</strong> constraints guarantee each riderId and driverId is
+unique within its pool and added at most once. This means the active set never holds stale
+entries from re-insertion, and physical queue removal in the eager approach never removes
+the wrong element due to duplicate IDs.</p>
+
+<!-- SVG system diagram -->
+<div style="margin: 20px 0;">
+<svg width="560" height="210" xmlns="http://www.w3.org/2000/svg"
+     style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:4px;">
+  <defs>
+    <marker id="arr-b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#388bfd"/>
+    </marker>
+    <marker id="arr-o" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#ffa657"/>
+    </marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#7ee787"/>
+    </marker>
+  </defs>
+
+  <!-- addRider -->
+  <rect x="14" y="22" width="88" height="28" rx="4" fill="#1c2128" stroke="#388bfd" stroke-width="1.2"/>
+  <text x="58" y="41" text-anchor="middle" fill="#79c0ff" font-size="11" font-family="monospace">addRider</text>
+
+  <!-- Rider Deque -->
+  <rect x="158" y="14" width="118" height="28" rx="4" fill="#1c2128" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="217" y="33" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="monospace">Rider Deque</text>
+
+  <!-- Active Set -->
+  <rect x="158" y="60" width="118" height="28" rx="4" fill="#1c2128" stroke="#7ee787" stroke-width="1.2"/>
+  <text x="217" y="79" text-anchor="middle" fill="#7ee787" font-size="11" font-family="monospace">Active Set</text>
+
+  <!-- cancelRider -->
+  <rect x="14" y="60" width="88" height="28" rx="4" fill="#1c2128" stroke="#ffa657" stroke-width="1.2"/>
+  <text x="58" y="79" text-anchor="middle" fill="#ffa657" font-size="11" font-family="monospace">cancelRider</text>
+
+  <!-- addDriver -->
+  <rect x="14" y="140" width="88" height="28" rx="4" fill="#1c2128" stroke="#388bfd" stroke-width="1.2"/>
+  <text x="58" y="159" text-anchor="middle" fill="#79c0ff" font-size="11" font-family="monospace">addDriver</text>
+
+  <!-- Driver Deque -->
+  <rect x="158" y="140" width="118" height="28" rx="4" fill="#1c2128" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="217" y="159" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="monospace">Driver Deque</text>
+
+  <!-- match() box -->
+  <rect x="348" y="72" width="118" height="52" rx="4" fill="#1c2128" stroke="#f78166" stroke-width="1.2"/>
+  <text x="407" y="93" text-anchor="middle" fill="#f78166" font-size="11" font-family="monospace">match()</text>
+  <text x="407" y="108" text-anchor="middle" fill="#8b949e" font-size="10" font-family="monospace">drain tombstones</text>
+  <text x="407" y="120" text-anchor="middle" fill="#8b949e" font-size="10" font-family="monospace">pop from both</text>
+
+  <!-- Result -->
+  <rect x="490" y="84" width="62" height="28" rx="4" fill="#1c2128" stroke="#7ee787" stroke-width="1.2"/>
+  <text x="521" y="103" text-anchor="middle" fill="#7ee787" font-size="10" font-family="monospace">[d,r]/[-1,-1]</text>
+
+  <!-- addRider -> Rider Deque -->
+  <line x1="102" y1="30" x2="158" y2="24" stroke="#388bfd" stroke-width="1.4" marker-end="url(#arr-b)"/>
+  <!-- addRider -> Active Set -->
+  <line x1="102" y1="42" x2="150" y2="66" stroke="#388bfd" stroke-width="1.4" marker-end="url(#arr-b)"/>
+  <!-- cancelRider -> Active Set (dashed, remove) -->
+  <line x1="102" y1="74" x2="158" y2="74" stroke="#ffa657" stroke-width="1.4" stroke-dasharray="5,3" marker-end="url(#arr-o)"/>
+  <!-- addDriver -> Driver Deque -->
+  <line x1="102" y1="154" x2="158" y2="154" stroke="#388bfd" stroke-width="1.4" marker-end="url(#arr-b)"/>
+  <!-- Rider Deque -> match -->
+  <line x1="276" y1="28" x2="348" y2="86" stroke="#58a6ff" stroke-width="1.4" marker-end="url(#arr-b)"/>
+  <!-- Driver Deque -> match -->
+  <line x1="276" y1="154" x2="348" y2="112" stroke="#58a6ff" stroke-width="1.4" marker-end="url(#arr-b)"/>
+  <!-- Active Set -> match (check, dashed) -->
+  <line x1="276" y1="74" x2="348" y2="94" stroke="#7ee787" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arr-g)"/>
+  <!-- match -> result -->
+  <line x1="466" y1="98" x2="490" y2="98" stroke="#7ee787" stroke-width="1.4" marker-end="url(#arr-g)"/>
+
+  <!-- Legend -->
+  <text x="14" y="198" fill="#8b949e" font-size="9" font-family="monospace">solid = data flow  |  dashed = set membership check/modify</text>
+</svg>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 6. IMPLEMENTATION SKELETON                                   -->
+<!-- ============================================================ -->
+<section id="implementation-skeleton">
+<h2>Implementation Skeleton</h2>
+<p>Python 3 -- lazy-deletion approach. Uses the function signature from stats.json.</p>
+<pre>
+from collections import deque
+from typing import List
+
+class RideSharingSystem:
+
+    def __init__(self):
+        self.riders: deque  = deque()  # FIFO queue; may contain canceled tombstone IDs
+        self.drivers: deque = deque()  # FIFO queue of available drivers
+        self.active: set    = set()    # IDs of riders not yet matched or canceled
+
+    def addRider(self, riderId: int) -> None:
+        self.riders.append(riderId)
+        self.active.add(riderId)
+
+    def addDriver(self, driverId: int) -> None:
+        self.drivers.append(driverId)
+
+    def matchDriverWithRider(self) -> List[int]:
+        # drain tombstones -- canceled riders sitting at the front of the queue
+        while self.riders and self.riders[0] not in self.active:
+            self.riders.popleft()
+        # no eligible rider or no driver available
+        if not self.riders or not self.drivers:
+            return [-1, -1]
+        driver = self.drivers.popleft()
+        rider  = self.riders.popleft()
+        self.active.discard(rider)    # remove matched rider from active set
+        return [driver, rider]
+
+    def cancelRider(self, riderId: int) -> None:
+        # O(1): mark inactive; drain happens lazily on the next match call
+        self.active.discard(riderId)
+</pre>
+</section>
+
+<!-- ============================================================ -->
+<!-- 7. REIMPLEMENTATION CHECKLIST                                -->
+<!-- ============================================================ -->
+<section id="reimplementation-checklist">
+<h2>Reimplementation Checklist</h2>
+<ul>
+  <li>Rider queue is FIFO -- use deque/ArrayDeque/VecDeque, not a sorted structure or priority queue.</li>
+  <li>Driver queue is also FIFO -- drivers are matched in arrival order, not by smallest ID.</li>
+  <li>Maintain a separate hash set (active set) tracking rider IDs that are still waiting.</li>
+  <li>cancelRider removes from the active set only; do NOT physically remove from the rider deque.</li>
+  <li>matchDriverWithRider drains tombstones from the rider deque front BEFORE the emptiness check.</li>
+  <li>After a successful match, discard the matched rider ID from the active set.</li>
+  <li>Return exactly [-1, -1] (not null, not an empty array) when no match is possible.</li>
+  <li>In Rust: all four operational methods mutate state and must take &amp;mut self, not &amp;self.</li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<!-- 8. WRONG BUT TEMPTING                                        -->
+<!-- ============================================================ -->
+<section id="wrong-but-tempting">
+<h2>Wrong But Tempting</h2>
+
+<div class="card">
+<strong>1. Matching by smallest ID (min-heap) instead of FIFO arrival order</strong>
+<p>A min-heap or sorted insert would pair the driver/rider with the smallest integer ID.
+The problem requires FIFO on arrival, not sorted order. Counterexample: addRider(3),
+addRider(1) -- heap pops 1 first, but the correct answer at the first match is rider 3
+(arrived first). Example 1 from the problem statement demonstrates this: rider 3 is matched
+before rider 1 even though 3 &gt; 1. This produces Wrong Answer on nearly every test case
+with non-monotone insertion order.</p>
+</div>
+
+<div class="card">
+<strong>2. Physical removal from the deque inside cancelRider -- O(n) and brittle</strong>
+<p>Calling <code>deque.remove(riderId)</code> (Python) or <code>Queue.remove(riderId)</code>
+(Java) is O(n) per cancel. For n=1000 riders all canceled: 1000 * 1000 / 2 = ~5e5 comparisons.
+Within the stated constraint (1000 total calls), this is still accepted -- and several accepted
+files do exactly this. The danger is correctness, not performance: if the guard
+"rider exists and has not been matched" is omitted or implemented with a stale data structure,
+the remove may silently do nothing (deque no longer contains it) OR incorrectly attempt to
+remove an ID that was already popped. The lazy-deletion approach sidesteps this entirely.</p>
+</div>
+
+<div class="card">
+<strong>3. Forgetting to drain tombstones before the emptiness check</strong>
+<p>A common bug: call cancelRider on several riders, then call matchDriverWithRider. If the
+code checks <code>if not self.riders or not self.drivers: return [-1, -1]</code> BEFORE
+draining tombstones, the rider queue is non-empty (it holds canceled IDs), so the check
+passes, and the code then pops a canceled rider and returns it as a valid match. Symptom:
+returns [driverId, canceledRiderId] instead of [-1, -1] or the next valid pair. This is
+the most likely root cause of the 1 Wrong Answer in the failure stats.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 9. ACCEPTED ALGORITHM FAMILIES                               -->
+<!-- ============================================================ -->
+<section id="accepted-algorithm-families">
+<h2>Accepted Algorithm Families</h2>
+
+<h3>Family A -- Lazy Deletion with Active Hash Set</h3>
+<p>Two FIFO queues. A hash set tracks which rider IDs are currently active (added, not yet
+matched or canceled). <code>cancelRider</code> is O(1) -- remove from set only.
+<code>matchDriverWithRider</code> drains tombstones from the rider queue front in a while-loop,
+then pops one from each queue. Total drain work is O(n) amortized. This is the recommended
+pattern and covers the majority of accepted files across all languages.</p>
+
+<p>Representative files: accepted__deepseek-v4-pro-cloud-t0.0__python3.py,
+accepted__deepseek-v4-flash-cloud-t0.0__python3.py,
+accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp,
+accepted__kimi-k2.5-cloud-t0.0-golang__golang.go,
+accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs,
+accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts,
+accepted__codex-agent-gpt-5.5-high-java__java.java,
+accepted__deepseek-v4-flash-cloud-t0.0-java__java.java,
+accepted__deepseek-v4-pro-cloud-t0.0-java__java.java,
+all four golang files.</p>
+
+<p><strong>Illustrative excerpt</strong> (source: <code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code>):</p>
+<pre>
+    queue&lt;int&gt; drivers;
+    queue&lt;int&gt; riders;
+    unordered_set&lt;int&gt; activeRiders;
+
+    vector&lt;int&gt; matchDriverWithRider() {
+        while (!riders.empty() &&
+               activeRiders.find(riders.front()) == activeRiders.end()) {
+            riders.pop();        // drain canceled tombstones from front
+        }
+        if (drivers.empty() || riders.empty()) return {-1, -1};
+        int driverId = drivers.front(); drivers.pop();
+        int riderId  = riders.front();  riders.pop();
+        activeRiders.erase(riderId);
+        return {driverId, riderId};
+    }
+
+    void cancelRider(int riderId) {
+        activeRiders.erase(riderId);    // O(1), no deque touch
+    }
+</pre>
+
+<h3>Family B -- Eager Linear Removal on Cancel</h3>
+<p>Two FIFO queues (deque or plain array). <code>cancelRider</code> physically searches the
+rider queue and removes the ID in O(n). <code>matchDriverWithRider</code> simply pops from
+the front of each queue -- no tombstone drain needed because canceled entries were already
+removed eagerly. Correct for n &lt;= 1000. Some variants (minimax Python) rebuild the entire
+rider deque as a new deque excluding the canceled rider, which is also O(n).</p>
+
+<p>Representative files: accepted__glm-5-cloud__python3.py,
+accepted__minimax-m2.7-cloud__python3.py,
+accepted__kimi-k2.5-cloud-t0.0-java__java.java,
+accepted__glm-5-cloud-t0.8-java__java.java,
+accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js,
+accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js,
+accepted__glm-5-cloud-t0.8-javascript__javascript.js,
+accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js.</p>
+
+<p><strong>Illustrative excerpt</strong> (source: <code>accepted__glm-5-cloud__python3.py</code> -- full 25-line file):</p>
+<pre>
+from collections import deque
+from typing import List
+
+class RideSharingSystem:
+
+    def __init__(self):
+        self.riders = deque()
+        self.drivers = deque()
+
+    def addRider(self, riderId: int) -> None:
+        self.riders.append(riderId)
+
+    def addDriver(self, driverId: int) -> None:
+        self.drivers.append(driverId)
+
+    def matchDriverWithRider(self) -> List[int]:
+        if self.riders and self.drivers:
+            driver = self.drivers.popleft()
+            rider  = self.riders.popleft()
+            return [driver, rider]
+        return [-1, -1]
+
+    def cancelRider(self, riderId: int) -> None:
+        if riderId in self.riders:
+            self.riders.remove(riderId)   # O(n) linear scan on deque
+</pre>
+</section>
+
+<!-- ============================================================ -->
+<!-- 10. LANGUAGE AND PERFORMANCE NOTES                           -->
+<!-- ============================================================ -->
+<section id="language-and-performance-notes">
+<h2>Language and Performance Notes</h2>
+
+<table>
+  <tr>
+    <th>Language</th><th>Count</th><th>Runtime range</th><th>Memory range</th><th>Notes</th>
+  </tr>
+  <tr>
+    <td>Python 3</td><td>6</td><td>36--104 ms</td><td>20.1--20.3 MB</td>
+    <td>
+      Fastest: <code>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</code> at 36 ms (lazy
+      deletion, 40 lines). Slowest: <code>accepted__minimax-m2.7-cloud__python3.py</code> at
+      104 ms -- likely because its <code>cancelRider</code> rebuilds the entire rider deque
+      by iterating over all elements, adding O(n) work per cancel call on top of normal
+      deque operations, pushing total runtime ~1.6x above the peer median of ~65 ms.
+    </td>
+  </tr>
+  <tr>
+    <td>Java</td><td>7</td><td>48--56 ms</td><td>47.7--48.6 MB</td>
+    <td>
+      Very consistent across all 7 files. Fastest:
+      <code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code> at 48 ms using simple
+      ArrayDeque with linear remove on cancel (33 lines, minimal). Notably,
+      <code>accepted__codex-agent-gpt-5.5-high-java__java.java</code> (56 ms, 47.7 MB)
+      maintains a waitingDrivers HashSet in addition to the rider active set -- it guards
+      against duplicate driver adds, a scenario the constraints already prevent, so the
+      extra HashSet adds overhead without providing correctness benefit.
+    </td>
+  </tr>
+  <tr>
+    <td>JavaScript</td><td>4</td><td>47--65 ms</td><td>68.6--69.7 MB</td>
+    <td>
+      All four JS files use plain arrays with <code>shift()</code> (O(n) dequeue operation).
+      <code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code> also
+      uses <code>Array.splice()</code> for cancel -- both operations are O(n) on V8 arrays,
+      but the n=1000 constraint keeps runtime at 47--65 ms. The ~69 MB memory footprint is
+      dominated by the V8 runtime overhead, not by algorithm data structures.
+    </td>
+  </tr>
+  <tr>
+    <td>Go</td><td>4</td><td>32--56 ms</td><td>9.6--11.9 MB</td>
+    <td>
+      Fastest overall runtime: <code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code>
+      at 32 ms. Go slices used as queues (slice[1:] for front-pop) leak backing array memory
+      but for n=1000 this is negligible. Memory is consistent at 9.6--11.9 MB, reflecting
+      Go's compact runtime vs Java/JS.
+    </td>
+  </tr>
+  <tr>
+    <td>C++</td><td>1</td><td>45 ms</td>
+    <td class="outlier">144.4 MB</td>
+    <td>
+      <span class="outlier">OUTLIER.</span>
+      <code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code> uses
+      <code>std::queue</code> and <code>std::unordered_set</code> -- both are lightweight
+      standard containers that should not exceed a few kilobytes for n=1000. Yet the reported
+      memory is 144.4 MB, which is &gt;= 14x the Go median (10 MB) and &gt;= 55x the Rust
+      figure (2.6 MB). This is likely because the LeetCode C++ judge process image itself
+      carries a substantial base-memory overhead (runtime libs, harness allocations) that
+      inflates the measurement for all C++ submissions regardless of algorithm size.
+    </td>
+  </tr>
+  <tr>
+    <td>Rust</td><td>1</td><td>36 ms</td><td>2.6 MB</td>
+    <td>
+      <code>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</code> achieves the lowest memory
+      of all 24 accepted solutions (2.6 MB) using <code>VecDeque&lt;i32&gt;</code> and
+      <code>HashSet&lt;i32&gt;</code>. The file correctly changes all four operational methods
+      to <code>&amp;mut self</code>; the starter snippet from LeetCode uses <code>&amp;self</code>
+      (immutable), which would be a compile-time error for any mutating operation.
+    </td>
+  </tr>
+  <tr>
+    <td>TypeScript</td><td>1</td><td>54 ms</td><td>69.4 MB</td>
+    <td>
+      <code>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</code> uses a
+      <code>Set&lt;number&gt;</code> for the active set (lazy-deletion cancel) but
+      <code>number[]</code> arrays with <code>shift()</code> for both queues -- a hybrid
+      that keeps cancel O(1) while accepting O(n) dequeue. Memory mirrors JavaScript at
+      ~69 MB, confirming the V8 runtime image dominates.
+    </td>
+  </tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- 11. FAILURE PATTERNS FROM STATS                              -->
+<!-- ============================================================ -->
+<section id="failure-patterns-from-stats">
+<h2>Failure Patterns From Stats</h2>
+<p>5 failed submissions recorded in stats.json: 1 Wrong Answer, 4 Runtime Errors.</p>
+<table>
+  <tr>
+    <th>Status</th><th>Count</th><th>Likely Root Cause</th><th>Invariant Violated</th>
+  </tr>
+  <tr>
+    <td>Wrong Answer</td><td>1</td>
+    <td>
+      Possibly: (a) matchDriverWithRider checks queue non-emptiness before draining tombstones,
+      so a canceled rider is returned as a valid match; or (b) result returned as [riderId,
+      driverId] instead of the required [driverId, riderId]; or (c) riders sorted by ID rather
+      than by arrival order (min-heap approach), producing wrong pairs when IDs are not
+      inserted monotonically.
+    </td>
+    <td>
+      Drain tombstones BEFORE emptiness check. Return order is [driver, rider]. Queue must
+      be FIFO on arrival, not sorted by value.
+    </td>
+  </tr>
+  <tr>
+    <td>Runtime Error</td><td>4</td>
+    <td>
+      Likely: (a) Rust submission using <code>&amp;self</code> (immutable reference) for
+      mutating methods -- compile error surfaces as runtime error on the judge;
+      (b) popping from an empty deque/ArrayDeque without an emptiness guard -- NullPointerException
+      in Java or panic in Rust/Go; (c) Go solution with an uninitialized map
+      (<code>var active map[int]bool</code> instead of <code>make(map[int]bool)</code>)
+      causing a nil map assignment panic; (d) TypeScript/JavaScript
+      <code>shift()</code> on an empty array returning <code>undefined</code> passed as a
+      valid ID.
+    </td>
+    <td>
+      Guard both queues before pop. In Rust: all mutating methods require <code>&amp;mut self</code>.
+      In Go: initialize all map fields with <code>make()</code> in Constructor.
+    </td>
+  </tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- 12. ALL ACCEPTED SOLUTIONS                                   -->
+<!-- ============================================================ -->
+<section id="all-accepted-solutions">
+<h2>All Accepted Solutions</h2>
+<p>24 accepted solutions total. Canonical subtable: 6 files selected to span all languages
+and both algorithm families. Variants subtable: remaining 18 files.</p>
+
+<h3>Canonical</h3>
+<table class="canonical">
+  <tr>
+    <th>File</th><th>Model</th><th>Lang</th>
+    <th>Family</th><th>Runtime</th><th>Memory</th><th>Lines</th>
+  </tr>
+  <tr>
+    <td>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</td>
+    <td>deepseek-v4-pro-cloud-t0.0</td><td>python3</td>
+    <td>A -- lazy</td><td>51 ms</td><td>20.2 MB</td><td>33</td>
+  </tr>
+  <tr>
+    <td>accepted__glm-5-cloud__python3.py</td>
+    <td>glm-5-cloud</td><td>python3</td>
+    <td>B -- eager</td><td>67 ms</td><td>20.2 MB</td><td>25</td>
+  </tr>
+  <tr>
+    <td>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</td>
+    <td>kimi-k2.5-cloud-t0.0-cpp</td><td>cpp</td>
+    <td>A -- lazy</td><td>45 ms</td><td class="outlier">144.4 MB</td><td>48</td>
+  </tr>
+  <tr>
+    <td>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</td>
+    <td>kimi-k2.5-cloud-t0.0-golang</td><td>golang</td>
+    <td>A -- lazy</td><td>45 ms</td><td>9.6 MB</td><td>51</td>
+  </tr>
+  <tr>
+    <td>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</td>
+    <td>kimi-k2.5-cloud-t0.0-rust</td><td>rust</td>
+    <td>A -- lazy</td><td>36 ms</td><td>2.6 MB</td><td>50</td>
+  </tr>
+  <tr>
+    <td>accepted__codex-agent-gpt-5.5-high-java__java.java</td>
+    <td>codex-agent-gpt-5.5-high-java</td><td>java</td>
+    <td>A -- lazy, both queues guarded</td><td>56 ms</td><td>47.7 MB</td><td>62</td>
+  </tr>
+</table>
+
+<h3>Variants</h3>
+<table class="variants">
+  <tr>
+    <th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th>
+  </tr>
+  <tr>
+    <td>accepted__codex-agent-gpt-5.5-java__java.java</td>
+    <td>codex-agent-gpt-5.5-java</td><td>java</td><td>50 ms</td><td>48.6 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</td>
+    <td>deepseek-v4-flash-cloud-t0.0</td><td>python3</td><td>36 ms</td><td>20.3 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</td>
+    <td>deepseek-v4-flash-cloud-t0.0-java</td><td>java</td><td>51 ms</td><td>47.9 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</td>
+    <td>deepseek-v4-flash-cloud-t0.0-javascript</td><td>javascript</td><td>58 ms</td><td>68.6 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</td>
+    <td>deepseek-v4-pro-cloud-t0.0-java</td><td>java</td><td>55 ms</td><td>48.1 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</td>
+    <td>deepseek-v4-pro-cloud-t0.0-javascript</td><td>javascript</td><td>47 ms</td><td>69.1 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__glm-5-cloud-t0.0__python3.py</td>
+    <td>glm-5-cloud-t0.0</td><td>python3</td><td>72 ms</td><td>20.1 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__glm-5-cloud-t0.8-java__java.java</td>
+    <td>glm-5-cloud-t0.8-java</td><td>java</td><td>53 ms</td><td>48.3 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__glm-5-cloud-t0.8-javascript__javascript.js</td>
+    <td>glm-5-cloud-t0.8-javascript</td><td>javascript</td><td>54 ms</td><td>69.7 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__kimi-k2.5-cloud-t0.0__python3.py</td>
+    <td>kimi-k2.5-cloud-t0.0</td><td>python3</td><td>63 ms</td><td>20.1 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__kimi-k2.5-cloud-t0.0-java__java.java</td>
+    <td>kimi-k2.5-cloud-t0.0-java</td><td>java</td><td>48 ms</td><td>48.3 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</td>
+    <td>kimi-k2.5-cloud-t0.0-javascript</td><td>javascript</td><td>65 ms</td><td>68.8 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</td>
+    <td>kimi-k2.5-cloud-t0.0-typescript</td><td>typescript</td><td>54 ms</td><td>69.4 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__minimax-m2.7-cloud__python3.py</td>
+    <td>minimax-m2.7-cloud</td><td>python3</td><td>104 ms</td><td>20.1 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</td>
+    <td>minimax-m2.7-cloud-t0.0-golang</td><td>golang</td><td>32 ms</td><td>11.7 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</td>
+    <td>minimax-m2.7-cloud-t1.0-golang</td><td>golang</td><td>56 ms</td><td>11.9 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__qwen3.5-cloud-t1.0-golang__golang.go</td>
+    <td>qwen3.5-cloud-t1.0-golang</td><td>golang</td><td>55 ms</td><td>9.8 MB</td>
+  </tr>
+  <tr>
+    <td>accepted__qwen3.5-cloud-t1.0-java__java.java</td>
+    <td>qwen3.5-cloud-t1.0-java</td><td>java</td><td>49 ms</td><td>48.1 MB</td>
+  </tr>
+</table>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wc0486-Q4 -- Find Nth Smallest Integer With K One Bits</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SECTION 1: Header Card
+     ============================================================ -->
+<header class="header-card">
+  <div class="difficulty">Hard</div>
+  <h1>Find Nth Smallest Integer With K One Bits</h1>
+  <div class="meta-row">
+    Problem ID: <code>wc0486-Q4-find-nth-smallest-integer-with-k-one-bits</code>
+    &nbsp;|&nbsp;
+    Accepted: <strong>25</strong> solutions
+    &nbsp;|&nbsp;
+    Tags:
+    <span class="tag">math</span>
+    <span class="tag">bit-manipulation</span>
+    <span class="tag">combinatorics</span>
+  </div>
+  <div class="sig">
+    <strong>Python 3:</strong>&nbsp; <code>def nthSmallest(self, n: int, k: int) -> int</code><br>
+    <strong>C++:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>long long nthSmallest(long long n, int k)</code><br>
+    <strong>Java:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>public long nthSmallest(long n, int k)</code><br>
+    <strong>JavaScript:</strong> <code>var nthSmallest = function(n, k)</code><br>
+    <strong>TypeScript:</strong> <code>function nthSmallest(n: number, k: number): number</code><br>
+    <strong>Go:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>func nthSmallest(n int64, k int) int64</code><br>
+    <strong>Rust:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>pub fn nth_smallest(n: i64, k: i32) -> i64</code>
+  </div>
+</header>
+
+<!-- ============================================================
+     SECTION 2: Provenance
+     ============================================================ -->
+<section class="section" id="provenance">
+  <h2>Provenance</h2>
+  <table class="prov-table">
+    <tr><td>problem_id</td><td>wc0486-Q4-find-nth-smallest-integer-with-k-one-bits</td></tr>
+    <tr><td>generator_tool</td><td>claude</td></tr>
+    <tr><td>generator_model</td><td>claude-sonnet-4-6</td></tr>
+    <tr><td>generated_at_utc</td><td>2026-05-20T13:37:27.908127+00:00</td></tr>
+    <tr><td>accepted_count</td><td>25</td></tr>
+  </table>
+</section>
+
+<!-- ============================================================
+     SECTION 3: Problem Essence
+     ============================================================ -->
+<section class="section" id="problem-essence">
+  <h2>Problem Essence</h2>
+  <p>
+    Given two positive integers <code>n</code> and <code>k</code>, return the n-th smallest
+    positive integer whose binary representation contains exactly <code>k</code> ones.
+    The integers are ranked in ascending order (1-indexed), and the answer is guaranteed
+    to be strictly less than 2^50.
+  </p>
+  <p>
+    The core insight is that counting integers with exactly <code>k</code> set bits in a
+    given range reduces to binomial coefficients: C(b, k) is the count of b-bit numbers
+    (more precisely, numbers fitting in b bits) with exactly k ones. This turns rank
+    retrieval into a combinatorial decoding problem solvable bit by bit in O(50 * k) time.
+  </p>
+</section>
+
+<!-- ============================================================
+     SECTION 4: Worked Example
+     ============================================================ -->
+<section class="section" id="worked-example">
+  <h2>Worked Example</h2>
+  <p>
+    <strong>Input:</strong> <code>n = 4, k = 2</code>&nbsp;&nbsp;
+    <strong>Expected output:</strong> <code>9</code>
+  </p>
+  <p>
+    We want the 4th smallest positive integer with exactly 2 one-bits.
+    Use the greedy position-scan algorithm: scan bit positions from 49 down to 0.
+    At each position <code>pos</code>, compute <code>C(pos, k)</code> -- the count of
+    numbers that would use a higher set bit somewhere above <code>pos</code> with the
+    remaining ones placed freely below. If <code>n &gt; C(pos, k)</code>, place a 1 at
+    <code>pos</code>.
+  </p>
+  <table>
+    <tr>
+      <th>Step</th><th>pos</th><th>k remaining</th><th>n remaining</th>
+      <th>C(pos, k)</th><th>Decision</th><th>ans so far</th>
+    </tr>
+    <tr>
+      <td>skip 49..4</td><td>49..4</td><td>2</td><td>4</td>
+      <td>&gt;= 6 at pos=4</td><td>4 &lt;= C, skip</td><td>0</td>
+    </tr>
+    <tr>
+      <td>1</td><td>3</td><td>2</td><td>4</td>
+      <td>C(3,2) = 3</td><td>4 &gt; 3 -> SET bit 3</td><td>8</td>
+    </tr>
+    <tr>
+      <td>2</td><td>2</td><td>1</td><td>4-3=1</td>
+      <td>C(2,1) = 2</td><td>1 &lt;= 2 -> skip</td><td>8</td>
+    </tr>
+    <tr>
+      <td>3</td><td>1</td><td>1</td><td>1</td>
+      <td>C(1,1) = 1</td><td>1 &lt;= 1 -> skip</td><td>8</td>
+    </tr>
+    <tr>
+      <td>4</td><td>0</td><td>1</td><td>1</td>
+      <td>C(0,1) = 0</td><td>1 &gt; 0 -> SET bit 0</td><td>9</td>
+    </tr>
+    <tr>
+      <td>done</td><td>--</td><td>0</td><td>1</td><td>--</td><td>k=0, stop</td><td><strong>9</strong></td>
+    </tr>
+  </table>
+  <p>
+    Result: 9 = 1001 in binary -- bits 3 and 0 are set, exactly 2 ones. Correct.
+  </p>
+
+  <!-- Inline SVG diagram showing bit construction -->
+  <div class="svg-wrap">
+    <svg width="520" height="160" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .bit-box { fill: #21262d; stroke: #30363d; stroke-width:1; }
+        .bit-set  { fill: #1f4a1f; stroke: #3fb950; stroke-width:2; }
+        .bit-label { fill: #8b949e; font-size:11px; font-family:monospace; }
+        .bit-val  { fill: #e6edf3; font-size:15px; font-weight:bold; font-family:monospace; }
+        .bit-val-set { fill: #3fb950; font-size:15px; font-weight:bold; font-family:monospace; }
+        .arrow-txt { fill: #f0883e; font-size:10px; font-family:monospace; }
+        .title-txt { fill: #79c0ff; font-size:12px; font-family:monospace; }
+        .eq-txt { fill: #c9d1d9; font-size:13px; font-family:monospace; }
+      </style>
+      <!-- Title -->
+      <text x="10" y="20" class="title-txt">Greedy bit construction: n=4, k=2  ->  9 = 1001 (binary)</text>
+
+      <!-- Bit boxes: positions 7 down to 0 shown (answer uses bits 3 and 0) -->
+      <!-- We show positions 7..0 for clarity, grayed out high bits -->
+      <!-- pos 7 -->
+      <rect x="30"  y="40" width="50" height="40" rx="4" class="bit-box"/>
+      <text x="55"  y="56" text-anchor="middle" class="bit-label">pos 7</text>
+      <text x="55"  y="74" text-anchor="middle" class="bit-val">0</text>
+
+      <!-- pos 6 -->
+      <rect x="90"  y="40" width="50" height="40" rx="4" class="bit-box"/>
+      <text x="115" y="56" text-anchor="middle" class="bit-label">pos 6</text>
+      <text x="115" y="74" text-anchor="middle" class="bit-val">0</text>
+
+      <!-- pos 5 -->
+      <rect x="150" y="40" width="50" height="40" rx="4" class="bit-box"/>
+      <text x="175" y="56" text-anchor="middle" class="bit-label">pos 5</text>
+      <text x="175" y="74" text-anchor="middle" class="bit-val">0</text>
+
+      <!-- pos 4 -->
+      <rect x="210" y="40" width="50" height="40" rx="4" class="bit-box"/>
+      <text x="235" y="56" text-anchor="middle" class="bit-label">pos 4</text>
+      <text x="235" y="74" text-anchor="middle" class="bit-val">0</text>
+
+      <!-- pos 3 SET -->
+      <rect x="270" y="40" width="50" height="40" rx="4" class="bit-set"/>
+      <text x="295" y="56" text-anchor="middle" class="bit-label">pos 3</text>
+      <text x="295" y="74" text-anchor="middle" class="bit-val-set">1</text>
+      <text x="295" y="108" text-anchor="middle" class="arrow-txt">n&gt;C(3,2)=3</text>
+
+      <!-- pos 2 -->
+      <rect x="330" y="40" width="50" height="40" rx="4" class="bit-box"/>
+      <text x="355" y="56" text-anchor="middle" class="bit-label">pos 2</text>
+      <text x="355" y="74" text-anchor="middle" class="bit-val">0</text>
+      <text x="355" y="108" text-anchor="middle" class="arrow-txt">n&lt;=C(2,1)=2</text>
+
+      <!-- pos 1 -->
+      <rect x="390" y="40" width="50" height="40" rx="4" class="bit-box"/>
+      <text x="415" y="56" text-anchor="middle" class="bit-label">pos 1</text>
+      <text x="415" y="74" text-anchor="middle" class="bit-val">0</text>
+      <text x="415" y="108" text-anchor="middle" class="arrow-txt">n&lt;=C(1,1)=1</text>
+
+      <!-- pos 0 SET -->
+      <rect x="450" y="40" width="50" height="40" rx="4" class="bit-set"/>
+      <text x="475" y="56" text-anchor="middle" class="bit-label">pos 0</text>
+      <text x="475" y="74" text-anchor="middle" class="bit-val-set">1</text>
+      <text x="475" y="108" text-anchor="middle" class="arrow-txt">n&gt;C(0,1)=0</text>
+
+      <!-- Result annotation -->
+      <text x="260" y="140" class="eq-txt">result = 8 + 1 = 9   (binary: 00001001)</text>
+    </svg>
+  </div>
+
+  <h3>Other Official Examples</h3>
+  <table>
+    <tr><th>n</th><th>k</th><th>Expected</th><th>Confirmation</th></tr>
+    <tr>
+      <td>3</td><td>1</td><td>4</td>
+      <td>Powers of 2 are the only integers with exactly 1 one-bit: 1, 2, 4. The 3rd is 4 = 100 (binary). Confirmed.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ============================================================
+     SECTION 5: Decision Rule / Algorithm
+     ============================================================ -->
+<section class="section" id="decision-rule">
+  <h2>Decision Rule / Algorithm</h2>
+  <p>
+    <strong>Core rule:</strong> Among all positive integers with exactly <code>k</code> set
+    bits, the n-th smallest can be decoded bit by bit using binomial coefficients.
+    Scan bit positions from high (pos=49) to low (pos=0). Maintain the count of ones
+    still needed (<code>rem</code>). At each position:
+  </p>
+  <pre>if C(pos, rem) &lt; n:
+    set this bit in the answer
+    n -= C(pos, rem)
+    rem -= 1</pre>
+  <p>
+    <strong>Precondition:</strong> answer is guaranteed strictly less than 2^50, so bit
+    positions 49..0 suffice.
+  </p>
+  <p>
+    <strong>Why C(pos, rem)?</strong> If we are deciding whether to place a one-bit at
+    position <code>pos</code>, then C(pos, rem) counts the number of integers with the
+    MSB currently being considered NOT at position <code>pos</code> but somewhere below
+    -- that is, integers with exactly <code>rem</code> ones drawn from the lower
+    <code>pos</code> positions. If n exceeds that count, the n-th number must have bit
+    <code>pos</code> set; otherwise it does not.
+  </p>
+  <p>
+    <strong>Key bound:</strong> The maximum value of C(50, k) for any k fits in a 64-bit
+    integer (C(50, 25) ~ 1.26e14, well within 2^63-1 ~ 9.2e18), so no big-integer
+    arithmetic is needed in compiled languages. In JavaScript, regular <code>number</code>
+    handles C(49, 24) ~ 6.3e13 without precision loss since it is below 2^53.
+  </p>
+  <p>
+    <strong>Time complexity:</strong> O(50 * k) for the precomputed-table variant or
+    O(50) for the linear scan variant (since we stop when rem reaches 0).
+    Space: O(1) with on-the-fly comb, or O(50 * k) for a Pascal triangle table.
+  </p>
+</section>
+
+<!-- ============================================================
+     SECTION 6: Implementation Skeleton
+     ============================================================ -->
+<section class="section" id="implementation-skeleton">
+  <h2>Implementation Skeleton</h2>
+  <p>Python 3 -- position-scan greedy (most common family):</p>
+  <pre>from math import comb
+
+class Solution:
+    def nthSmallest(self, n: int, k: int) -> int:
+        ans = 0
+        rem = k
+        # Scan from bit 49 down; answer is guaranteed < 2^50
+        for pos in range(49, -1, -1):
+            if rem == 0:
+                break
+            # C(pos, rem): count of integers with 'rem' ones
+            # that can be placed freely in positions 0..pos-1
+            c = comb(pos, rem)
+            if n > c:
+                # The n-th number must have bit 'pos' set
+                ans |= (1 &lt;&lt; pos)
+                n -= c
+                rem -= 1
+            # else: bit 'pos' is 0; continue scanning lower bits
+        return ans</pre>
+  <p class="note-inline">
+    This is a cleaned-up version of the algorithm used in
+    accepted__kimi-k2.5-cloud-t0.0-golang__golang.go,
+    accepted__qwen3.5-cloud__python3.py, and many others.
+    Replace <code>comb(pos, rem)</code> with a precomputed table for
+    compiled languages (see C++ and Go accepted files).
+  </p>
+</section>
+
+<!-- ============================================================
+     SECTION 7: Reimplementation Checklist
+     ============================================================ -->
+<section class="section" id="reimplementation-checklist">
+  <h2>Reimplementation Checklist</h2>
+  <ul class="checklist">
+    <li>Start scanning from bit position 49 (not 50 or 63); answer &lt; 2^50 so positions 0..49 are enough.</li>
+    <li>Stop the outer loop early when <code>rem == 0</code> (no more ones to place).</li>
+    <li>Use <code>long long</code> / <code>int64</code> for both n and the answer -- n can be up to 2^50 and binomial values can exceed 2^32.</li>
+    <li>Guard <code>C(pos, rem)</code> when <code>pos &lt; rem</code>: result is 0 (impossible to place rem ones in fewer than rem positions).</li>
+    <li>In compiled languages, precompute a 61x61 Pascal triangle to avoid repeated division; avoids integer division rounding errors in iterative comb formulas.</li>
+    <li>In JavaScript, use regular <code>number</code> for positions up to 49; values stay below 2^53. Only switch to BigInt if the problem ever extends to 64-bit range.</li>
+    <li>The condition is strict: <code>n &gt; C(pos, rem)</code> (not &gt;=). If n equals C(pos, rem), the answer sits exactly at the boundary of the zero-branch, so bit pos stays 0.</li>
+    <li>After the loop, verify <code>rem == 0</code> in debug mode -- if it is not, the answer would have more than k ones, indicating a bug in the range or loop bounds.</li>
+  </ul>
+</section>
+
+<!-- ============================================================
+     SECTION 8: Wrong But Tempting
+     ============================================================ -->
+<section class="section" id="wrong-but-tempting">
+  <h2>Wrong But Tempting</h2>
+
+  <div class="wrong-card">
+    <div class="wrong-label">Approach 1: Linear scan (brute force popcount)</div>
+    <p>
+      Iterate integers 1, 2, 3, ... and count each time popcount(x) == k.
+      Return when the counter reaches n.
+    </p>
+    <p>
+      <strong>Why it fails:</strong> n can be up to 2^50 ~ 10^15. At best you'd scan
+      every integer up to the answer, which is also near 2^50. That is
+      10^15 iterations -- approximately 10^15 / 10^9 = 10^6 seconds. Completely
+      infeasible.
+    </p>
+  </div>
+
+  <div class="wrong-card">
+    <div class="wrong-label">Approach 2: Enumerate all C(50, k) combinations then sort</div>
+    <p>
+      Generate all k-element subsets of {0..49} (each subset encodes a number with
+      those bits set), sort the resulting integers, and return the n-th.
+    </p>
+    <p>
+      <strong>Why it fails:</strong> C(50, 25) ~ 1.26 * 10^14 combinations -- a 14-trillion
+      element array far exceeds memory (10^14 * 8 bytes = 800 TB). Even for k=10,
+      C(50, 10) ~ 10^10 = 10 billion combinations, still impossible. Only works for
+      tiny k (k &lt;= 6 or so).
+    </p>
+  </div>
+
+  <div class="wrong-card">
+    <div class="wrong-label">Approach 3: Next-permutation of bits (Gosper's hack)</div>
+    <p>
+      Start from the smallest k-bit number (<code>(1 &lt;&lt; k) - 1</code>) and apply the
+      "next permutation" bit trick n-1 times to advance to the next integer with
+      the same popcount.
+    </p>
+    <p>
+      <strong>Why it fails:</strong> Each call to next-permutation is O(1), but it must be
+      called n-1 times. With n up to 2^50, that is 10^15 calls:
+      10^15 * 1ns = 10^6 seconds. No better than brute force. The trick is useful
+      only when n is small (n &lt;= 10^7 or so).
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 9: Accepted Algorithm Families
+     ============================================================ -->
+<section class="section" id="accepted-algorithm-families">
+  <h2>Accepted Algorithm Families</h2>
+
+  <!-- Family 1 -->
+  <div class="family-card">
+    <div class="family-label">Family A -- Greedy position-scan (combinatorial rank decoding) -- ~20 files</div>
+    <p>
+      The dominant approach. Scan bit positions from 49 (or 59) down to 0.
+      At each position <code>pos</code>, compare n against C(pos, rem). If n is larger,
+      place a one-bit there, subtract C(pos, rem) from n, and decrement rem.
+      Two sub-variants exist: (a) a single linear scan using a precomputed or
+      on-the-fly binomial table; (b) an inner binary search or inner linear search
+      to find the exact bit position for each remaining one.
+    </p>
+    <p>
+      Files: accepted__kimi-k2.5-cloud-t0.0-golang__golang.go,
+      accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs,
+      accepted__qwen3.5-cloud__python3.py,
+      accepted__deepseek-v4-pro-cloud-t1.0__python3.py,
+      accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js,
+      accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts,
+      accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js,
+      accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js,
+      accepted__deepseek-v4-flash-cloud-t0.0-java__java.java,
+      accepted__deepseek-v4-pro-cloud-t0.0-java__java.java,
+      accepted__kimi-k2.5-cloud-t0.0-java__java.java,
+      accepted__glm-5-cloud-t0.8-java__java.java,
+      accepted__qwen3.5-cloud-t1.0-java__java.java,
+      accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp,
+      accepted__minimax-m2.7-cloud-t0.0-golang__golang.go,
+      accepted__qwen3.5-cloud-t1.0-golang__golang.go,
+      accepted__deepseek-v4-pro-cloud-t0.0__python3.py (elegant inner-search variant),
+      accepted__qwen3.5-cloud-t1.0__python3.py
+    </p>
+    <p><strong>Illustrative excerpt</strong> (Go linear scan, table-based):</p>
+    <pre>var res int64
+rem := k
+for pos := MAX; pos >= 0; pos-- {
+    if rem == 0 {
+        break
+    }
+    if C[pos][rem] < n {
+        res |= int64(1) << uint(pos)
+        n -= C[pos][rem]
+        rem--
+    }
+}
+return res</pre>
+    <div class="source-attr">Source: accepted__kimi-k2.5-cloud-t0.0-golang__golang.go (lines 14-27)</div>
+  </div>
+
+  <!-- Family 2 -->
+  <div class="family-card">
+    <div class="family-label">Family B -- Binary search on value + digit counting -- ~4 files</div>
+    <p>
+      Binary search over the answer range [1, 2^50]. The predicate is a
+      digit-count function <code>count(x, k)</code> that computes how many integers
+      in [1, x] have exactly k one-bits (using standard digit-DP over set bits of x).
+      Return the smallest x such that count(x, k) &gt;= n.
+    </p>
+    <p>
+      Files: accepted__kimi-k2.5-cloud-t0.0__python3.py,
+      accepted__glm-5-cloud__python3.py,
+      accepted__glm-5-cloud-t0.8-javascript__javascript.js,
+      accepted__codex-agent-gpt-5.5-high-java__java.java
+    </p>
+    <p><strong>Illustrative excerpt</strong> (Python binary search):</p>
+    <pre>// from accepted__kimi-k2.5-cloud-t0.0__python3.py
+lo = 0
+hi = (1 << 50) - 1
+while lo < hi:
+    mid = (lo + hi) // 2
+    if count(mid) >= n:
+        hi = mid
+    else:
+        lo = mid + 1
+return lo</pre>
+    <div class="source-attr">Source: accepted__kimi-k2.5-cloud-t0.0__python3.py (lines 22-28)</div>
+  </div>
+
+  <!-- Family 3 -->
+  <div class="family-card">
+    <div class="family-label">Family C -- Bit-length-first greedy -- 1 file</div>
+    <p>
+      First determine the total bit length b of the answer (smallest b where the
+      cumulative count C(b, k) &gt;= n). Fix the MSB at position b-1, subtract the
+      count of all (b-1)-bit numbers with k ones from n, then fill bit positions
+      b-2 down to 0 with the remaining greedy scan.
+    </p>
+    <p>
+      Files: accepted__claude-sonnet-4-6__python3.py
+    </p>
+    <p><strong>Illustrative excerpt:</strong></p>
+    <pre>b = k
+while comb(b, k) < n:
+    b += 1
+result = 1 << (b - 1)
+ones_needed -= 1
+n -= comb(b - 1, k)
+for pos in range(b - 2, -1, -1):
+    if ones_needed == 0:
+        break
+    count_if_zero = comb(pos, ones_needed)
+    if n > count_if_zero:
+        n -= count_if_zero
+        result |= (1 << pos)
+        ones_needed -= 1</pre>
+    <div class="source-attr">Source: accepted__claude-sonnet-4-6__python3.py (lines 31-59, condensed)</div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 10: Language and Performance Notes
+     ============================================================ -->
+<section class="section" id="language-and-performance-notes">
+  <h2>Language and Performance Notes</h2>
+
+  <table>
+    <tr>
+      <th>Language</th><th>Count</th><th>Runtime range</th><th>Memory range</th><th>Notes</th>
+    </tr>
+    <tr>
+      <td>Python 3</td><td>8</td><td>0 ms -- 399 ms</td><td>19.3 -- 19.6 MB</td>
+      <td>
+        Huge spread. See outlier analysis below.
+        Memory is nearly identical across all solutions -- no significant allocations.
+      </td>
+    </tr>
+    <tr>
+      <td>Java</td><td>7</td><td>5 ms -- 19 ms</td><td>42.5 -- 46.7 MB</td>
+      <td>
+        Tight spread. JVM baseline dominates memory.
+        <code>accepted__glm-5-cloud-t0.8-java__java.java</code> is lowest memory (42.5 MB).
+        <code>accepted__qwen3.5-cloud-t1.0-java__java.java</code> is highest memory (46.7 MB).
+      </td>
+    </tr>
+    <tr>
+      <td>JavaScript</td><td>4</td><td>2 ms -- 86 ms</td><td>57.8 -- 64.9 MB</td>
+      <td>See outlier analysis below. BigInt vs Number arithmetic is the key split.</td>
+    </tr>
+    <tr>
+      <td>Go</td><td>3</td><td>0 ms -- 13 ms</td><td>4.2 -- 9.1 MB</td>
+      <td>
+        Lowest memory of multi-file languages.
+        <code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code> uses a package-level
+        <code>init()</code> for the Pascal triangle -- 4.2 MB.
+        <code>accepted__qwen3.5-cloud-t1.0-golang__golang.go</code> allocates the table inside
+        the function -- 9.1 MB, likely because the GC sees a large local array on the heap.
+      </td>
+    </tr>
+    <tr>
+      <td>C++</td><td>1</td><td>0 ms</td><td>9 MB</td>
+      <td>
+        <code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code> uses binary search per bit
+        position (inner while loop), keeping an extra <code>prev</code> bound to shrink the
+        search window. Despite the extra complexity it is still 0 ms -- the constant factor
+        for 50*log(50) operations is negligible.
+      </td>
+    </tr>
+    <tr>
+      <td>Rust</td><td>1</td><td>4 ms</td><td>2.3 MB</td>
+      <td>
+        <code>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</code> has the lowest memory of all
+        25 solutions (2.3 MB). It precomputes a 61x(k+1) Vec of i64, which is a tiny
+        allocation relative to the JVM or V8 runtimes.
+      </td>
+    </tr>
+    <tr>
+      <td>TypeScript</td><td>1</td><td>25 ms</td><td>62 MB</td>
+      <td>
+        <code>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</code> uses regular
+        Number arithmetic (no BigInt), so its 25 ms is modest. The 62 MB reflects the
+        Node.js/V8 engine baseline, consistent with the JavaScript solutions.
+      </td>
+    </tr>
+  </table>
+
+  <h3>Runtime Outliers</h3>
+
+  <p>
+    <span class="outlier">Python outlier -- glm-5-cloud:</span>
+    <code>accepted__glm-5-cloud__python3.py</code> runs in 399 ms vs the Python median of
+    ~17.5 ms -- <span class="outlier">~23x the median</span>. This solution uses binary search
+    over [1, 2^50] (50 iterations) with an inner digit-scan loop and a custom
+    non-cached <code>comb()</code> function recalculated from scratch each call;
+    likely the combination of three nested loops (binary search, digit scan, comb loop)
+    and Python's interpreter overhead accounts for the extreme slowdown.
+  </p>
+
+  <p>
+    <span class="outlier">Python outlier -- kimi-k2.5-cloud:</span>
+    <code>accepted__kimi-k2.5-cloud-t0.0__python3.py</code> runs in 208 ms -- ~12x the median.
+    It also uses binary search with a digit-count function, likely accumulating
+    high per-iteration overhead from Python function call dispatch inside the 50-step
+    binary search.
+  </p>
+
+  <p>
+    <span class="outlier">Python outlier -- deepseek-v4-pro-t1.0:</span>
+    <code>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</code> runs in 157 ms -- ~9x the median.
+    It uses a 65x65 Pascal triangle initialized as a 2D list inside the function body on
+    every call; likely the O(65^2) = 4225-cell table initialization in pure Python adds
+    significant constant overhead even though the algorithm itself is O(60).
+  </p>
+
+  <p>
+    <span class="outlier">JavaScript outlier -- glm-5-cloud:</span>
+    <code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code> runs in 86 ms vs the
+    JavaScript median of ~29 ms -- <span class="outlier">~3x the median</span>;
+    likely because it uses BigInt for all arithmetic in its binary-search-based
+    countNumbers function, while the fast solutions (kimi at 2 ms, deepseek-pro at 22 ms)
+    use either regular Number or limit BigInt to the final return conversion.
+  </p>
+</section>
+
+<!-- ============================================================
+     SECTION 11: Failure Patterns From Stats
+     ============================================================ -->
+<section class="section" id="failure-patterns-from-stats">
+  <h2>Failure Patterns From Stats</h2>
+  <p>
+    The stats.json records no failed submissions
+    (<code>"failed_submission_status_counts": {}</code>). All 25 solutions
+    were accepted. The table below lists failure modes that a reimplementation
+    could encounter, inferred from invariants visible in the accepted code.
+  </p>
+  <table>
+    <tr>
+      <th>Likely Failure</th><th>Root Cause</th><th>Evidence from Accepted Code</th>
+    </tr>
+    <tr>
+      <td>Wrong answer for large n (n near 2^50)</td>
+      <td>
+        Using 32-bit integer for n or the answer.
+        Java <code>int</code> overflows at ~2.1e9; n can be 2^50 ~ 10^15.
+      </td>
+      <td>
+        All Java accepted files use <code>long</code> for n and return type.
+        C++ files use <code>long long</code>. Rust uses <code>i64</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>Wrong answer for k near 25 (large binomial)</td>
+      <td>
+        Overflow in binomial coefficient calculation.
+        C(50, 25) ~ 1.26e14 fits in int64 but not int32.
+        Some iterative comb formulas divide before multiplying fully and lose precision.
+      </td>
+      <td>
+        C++ file uses <code>res = res * (n - k + i) / i</code> with division interleaved
+        to prevent overflow. Go and Rust precompute the Pascal triangle using i64.
+      </td>
+    </tr>
+    <tr>
+      <td>Wrong answer: off-by-one in condition</td>
+      <td>
+        Using <code>n >= C(pos, rem)</code> instead of <code>n > C(pos, rem)</code>,
+        or starting the scan at pos=50 instead of pos=49.
+      </td>
+      <td>
+        All accepted files consistently use strict greater-than (<code>&gt;</code>)
+        for the branch decision and cap pos at 49 or 60.
+      </td>
+    </tr>
+    <tr>
+      <td>Wrong answer: missing C(pos,rem)=0 guard</td>
+      <td>
+        When pos &lt; rem, C(pos, rem) = 0. If the guard is missing, subtracting 0
+        and decrementing rem still "sets" the bit spuriously in some formulations.
+      </td>
+      <td>
+        All accepted files include a check: either <code>if K &lt; 0 || K > N return 0</code>
+        in comb(), or they naturally handle it via the Pascal triangle (C[pos][rem]=0
+        when pos &lt; rem).
+      </td>
+    </tr>
+    <tr>
+      <td>Timeout / TLE on binary-search variant</td>
+      <td>
+        Binary-search approach over [0, 2^50] with a slow inner counting function
+        runs ~50 * 50 = 2500 operations per query. In Python with per-call comb,
+        this accumulates to hundreds of milliseconds but stays within LeetCode limits.
+        An O(n) brute-force variant would TLE immediately.
+      </td>
+      <td>
+        The binary-search Python solutions (glm, kimi) were accepted at 208-399 ms,
+        near LeetCode's Python time limit. Greedy solutions run at 0-16 ms.
+      </td>
+    </tr>
+  </table>
+</section>
+
+<!-- ============================================================
+     SECTION 12: All Accepted Solutions
+     ============================================================ -->
+<section class="section" id="all-accepted-solutions">
+  <h2>All Accepted Solutions</h2>
+
+  <h3>Canonical</h3>
+  <p>Most representative across algorithm families and languages.</p>
+  <table>
+    <tr>
+      <th>File</th><th>Model</th><th>Lang</th><th>Algorithm</th>
+      <th>Runtime</th><th>Memory</th><th>Lines</th>
+    </tr>
+    <tr>
+      <td><code>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</code></td>
+      <td>deepseek-v4-pro-cloud-t0.0</td><td>Python 3</td>
+      <td>Greedy inner-search (13 lines, most elegant)</td>
+      <td>16 ms</td><td>19.3 MB</td><td>13</td>
+    </tr>
+    <tr>
+      <td><code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code></td>
+      <td>kimi-k2.5-cloud-t0.0</td><td>Go</td>
+      <td>Greedy linear scan, Pascal table, 0 ms</td>
+      <td>0 ms</td><td>4.3 MB</td><td>27</td>
+    </tr>
+    <tr>
+      <td><code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code></td>
+      <td>kimi-k2.5-cloud-t0.0</td><td>C++</td>
+      <td>Greedy with binary search per bit (O(k log 50))</td>
+      <td>0 ms</td><td>9 MB</td><td>37</td>
+    </tr>
+    <tr>
+      <td><code>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</code></td>
+      <td>kimi-k2.5-cloud-t0.0</td><td>Rust</td>
+      <td>Greedy linear scan, Pascal table, lowest memory overall (2.3 MB)</td>
+      <td>4 ms</td><td>2.3 MB</td><td>42</td>
+    </tr>
+    <tr>
+      <td><code>accepted__codex-agent-gpt-5.5-high-java__java.java</code></td>
+      <td>codex-agent-gpt-5.5-high</td><td>Java</td>
+      <td>Binary search on value + saturated-arithmetic digit count</td>
+      <td>6 ms</td><td>43 MB</td><td>73</td>
+    </tr>
+    <tr>
+      <td><code>accepted__claude-sonnet-4-6__python3.py</code></td>
+      <td>claude-sonnet-4-6</td><td>Python 3</td>
+      <td>Bit-length-first greedy (Family C)</td>
+      <td>0 ms</td><td>19.6 MB</td><td>62</td>
+    </tr>
+  </table>
+
+  <h3>Variants</h3>
+  <p>All remaining accepted files.</p>
+  <table>
+    <tr>
+      <th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th>
+    </tr>
+    <tr>
+      <td><code>accepted__codex-agent-gpt-5.5-java__java.java</code></td>
+      <td>codex-agent-gpt-5.5-java</td><td>Java</td><td>19 ms</td><td>45.9 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</code></td>
+      <td>deepseek-v4-flash-cloud-t0.0</td><td>Python 3</td><td>5 ms</td><td>19.5 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code></td>
+      <td>deepseek-v4-flash-cloud-t0.0</td><td>Java</td><td>9 ms</td><td>46.5 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code></td>
+      <td>deepseek-v4-flash-cloud-t0.0</td><td>JavaScript</td><td>36 ms</td><td>63.1 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code></td>
+      <td>deepseek-v4-pro-cloud-t0.0</td><td>Java</td><td>9 ms</td><td>46.6 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code></td>
+      <td>deepseek-v4-pro-cloud-t0.0</td><td>JavaScript</td><td>22 ms</td><td>59.7 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</code></td>
+      <td>deepseek-v4-pro-cloud-t1.0</td><td>Python 3</td>
+      <td class="outlier">157 ms</td><td>19.3 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__glm-5-cloud__python3.py</code></td>
+      <td>glm-5-cloud</td><td>Python 3</td>
+      <td class="outlier">399 ms</td><td>19.4 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__glm-5-cloud-t0.8-java__java.java</code></td>
+      <td>glm-5-cloud-t0.8</td><td>Java</td><td>16 ms</td><td>42.5 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code></td>
+      <td>glm-5-cloud-t0.8</td><td>JavaScript</td>
+      <td class="outlier">86 ms</td><td>64.9 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__kimi-k2.5-cloud-t0.0__python3.py</code></td>
+      <td>kimi-k2.5-cloud-t0.0</td><td>Python 3</td>
+      <td class="outlier">208 ms</td><td>19.4 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code></td>
+      <td>kimi-k2.5-cloud-t0.0</td><td>Java</td><td>5 ms</td><td>42.7 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</code></td>
+      <td>kimi-k2.5-cloud-t0.0</td><td>JavaScript</td><td>2 ms</td><td>57.8 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</code></td>
+      <td>kimi-k2.5-cloud-t0.0</td><td>TypeScript</td><td>25 ms</td><td>62 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code></td>
+      <td>minimax-m2.7-cloud-t0.0</td><td>Go</td><td>0 ms</td><td>4.2 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__qwen3.5-cloud__python3.py</code></td>
+      <td>qwen3.5-cloud</td><td>Python 3</td><td>7 ms</td><td>19.3 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__qwen3.5-cloud-t1.0__python3.py</code></td>
+      <td>qwen3.5-cloud-t1.0</td><td>Python 3</td><td>19 ms</td><td>19.3 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__qwen3.5-cloud-t1.0-golang__golang.go</code></td>
+      <td>qwen3.5-cloud-t1.0</td><td>Go</td><td>13 ms</td><td>9.1 MB</td>
+    </tr>
+    <tr>
+      <td><code>accepted__qwen3.5-cloud-t1.0-java__java.java</code></td>
+      <td>qwen3.5-cloud-t1.0</td><td>Java</td><td>8 ms</td><td>46.7 MB</td>
+    </tr>
+  </table>
+</section>
+
+</body>
+</html>

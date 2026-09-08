@@ -12,8 +12,8 @@
 .wrap{max-width:860px;margin:0 auto;padding:2rem 1.2rem 5rem}
 h1{font-size:2.1rem;line-height:1.15;margin:.2rem 0 .6rem}h2{font-size:1.35rem;margin:0 0 .3rem}h3{font-size:1rem;margin:1.2rem 0 .4rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .lede{font-size:1.1rem;color:var(--muted);max-width:640px}
-.rules{background:var(--soft);border:1px solid var(--line);padding:1rem 1.2rem;margin:1.4rem 0 2rem;border-radius:6px}
-.rules ol{margin:.4rem 0 0 1.2rem;padding:0}
+.rules{background:var(--soft);border:1px solid var(--line);padding:.8rem 1.1rem;margin:1.2rem 0 1.8rem;border-radius:6px;font-size:.95rem}
+a.primary{display:inline-block;text-decoration:none}
 .ladder{list-style:none;padding:0;margin:0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.3rem;margin:0 0 1rem}
 .card header{display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap}
@@ -42,19 +42,11 @@ a{color:var(--accent)}
 <main class="wrap">
 <p class="note">Hard Half · pilot · {{N}} problems</p>
 <h1>The models have already tried these. Your turn.</h1>
-<p class="lede">Ten problems from the hard half of recent LeetCode weekly contests, questions 3 and 4 only. Every one was submitted to LeetCode by a dozen AI models in up to seven languages, and the record of who got <em>Accepted</em> is below each problem. Start the clock, solve it however you solve things, then record what happened. Only then do you get the models' mistakes and the full manual.</p>
-<div class="rules">
-<strong>How this works.</strong>
-<ol>
-<li>Pick the lowest rung you have not cleared. The ladder is ordered by how many model attempts were accepted, so the first win comes early and the last rung is the one most models failed.</li>
-<li>Press <b>Start</b>, read, think, code wherever you like. Submit on LeetCode if you want a real verdict.</li>
-<li>Press <b>Passed</b>, <b>Failed</b> or <b>Gave up</b>. Your time and verdict stay in this browser only.</li>
-<li>The card then opens: what the models got wrong on this problem, and the link to the manual built from their accepted solutions.</li>
-</ol>
-</div>
+<p class="lede">Ten problems from the hard half of recent LeetCode weekly contests, questions 3 and 4 only, and on every one of them at least one AI model failed. Each model's solutions were submitted to LeetCode in up to seven languages; the verdicts are under each problem. Start the clock, solve it wherever you solve things, record what happened, and the card opens: the idea that works, the mistakes the models made, and the full manual.</p>
+<p class="rules">Rungs run from the problem most model submissions passed to the one most failed. Start wherever the failures interest you. Your times and verdicts stay in this browser only. A count like <span class="chip">deepseek 5/7</span> means five of seven <em>submissions</em> accepted, one submission per language, so a family can pass in Python and fail in Java.</p>
 <ol class="ladder" id="ladder"></ol>
 <div class="summary" id="summary"></div>
-<p class="note">Source of the model record: an independent benchmark that submitted model-written solutions to LeetCode and kept the verdicts. Counts are <em>submissions</em>, one per model and language, not distinct models. Manuals are generated from accepted solutions and are the reference, not the answer key. Problem statements are LeetCode's; links go to the original problems.</p>
+<p class="note">Source of the model record: an independent benchmark that submitted model-written solutions to LeetCode and kept the verdicts. Counts are submissions, one per model and language, not distinct models. Manuals are generated from accepted solutions and are the reference, not the answer key. Problem statements are LeetCode's; links go to the original problems.</p>
 </main>
 <script>
 const DATA = /*DATA*/;
@@ -73,20 +65,22 @@ function render() {
   document.getElementById('ladder').innerHTML = DATA.map(p => {
     const a = att[p.id];
     const pct = Math.round(100 * p.rate);
-    const failedFams = p.models.filter(m => m.accepted < m.attempts).map(m => m.family);
+    const failedFams = p.models.filter(m => m.accepted < m.attempts).map(m => `${m.family} ${m.accepted}/${m.attempts}`);
     return `<li class="card${a ? ' done' : ''}" data-id="${p.id}">
 <header><span class="rank">RUNG ${p.rank}</span><h2>${esc(p.title)}</h2><span class="diff">${esc(p.difficulty)}</span><span class="note">Weekly Contest ${p.contest || ''} · ${esc(p.position || '')}</span></header>
-<p class="challenge">${p.accepted} of ${p.attempts} model submissions were accepted (${pct}%).${failedFams.length ? ' Stumbled: ' + failedFams.map(esc).join(', ') + '.' : ' Nobody stumbled.'} Can you?</p>
-<div class="bar"><i style="width:${pct}%"></i></div>
+<p class="challenge">${p.accepted} of ${p.attempts} model submissions accepted (${pct}%). Stumbled: ${failedFams.map(esc).join(', ')}. Can you?</p>
 <div class="chips">${p.models.map(chip).join('')}</div>
-<details><summary>Problem statement</summary><div class="statement">${p.statement_html}</div><p class="note"><a href="${p.leetcode_url}" target="_blank" rel="noopener">Open on LeetCode</a> · function <code>${esc(p.function || '')}</code></p></details>
+<details open><summary>Problem statement</summary><div class="statement">${p.statement_html}</div></details>
 <div class="attempt">
-<div class="controls"><button class="primary" data-act="start">Start</button><span class="clock" data-clock>00:00</span><button data-act="pass" disabled>Passed</button><button data-act="fail" disabled>Failed</button><button data-act="quit" disabled>Gave up</button></div>
-<p class="note">Solve it anywhere. The clock is for you, not for us.</p>
+<div class="controls"><button class="primary" data-act="start">Start</button><span class="clock" data-clock>00:00</span><a class="primary" href="${p.leetcode_url}" target="_blank" rel="noopener"><button type="button">Open on LeetCode ↗</button></a><button data-act="pass" disabled>Passed</button><button data-act="fail" disabled>Failed</button><button data-act="quit" disabled>Gave up</button></div>
+<p class="note">Solve it anywhere. The clock is for you, not for us. Function <code>${esc(p.function || '')}</code>.</p>
 </div>
 <div class="reveal">
 <p class="verdict">${a ? `You recorded <b>${esc(a.verdict)}</b> after ${fmt(a.ms)} on ${new Date(a.at).toLocaleDateString()}. <button data-act="reset">Try again</button>` : ''}</p>
-<h3>What the models got wrong here</h3>
+<h3>The idea that works</h3>
+<div class="tempting">${p.essence_html || '<p class="note">No section available for this problem.</p>'}</div>
+<h3>Wrong but tempting</h3>
+<p class="note">Generated from the model runs, not independently checked; two passages were corrected after review. Treat as leads, and verify against the manual.</p>
 <div class="tempting">${p.tempting_html || '<p class="note">No section available for this problem.</p>'}</div>
 <h3>The manual</h3>
 <p>Built from every accepted model solution: the essence, the algorithm families that worked, and the failure patterns from the stats. <a href="${p.manual_url}" target="_blank" rel="noopener">Read the manual for ${esc(p.title)}</a></p>
