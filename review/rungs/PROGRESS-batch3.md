@@ -1,0 +1,9 @@
+# Batch 3 progress (checkpoint 2026-09-08)
+
+- **8. wc0485-Q3-design-auction-system — done.** JSON + note committed (py/java/cpp/js/go, 43/43 local tests each).
+- **9. wc0489-Q3-longest-almost-palindromic-substring — done.** JSON + note committed with this checkpoint (py/java/cpp/js/go, 39/39 local tests each).
+- **10. wc0485-Q4-lexicographically-smallest-string-after-deleting-duplicate-characters — not started** beyond collecting inputs. Nothing verified yet. Facts from the record, for whoever resumes:
+  - 12/29 accepted; 15 Wrong Answer, 1 Runtime Error, no TLE. `testcases` has only the 2 samples; a brute force (enumerate all deletion subsets for n ≤ 8) is needed as the reference.
+  - Accepted candidates by language: python qwen3.5-cloud-t1.0 (838 ms), claude-sonnet-4-6 (1001), deepseek-flash-t0.0 (1174), deepseek-pro-t0.0 (1260), minimax (3170); java codex-mini-direct-gpt-5.4-mini-java (135 ms), codex-low-gpt-5.4-mini-java (137); javascript deepseek-flash-t0.0 (74 ms), deepseek-pro-t0.0 (90), glm-t0.8 (92); golang kimi-t0.0 (143 ms), minimax-t0.0 (204). No accepted C++ (kimi cpp WA 733/1017) — do not ship C++.
+  - Original tempting claims to check: (1) LC 316 gives "acb" for "aaccb" (plausible, run it); (2) the "bac" example is suspect — "bac" has no duplicates so nothing can be deleted, the example does not show the described failure; find a real breaking input by running the no-deadline greedy against brute force; (3) "10^5 * 10^5 = 10^10" for the O(n^2) check is fine arithmetic but no submission TLE'd, so it is not what failed 15 of 29.
+  - Solutions are copied to the scratch dir `<scratchpad>/wc0485-Q4-.../sols/` with `all_solutions.txt`; the WA files (claude-haiku java 340/1017, deepseek-flash java 956/1017, minimax-t1.0 go 956/1017, kimi js 911/1017, glm/qwen/kimi py) are the place to find the real pitfalls.
