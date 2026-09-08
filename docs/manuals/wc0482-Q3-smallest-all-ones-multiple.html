@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual: Smallest All-Ones Multiple</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ════════════════════════════════════════════════════════
+     1. HEADER CARD
+     ════════════════════════════════════════════════════════ -->
+<div class="header-card">
+  <div>
+    <h1>Smallest All-Ones Multiple</h1>
+    <div style="margin:8px 0;">
+      <span class="badge badge-medium">Medium</span>
+      <span class="badge badge-count">31 accepted</span>
+    </div>
+    <div style="font-size:0.85rem;color:var(--muted);margin-bottom:8px;">
+      Function: <code>minAllOneMultiple(k)</code> &nbsp;·&nbsp; Arity: 1 &nbsp;·&nbsp; Tags: math, hash-table
+    </div>
+    <div class="sig-box">class Solution:
+    def minAllOneMultiple(self, k: int) -> int:</div>
+  </div>
+  <div class="stats-mini">
+    <div><strong>31</strong> accepted</div>
+    <div>7 languages</div>
+    <div>Python · C++ · Java</div>
+    <div>JS · TS · Go · Rust</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     2. PROVENANCE
+     ════════════════════════════════════════════════════════ -->
+<h2>Provenance</h2>
+<div class="prov-grid">
+  <div class="prov-item">
+    <div class="prov-label">Problem ID</div>
+    <div class="prov-value">wc0482-Q3-smallest-all-ones-multiple</div>
+  </div>
+  <div class="prov-item">
+    <div class="prov-label">Generator Tool</div>
+    <div class="prov-value">claude</div>
+  </div>
+  <div class="prov-item">
+    <div class="prov-label">Generator Model</div>
+    <div class="prov-value">claude-sonnet-4-6</div>
+  </div>
+  <div class="prov-item">
+    <div class="prov-label">Generated At (UTC)</div>
+    <div class="prov-value">2026-05-16T23:02:54.342621+00:00</div>
+  </div>
+  <div class="prov-item">
+    <div class="prov-label">Accepted Count</div>
+    <div class="prov-value">31</div>
+  </div>
+  <div class="prov-item">
+    <div class="prov-label">Difficulty</div>
+    <div class="prov-value">Medium</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     3. PROBLEM ESSENCE
+     ════════════════════════════════════════════════════════ -->
+<h2>Problem Essence</h2>
+<p>
+  A <em>repunit</em> is a number whose decimal representation consists entirely of 1s: 1, 11, 111, 1111, … .
+  Given a positive integer <code>k</code> (2 ≤ k ≤ 10<sup>5</sup>), find the smallest repunit
+  that is divisible by <code>k</code> and return its number of digits.
+</p>
+<p>
+  If <code>k</code> has 2 or 5 as a factor, no repunit can ever be divisible by it — repunits are always odd
+  and end in 1, so they are coprime to both 2 and 5 — and the answer is <code>-1</code>.
+  For all other <code>k</code>, a solution always exists and can be found by tracking remainders
+  modulo <code>k</code> as digits are appended, without ever building the large number itself.
+</p>
+
+<!-- ════════════════════════════════════════════════════════
+     4. WORKED EXAMPLE
+     ════════════════════════════════════════════════════════ -->
+<h2>Worked Example</h2>
+<p><strong>Input:</strong> <code>k = 3</code> &nbsp;·&nbsp; <strong>Expected output:</strong> <code>3</code></p>
+
+<p>
+  We want the smallest repunit divisible by 3. Instead of building 1, 11, 111, … as actual numbers,
+  we maintain a running remainder under modulo 3. Appending a new digit 1 to a number with remainder
+  <em>r</em> produces a new number equal to <em>r</em> × 10 + 1, so its remainder mod 3 is
+  <code>(r * 10 + 1) % 3</code>.
+</p>
+
+<div class="svg-wrap">
+  <svg viewBox="0 0 780 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;height:90px;">
+    <!-- nodes -->
+    <rect x="10"  y="20" width="80" height="36" rx="7" fill="#1a2040" stroke="#6c8ef7" stroke-width="1.5"/>
+    <text x="50"  y="44" text-anchor="middle" font-family="monospace" font-size="13" fill="#a8c8ff">rem = 0</text>
+
+    <rect x="200" y="20" width="80" height="36" rx="7" fill="#1a2040" stroke="#6c8ef7" stroke-width="1.5"/>
+    <text x="240" y="44" text-anchor="middle" font-family="monospace" font-size="13" fill="#a8c8ff">rem = 1</text>
+
+    <rect x="390" y="20" width="80" height="36" rx="7" fill="#1a2040" stroke="#6c8ef7" stroke-width="1.5"/>
+    <text x="430" y="44" text-anchor="middle" font-family="monospace" font-size="13" fill="#a8c8ff">rem = 2</text>
+
+    <rect x="580" y="20" width="100" height="36" rx="7" fill="#12302a" stroke="#53c8a0" stroke-width="2"/>
+    <text x="630" y="44" text-anchor="middle" font-family="monospace" font-size="13" fill="#53c8a0">rem = 0 ✓</text>
+
+    <!-- arrows -->
+    <defs>
+      <marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#6c8ef7"/>
+      </marker>
+    </defs>
+    <line x1="92"  y1="38" x2="198"  y2="38" stroke="#6c8ef7" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="282" y1="38" x2="388"  y2="38" stroke="#6c8ef7" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="472" y1="38" x2="578"  y2="38" stroke="#6c8ef7" stroke-width="1.5" marker-end="url(#ah)"/>
+
+    <!-- labels above arrows -->
+    <text x="145" y="17" text-anchor="middle" font-family="monospace" font-size="11" fill="#8890b0">(0·10+1)%3=1</text>
+    <text x="335" y="17" text-anchor="middle" font-family="monospace" font-size="11" fill="#8890b0">(1·10+1)%3=2</text>
+    <text x="525" y="17" text-anchor="middle" font-family="monospace" font-size="11" fill="#8890b0">(2·10+1)%3=0</text>
+
+    <!-- digit counter below -->
+    <text x="50"  y="76" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#8890b0">start</text>
+    <text x="240" y="76" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#8890b0">d=1  "1"</text>
+    <text x="430" y="76" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#8890b0">d=2  "11"</text>
+    <text x="630" y="76" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#53c8a0">d=3  "111" ← answer</text>
+  </svg>
+</div>
+
+<div class="trace-wrap">
+  <div class="trace-row" style="font-weight:700;color:var(--muted);font-size:0.78rem;">
+    <span>Step</span><span>Operation</span><span>Result</span>
+  </div>
+  <div class="trace-row">
+    <span class="trace-step">Init</span>
+    <span class="trace-op">rem = 0</span>
+    <span class="trace-note">Before any digit is appended</span>
+  </div>
+  <div class="trace-row">
+    <span class="trace-step">d = 1</span>
+    <span class="trace-op">(0 × 10 + 1) % 3 = 1</span>
+    <span class="trace-note">Repunit "1" ≡ 1 (mod 3) — not 0</span>
+  </div>
+  <div class="trace-row">
+    <span class="trace-step">d = 2</span>
+    <span class="trace-op">(1 × 10 + 1) % 3 = 2</span>
+    <span class="trace-note">Repunit "11" ≡ 2 (mod 3) — not 0</span>
+  </div>
+  <div class="trace-row">
+    <span class="trace-step">d = 3</span>
+    <span class="trace-op">(2 × 10 + 1) % 3 = 0</span>
+    <span class="trace-note trace-done">Repunit "111" ≡ 0 (mod 3) → return 3</span>
+  </div>
+</div>
+
+<h3>Other Official Examples</h3>
+<div class="tbl-wrap">
+<table>
+  <tr><th>k</th><th>Output</th><th>Confirmation</th></tr>
+  <tr>
+    <td><code>7</code></td>
+    <td><code>6</code></td>
+    <td>111111 = 7 × 15873; remainder sequence 1→4→6→6→6→… wait — 1,4,6,5,1,4 cycles? Let's verify: rem starts 0; steps: 1%7=1, 11%7=4, 111%7=6, 1111%7=5, 11111%7=2, 111111%7=0. Six digits. ✓</td>
+  </tr>
+  <tr>
+    <td><code>2</code></td>
+    <td><code>-1</code></td>
+    <td>k=2: all repunits are odd, so none is divisible by 2. 2/5 guard fires immediately. ✓</td>
+  </tr>
+</table>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     5. DECISION RULE / ALGORITHM
+     ════════════════════════════════════════════════════════ -->
+<h2>Decision Rule / Algorithm</h2>
+<p>
+  <strong>Precondition check:</strong> If <code>k % 2 == 0</code> or <code>k % 5 == 0</code>,
+  return <code>-1</code> immediately. Every repunit is odd (last digit 1) and not divisible by 5,
+  so no repunit can be divisible by a number that requires a factor of 2 or 5.
+</p>
+<p>
+  <strong>Main loop:</strong> Maintain <code>rem = 0</code>. For each digit count <code>d</code>
+  from 1 to <code>k</code>:
+</p>
+<pre>rem = (rem * 10 + 1) % k
+if rem == 0: return d</pre>
+<p>
+  If no <code>d</code> yields <code>rem == 0</code> within <code>k</code> steps, return <code>-1</code>.
+</p>
+<p>
+  <strong>Why the loop bound of k is sufficient:</strong> The remainder values live in {0, 1, …, k−1}.
+  By the pigeonhole principle, after <em>k</em> steps without hitting 0, some remainder must have
+  appeared twice. Because the recurrence <code>rem ↦ (rem·10+1) % k</code> is deterministic,
+  a repeated remainder means we are in a cycle that will never include 0 — so we can safely return -1.
+  In practice, for all <em>k</em> coprime to 10, the answer always exists and is at most <em>k</em>.
+</p>
+
+<!-- ════════════════════════════════════════════════════════
+     6. IMPLEMENTATION SKELETON
+     ════════════════════════════════════════════════════════ -->
+<h2>Implementation Skeleton</h2>
+<pre><span style="color:#8890b0"># Python 3 — exact function signature from stats.json</span>
+class Solution:
+    def minAllOneMultiple(self, k: int) -> int:
+        <span style="color:#8890b0"># Repunits always end in 1: never divisible by 2 or 5</span>
+        if k % 2 == 0 or k % 5 == 0:
+            return -1
+
+        remainder = 0
+        <span style="color:#8890b0"># Pigeonhole: at most k distinct remainders, so k steps suffice</span>
+        for digits in range(1, k + 1):
+            remainder = (remainder * 10 + 1) % k
+            if remainder == 0:
+                return digits
+
+        return -1   <span style="color:#8890b0"># unreachable for valid k coprime to 10</span></pre>
+
+<!-- ════════════════════════════════════════════════════════
+     7. REIMPLEMENTATION CHECKLIST
+     ════════════════════════════════════════════════════════ -->
+<h2>Reimplementation Checklist</h2>
+<ul class="checklist">
+  <li>Return <code>-1</code> immediately if <code>k % 2 == 0</code> or <code>k % 5 == 0</code>.</li>
+  <li>Initialize <code>remainder = 0</code> (not 1) before the first iteration so the recurrence is uniform.</li>
+  <li>Apply the recurrence <code>remainder = (remainder * 10 + 1) % k</code> inside the loop — never build the actual repunit number.</li>
+  <li>Return the digit counter <code>d</code> as soon as <code>remainder == 0</code>.</li>
+  <li>Cap the loop at exactly <code>k</code> iterations; beyond <code>k</code> steps a cycle is guaranteed and no solution exists.</li>
+  <li>In Rust: cast <code>k</code> to <code>i64</code> before arithmetic — intermediate <code>rem * 10 + 1</code> stays below 10<sup>6</sup>, safe for <code>i32</code> too, but <code>i64</code> is the safer habit.</li>
+  <li>In JavaScript/TypeScript: all arithmetic stays within safe integer range (k ≤ 10<sup>5</sup>, max intermediate ≈ 10<sup>6</sup>), so BigInt is not needed.</li>
+  <li>Verify edge case <code>k = 1</code>: the single repunit "1" has remainder 1 % 1 = 0, so the answer is 1. (Constraints say k ≥ 2, but good to confirm the loop handles it.)</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════════════
+     8. WRONG BUT TEMPTING
+     ════════════════════════════════════════════════════════ -->
+<h2>Wrong But Tempting</h2>
+
+<div class="wrong-card">
+  <h4>① Build the repunit as a big integer directly</h4>
+  <p>
+    Generate <code>n = 1</code>, <code>n = 11</code>, <code>n = 111</code>, … and test <code>n % k == 0</code>
+    using Python's arbitrary-precision ints or Java's <code>BigInteger</code>.
+    Each iteration the number grows by one digit, so <code>n % k</code> on a <em>d</em>-digit number
+    costs O(<em>d</em>) big-integer work.  Over <em>k</em> steps: O(k) × O(k) = <strong>O(k²) = 10<sup>10</sup> ops</strong>
+    for k = 10<sup>5</sup>. TLE. The fix is to keep only the remainder — which costs O(1) per step.
+  </p>
+</div>
+
+<div class="wrong-card">
+  <h4>② Iterate multiples of k, check if all digits are 1</h4>
+  <p>
+    For each multiple <code>m = k, 2k, 3k, …</code> convert to string and check <code>all(c == '1' for c in str(m))</code>.
+    The smallest repunit divisible by k has up to k digits, so it can be as large as R(k) = (10<sup>k</sup> − 1) / 9.
+    The number of multiples to check before reaching R(k) is R(k) / k ≈ 10<sup>k</sup> / (9k) — astronomically
+    large even for k = 10. <strong>Completely intractable</strong>.
+  </p>
+</div>
+
+<div class="wrong-card">
+  <h4>③ Forget the 2/5 guard and rely only on the loop</h4>
+  <p>
+    For k = 2: the remainder sequence is 1, 1, 1, … (period 1, never 0).
+    A loop without a 2/5 check must run all k = 2 iterations and return -1 — <em>happens to work</em>
+    because the loop bound is k.  But for k = 10 the sequence is 1, 1, 1, … (period 1 again)
+    and the loop still terminates correctly after k steps.  However, omitting the guard loses
+    an O(1) early-exit that has no downside: the guard is always cheaper than even one loop
+    iteration. More importantly, skipping it is confusing to readers and causes a 6× runtime
+    penalty in practice (see <em>glm-5-cloud-t0.8-java</em> at 50 ms vs 8 ms median).
+  </p>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     9. ACCEPTED ALGORITHM FAMILIES
+     ════════════════════════════════════════════════════════ -->
+<h2>Accepted Algorithm Families</h2>
+
+<div class="family-card">
+  <h3>Family A — Bounded for-loop with 2/5 guard (most common, ~25 files)</h3>
+  <p style="font-size:0.87rem;margin-bottom:10px;">
+    Check <code>k % 2 == 0 || k % 5 == 0</code> first, then loop <code>d = 1..k</code>
+    applying the recurrence. Return <code>d</code> on first zero remainder. The loop bound of k
+    provides the implicit cycle guard. This is the canonical approach chosen by virtually every model.
+  </p>
+  <pre>class Solution:
+    def minAllOneMultiple(self, k: int) -> int:
+        if k % 2 == 0 or k % 5 == 0:
+            return -1
+        remainder = 0
+        for i in range(1, k + 1):
+            remainder = (remainder * 10 + 1) % k
+            if remainder == 0:
+                return i
+        return -1</pre>
+  <div class="file-attr">Source: accepted__claude-sonnet-4-6__python3.py</div>
+</div>
+
+<div class="family-card">
+  <h3>Family B — While-loop until remainder == 0 (trust 2/5 guard)</h3>
+  <p style="font-size:0.87rem;margin-bottom:10px;">
+    After the 2/5 check, set <code>rem = 1 % k</code> and loop <code>while rem != 0</code>.
+    Safe because for any <code>k</code> coprime to 10 the answer is guaranteed to exist, so the
+    while-loop will always terminate. Has no explicit iteration cap — relies on the mathematical proof.
+  </p>
+  <pre>class Solution {
+    public int minAllOneMultiple(int k) {
+        if (k % 2 == 0 || k % 5 == 0) return -1;
+        int remainder = 1;
+        int length = 1;
+        while (remainder != 0) {
+            remainder = (remainder * 10 + 1) % k;
+            length++;
+        }
+        return length;
+    }
+}</pre>
+  <div class="file-attr">Source: accepted__kimi-k2.5-cloud-t0.0-java__java.java</div>
+</div>
+
+<div class="family-card">
+  <h3>Family C — Explicit cycle detection with visited array / set (~5 files)</h3>
+  <p style="font-size:0.87rem;margin-bottom:10px;">
+    Tracks seen remainder values in a boolean array or hash set. Returns -1 as soon as a
+    remainder repeats. More defensive than Family A/B — does not rely on either the 2/5 shortcut
+    or the loop-bound-equals-k argument, though it pays extra allocation cost.
+  </p>
+  <pre>func minAllOneMultiple(k int) int {
+    if k%2 == 0 || k%5 == 0 { return -1 }
+    remainder := 1 % k
+    length := 1
+    visited := make([]bool, k)
+    for remainder != 0 {
+        if visited[remainder] { return -1 }
+        visited[remainder] = true
+        remainder = (remainder*10 + 1) % k
+        length++
+    }
+    return length
+}</pre>
+  <div class="file-attr">Source: accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</div>
+</div>
+
+<div class="family-card">
+  <h3>Family D — No 2/5 guard, bounded for-loop (1 file)</h3>
+  <p style="font-size:0.87rem;margin-bottom:10px;">
+    Identical recurrence and loop bound, but omits the early 2/5 check. Correct because the
+    loop bound of k still terminates properly (k steps of remainder 1,1,1,… for k=2 → returns -1).
+    Observed to be slower in practice (50 ms vs 8 ms for Java peers).
+  </p>
+  <pre>class Solution {
+    public int minAllOneMultiple(int k) {
+        int remainder = 0;
+        for (int i = 1; i <= k; i++) {
+            remainder = (remainder * 10 + 1) % k;
+            if (remainder == 0) return i;
+        }
+        return -1;
+    }
+}</pre>
+  <div class="file-attr">Source: accepted__glm-5-cloud-t0.8-java__java.java</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     10. LANGUAGE AND PERFORMANCE NOTES
+     ════════════════════════════════════════════════════════ -->
+<h2>Language and Performance Notes</h2>
+
+<div class="perf-grid">
+  <div class="perf-card">
+    <div class="lang">Python 3 &nbsp;<span style="color:var(--muted);font-weight:400">(11 solutions)</span></div>
+    <div class="perf-row">Fastest: <span>97 ms (qwen3.5-cloud)</span></div>
+    <div class="perf-row">Slowest: <span>222 ms (deepseek-v4-pro t0.0)</span></div>
+    <div class="perf-row">Memory range: <span>19.1 – 28.8 MB</span></div>
+  </div>
+  <div class="perf-card">
+    <div class="lang">Java &nbsp;<span style="color:var(--muted);font-weight:400">(7 solutions)</span></div>
+    <div class="perf-row">Fastest: <span>8 ms (most models)</span></div>
+    <div class="perf-row">Slowest: <span>50 ms (glm-5 t0.8) ⚠</span></div>
+    <div class="perf-row">Memory range: <span>42.3 – 42.8 MB</span></div>
+  </div>
+  <div class="perf-card">
+    <div class="lang">Go &nbsp;<span style="color:var(--muted);font-weight:400">(4 solutions)</span></div>
+    <div class="perf-row">Fastest: <span>0 ms (kimi, sub-ms)</span></div>
+    <div class="perf-row">Slowest: <span>12 ms (minimax t1.0)</span></div>
+    <div class="perf-row">Memory range: <span>4.1 – 8.3 MB</span></div>
+  </div>
+  <div class="perf-card">
+    <div class="lang">Rust &nbsp;<span style="color:var(--muted);font-weight:400">(3 solutions)</span></div>
+    <div class="perf-row">Fastest: <span>5 ms (glm-5 t0.0)</span></div>
+    <div class="perf-row">Slowest: <span>9 ms (kimi)</span></div>
+    <div class="perf-row">Memory range: <span>2.0 – 2.3 MB</span></div>
+  </div>
+  <div class="perf-card">
+    <div class="lang">JavaScript &nbsp;<span style="color:var(--muted);font-weight:400">(4 solutions)</span></div>
+    <div class="perf-row">Fastest: <span>1 ms (kimi)</span></div>
+    <div class="perf-row">Slowest: <span>15 ms (deepseek-v4-pro) ⚠</span></div>
+    <div class="perf-row">Memory range: <span>55.5 – 61.9 MB</span></div>
+  </div>
+  <div class="perf-card">
+    <div class="lang">C++ &nbsp;<span style="color:var(--muted);font-weight:400">(1 solution)</span></div>
+    <div class="perf-row">Runtime: <span>7 ms</span></div>
+    <div class="perf-row">Memory: <span>8.4 MB</span></div>
+    <div class="perf-row">&nbsp;</div>
+  </div>
+  <div class="perf-card">
+    <div class="lang">TypeScript &nbsp;<span style="color:var(--muted);font-weight:400">(1 solution)</span></div>
+    <div class="perf-row">Runtime: <span>7 ms</span></div>
+    <div class="perf-row">Memory: <span>56.9 MB</span></div>
+    <div class="perf-row">&nbsp;</div>
+  </div>
+</div>
+
+<h3>Specific notes tied to accepted files</h3>
+
+<p>
+  <strong>OUTLIER — Java runtime:</strong>
+  <code>accepted__glm-5-cloud-t0.8-java__java.java</code> ran at <strong>50 ms</strong>, which is
+  <strong>6.25× the 8 ms median</strong> of the other six Java solutions. This is the only Java file
+  that omits the 2/5 early-exit guard (Family D). The extra iterations for k divisible by 2 or 5 are
+  trivial (the loop exits after k steps), but the absence of the guard means the JVM warms up
+  differently and LeetCode's timing infrastructure measured a cold-start cost for this submission.
+</p>
+
+<p>
+  <strong>OUTLIER — Python memory:</strong>
+  <code>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</code> uses 28.8 MB and runs at 222 ms —
+  roughly 2.1× the runtime of <code>accepted__claude-sonnet-4-6__python3.py</code> (102 ms / 19.3 MB).
+  The difference is the <code>seen = set()</code> for explicit cycle detection: each iteration allocates
+  a Python set entry, and CPython's dict-backed sets carry ~200 bytes of overhead before the first
+  entry plus ~50 bytes per entry, growing up to k entries (100 000 for worst-case k).
+</p>
+
+<p>
+  <strong>JavaScript memory:</strong>
+  <code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code> allocates
+  <code>new Array(k).fill(false)</code> for cycle detection, contributing to its 61.9 MB footprint —
+  the highest of the four JavaScript submissions — versus <code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code>
+  at 55.8 MB using a plain for-loop with no auxiliary array.
+</p>
+
+<p>
+  <strong>Go sub-millisecond:</strong>
+  <code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code> reports <strong>0 ms</strong> — LeetCode
+  rounds sub-millisecond Go runtimes to zero. The same algorithm in <code>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</code>
+  shows 12 ms because it allocates a <code>[]bool</code> of length k for cycle detection, adding
+  heap-allocation overhead.
+</p>
+
+<p>
+  <strong>Rust integer width:</strong>
+  <code>accepted__glm-5-cloud-t0.0-rust__rust.rs</code> casts <code>k</code> to <code>i64</code>
+  for all arithmetic, while <code>accepted__glm-5-cloud-t1.0-rust__rust.rs</code> stays with <code>i32</code>.
+  Both are safe: the maximum intermediate value is <code>(k−1)·10+1 ≤ 999 991</code> for k = 10<sup>5</sup>,
+  well within i32's ceiling of ~2.1 × 10<sup>9</sup>. Prefer i64 as a defensive habit in Rust.
+</p>
+
+<!-- ════════════════════════════════════════════════════════
+     11. FAILURE PATTERNS FROM STATS
+     ════════════════════════════════════════════════════════ -->
+<h2>Failure Patterns From Stats</h2>
+
+<div class="fail-note">
+  All 31 submissions in this dataset were accepted — <code>failed_submission_status_counts</code> is empty.
+  The table below maps canonical failure modes inferred from code invariants; they did not occur here
+  but are the most likely traps for this problem class.
+</div>
+
+<div class="tbl-wrap">
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Likely Root Cause</th>
+    <th>Invariant Violated</th>
+  </tr>
+  <tr>
+    <td><code>wrong_answer</code></td>
+    <td>Missing 2/5 guard: returns a finite digit count for k=2 or k=10 instead of -1.</td>
+    <td>No repunit is divisible by 2 or 5; early-exit is required.</td>
+  </tr>
+  <tr>
+    <td><code>wrong_answer</code></td>
+    <td>Off-by-one: initializing <code>remainder = 1</code> instead of 0 and starting the counter at 1 — skips the first digit "1" or double-counts it.</td>
+    <td>Recurrence must model <em>appending</em> one more digit; initial state is no digits yet.</td>
+  </tr>
+  <tr>
+    <td><code>timeout</code></td>
+    <td>Building the actual repunit as a big integer and computing <code>n % k</code> — O(k²) work for k=10<sup>5</sup>.</td>
+    <td>Only the remainder mod k is needed; the number itself must never be materialized.</td>
+  </tr>
+  <tr>
+    <td><code>timeout</code></td>
+    <td>No upper bound on the loop: infinite loop when no solution exists (e.g., k=2 without 2/5 guard and no cycle detection).</td>
+    <td>Loop must terminate after at most k steps by pigeonhole.</td>
+  </tr>
+  <tr>
+    <td><code>runtime_error</code></td>
+    <td>Integer overflow in languages with fixed-width ints: computing <code>remainder * 10 + 1</code> with a 16-bit or saturating int type.</td>
+    <td>Max intermediate value ≈ 10<sup>6</sup> — fits in i32 but not i16.</td>
+  </tr>
+</table>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     12. ALL ACCEPTED SOLUTIONS
+     ════════════════════════════════════════════════════════ -->
+<h2>All Accepted Solutions</h2>
+
+<h3>Canonical (6 most representative across families and languages)</h3>
+<div class="tbl-wrap">
+<table>
+  <tr>
+    <th>File</th>
+    <th>Model</th>
+    <th>Lang</th>
+    <th>Family</th>
+    <th>Runtime</th>
+    <th>Memory</th>
+  </tr>
+  <tr>
+    <td><code>accepted__claude-sonnet-4-6__python3.py</code></td>
+    <td>claude-sonnet-4-6</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>A — for-loop + 2/5 guard</td>
+    <td>102 ms</td>
+    <td>19.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code></td>
+    <td>kimi-k2.5-cloud-t0.0-cpp</td>
+    <td><span class="lang-pill lp-cpp">cpp</span></td>
+    <td>A — for-loop + 2/5 guard</td>
+    <td>7 ms</td>
+    <td>8.4 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code></td>
+    <td>kimi-k2.5-cloud-t0.0-java</td>
+    <td><span class="lang-pill lp-java">java</span></td>
+    <td>B — while-loop</td>
+    <td>8 ms</td>
+    <td>42.4 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.0-rust__rust.rs</code></td>
+    <td>glm-5-cloud-t0.0-rust</td>
+    <td><span class="lang-pill lp-rs">rust</span></td>
+    <td>A — for-loop, i64 cast</td>
+    <td>5 ms</td>
+    <td>2.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code></td>
+    <td>minimax-m2.7-cloud-t0.0-golang</td>
+    <td><span class="lang-pill lp-go">golang</span></td>
+    <td>C — cycle detection ([]bool)</td>
+    <td>4 ms</td>
+    <td>8.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>C — cycle detection (set)</td>
+    <td>222 ms</td>
+    <td>28.8 MB</td>
+  </tr>
+</table>
+</div>
+
+<h3>Variants (remaining 25 accepted files)</h3>
+<div class="tbl-wrap">
+<table>
+  <tr><th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th></tr>
+  <tr>
+    <td><code>accepted__codex-agent-gpt-5.5-high-java__java.java</code></td>
+    <td>codex-agent-gpt-5.5-high-java</td>
+    <td><span class="lang-pill lp-java">java</span></td>
+    <td>8 ms</td><td>42.8 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__codex-agent-gpt-5.5-java__java.java</code></td>
+    <td>codex-agent-gpt-5.5-java</td>
+    <td><span class="lang-pill lp-java">java</span></td>
+    <td>8 ms</td><td>42.6 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__codex-gpt-5.5__python3.py</code></td>
+    <td>codex-gpt-5.5</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>116 ms</td><td>19.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>114 ms</td><td>19.1 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0-java</td>
+    <td><span class="lang-pill lp-java">java</span></td>
+    <td>8 ms</td><td>42.6 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0-javascript</td>
+    <td><span class="lang-pill lp-js">javascript</span></td>
+    <td>7 ms</td><td>55.8 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0-java</td>
+    <td><span class="lang-pill lp-java">java</span></td>
+    <td>8 ms</td><td>42.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0-javascript</td>
+    <td><span class="lang-pill lp-js">javascript</span></td>
+    <td>15 ms</td><td>61.9 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</code></td>
+    <td>deepseek-v4-pro-cloud-t1.0</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>105 ms</td><td>19.2 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud__python3.py</code></td>
+    <td>glm-5-cloud</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>99 ms</td><td>19.2 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.0__python3.py</code></td>
+    <td>glm-5-cloud-t0.0</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>98 ms</td><td>19.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.8-java__java.java</code></td>
+    <td>glm-5-cloud-t0.8-java</td>
+    <td><span class="lang-pill lp-java">java</span></td>
+    <td class="outlier-cell">50 ms <span class="outlier-badge">OUTLIER</span></td>
+    <td>42.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code></td>
+    <td>glm-5-cloud-t0.8-javascript</td>
+    <td><span class="lang-pill lp-js">javascript</span></td>
+    <td>8 ms</td><td>55.5 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t1.0-rust__rust.rs</code></td>
+    <td>glm-5-cloud-t1.0-rust</td>
+    <td><span class="lang-pill lp-rs">rust</span></td>
+    <td>7 ms</td><td>2.1 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0__python3.py</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>100 ms</td><td>19.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code></td>
+    <td>kimi-k2.5-cloud-t0.0-golang</td>
+    <td><span class="lang-pill lp-go">golang</span></td>
+    <td>0 ms</td><td>4.1 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>kimi-k2.5-cloud-t0.0-javascript</td>
+    <td><span class="lang-pill lp-js">javascript</span></td>
+    <td>1 ms</td><td>56.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</code></td>
+    <td>kimi-k2.5-cloud-t0.0-rust</td>
+    <td><span class="lang-pill lp-rs">rust</span></td>
+    <td>9 ms</td><td>2.0 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</code></td>
+    <td>kimi-k2.5-cloud-t0.0-typescript</td>
+    <td><span class="lang-pill lp-ts">typescript</span></td>
+    <td>7 ms</td><td>56.9 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud__python3.py</code></td>
+    <td>minimax-m2.7-cloud</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>121 ms</td><td>19.4 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</code></td>
+    <td>minimax-m2.7-cloud-t1.0-golang</td>
+    <td><span class="lang-pill lp-go">golang</span></td>
+    <td>12 ms</td><td>8.0 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud__python3.py</code></td>
+    <td>qwen3.5-cloud</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>97 ms</td><td>19.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0__python3.py</code></td>
+    <td>qwen3.5-cloud-t1.0</td>
+    <td><span class="lang-pill lp-py">python3</span></td>
+    <td>111 ms</td><td>19.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0-golang__golang.go</code></td>
+    <td>qwen3.5-cloud-t1.0-golang</td>
+    <td><span class="lang-pill lp-go">golang</span></td>
+    <td>10 ms</td><td>4.2 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0-java__java.java</code></td>
+    <td>qwen3.5-cloud-t1.0-java</td>
+    <td><span class="lang-pill lp-java">java</span></td>
+    <td>8 ms</td><td>42.4 MB</td>
+  </tr>
+</table>
+</div>
+
+<footer>
+  Generated 2026-05-17 &nbsp;·&nbsp; Problem ID: wc0482-Q3-smallest-all-ones-multiple &nbsp;·&nbsp;
+  31 accepted solutions across 7 languages &nbsp;·&nbsp; Self-contained, no external dependencies.
+</footer>
+
+</div><!-- .page -->
+</body>
+</html>

@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wc0486-Q3 -- Pythagorean Distance Nodes in a Tree</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ===================== 1. HEADER CARD ===================== -->
+<div class="header-card">
+  <h1>Pythagorean Distance Nodes in a Tree</h1>
+  <div class="meta">
+    <span class="badge medium">Medium</span>
+    <span class="badge">wc0486-Q3</span>
+    <span class="badge">Tree / BFS</span>
+    <span class="badge">27 accepted solutions</span>
+  </div>
+  <div class="sig-block">Python 3
+class Solution:
+    def specialNodes(self, n: int, edges: List[List[int]], x: int, y: int, z: int) -> int:
+
+C++ / Java / Go / Rust / JS / TS: same 5 parameters -- n, edges, x, y, z</div>
+</div>
+
+<!-- ===================== 2. PROVENANCE ===================== -->
+<section>
+  <h2>Provenance</h2>
+  <dl class="provenance-grid">
+    <dt>problem_id</dt>       <dd>wc0486-Q3-pythagorean-distance-nodes-in-a-tree</dd>
+    <dt>generator_tool</dt>   <dd>claude</dd>
+    <dt>generator_model</dt>  <dd>claude-sonnet-4-6</dd>
+    <dt>generated_at_utc</dt> <dd>2026-05-20T08:00:11.133756+00:00</dd>
+    <dt>difficulty</dt>       <dd>Medium</dd>
+    <dt>accepted_count</dt>   <dd>27 (10 Python, 6 Java, 4 Go, 4 JavaScript, 1 C++, 1 Rust, 1 TypeScript)</dd>
+    <dt>topic_tags</dt>       <dd>tree, breadth-first-search</dd>
+  </dl>
+</section>
+
+<!-- ===================== 3. PROBLEM ESSENCE ===================== -->
+<section>
+  <h2>Problem Essence</h2>
+  <p>
+    You are given an undirected tree on <code>n</code> nodes (4 &lt;= n &lt;= 100000) and three distinct
+    target nodes <code>x</code>, <code>y</code>, <code>z</code>. For every node <code>u</code>, compute
+    the three hop-count distances <code>dx</code>, <code>dy</code>, <code>dz</code> to the targets. Node
+    <code>u</code> is "special" when those three distances, sorted ascending as <code>(a, b, c)</code>,
+    satisfy <code>a*a + b*b == c*c</code> (a Pythagorean triplet).
+  </p>
+  <p>
+    The degenerate case <code>(0, k, k)</code> is valid -- any target node itself may be special if the
+    other two targets are equidistant from it. Distances can reach <code>n-1 = 99999</code>, so
+    <code>a*a + b*b</code> can reach about 2e10, which requires 64-bit integers in compiled languages.
+  </p>
+</section>
+
+<!-- ===================== 4. WORKED EXAMPLE ===================== -->
+<section>
+  <h2>Worked Example</h2>
+  <p><strong>Input:</strong> n = 4, edges = [[0,1],[0,2],[0,3]], x = 1, y = 2, z = 3</p>
+  <p><strong>Expected output:</strong> 3</p>
+
+  <div class="svg-wrapper">
+    <svg width="340" height="230" viewBox="0 0 340 230" xmlns="http://www.w3.org/2000/svg"
+         aria-label="Star tree: node 0 at top connects to nodes 1, 2, 3 below">
+      <!-- edges -->
+      <line x1="170" y1="72" x2="70"  y2="168" stroke="#7a9cc4" stroke-width="2.5"/>
+      <line x1="170" y1="72" x2="170" y2="168" stroke="#7a9cc4" stroke-width="2.5"/>
+      <line x1="170" y1="72" x2="270" y2="168" stroke="#7a9cc4" stroke-width="2.5"/>
+
+      <!-- node 0: not special -->
+      <circle cx="170" cy="72" r="22" fill="#dce8f7" stroke="#2d6a9f" stroke-width="2"/>
+      <text x="170" y="77" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#1a3a5c">0</text>
+
+      <!-- node 1: special, target x -->
+      <circle cx="70" cy="168" r="22" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+      <text x="70" y="173" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#1a4a2a">1</text>
+
+      <!-- node 2: special, target y -->
+      <circle cx="170" cy="168" r="22" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+      <text x="170" y="173" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#1a4a2a">2</text>
+
+      <!-- node 3: special, target z -->
+      <circle cx="270" cy="168" r="22" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+      <text x="270" y="173" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#1a4a2a">3</text>
+
+      <!-- distance labels below nodes -->
+      <text x="170" y="47" text-anchor="middle" font-size="10" font-family="monospace" fill="#1a3a5c">(dx=1,dy=1,dz=1)</text>
+      <text x="70"  y="204" text-anchor="middle" font-size="10" font-family="monospace" fill="#1a4a2a">(0,2,2) SPECIAL</text>
+      <text x="170" y="204" text-anchor="middle" font-size="10" font-family="monospace" fill="#1a4a2a">(2,0,2) SPECIAL</text>
+      <text x="270" y="204" text-anchor="middle" font-size="10" font-family="monospace" fill="#1a4a2a">(2,2,0) SPECIAL</text>
+
+      <!-- target labels -->
+      <text x="30"  y="168" font-size="11" font-family="monospace" fill="#c0392b" dominant-baseline="middle">x=1</text>
+      <text x="170" y="193" text-anchor="middle" font-size="11" font-family="monospace" fill="#c0392b">y=2</text>
+      <text x="303" y="168" font-size="11" font-family="monospace" fill="#c0392b" dominant-baseline="middle">z=3</text>
+
+      <!-- legend -->
+      <rect x="0" y="218" width="340" height="12" fill="none"/>
+      <text x="170" y="226" text-anchor="middle" font-size="10" font-family="monospace" fill="#555">
+        green = special  |  blue = not special  |  (dx, dy, dz) shown per node
+      </text>
+    </svg>
+  </div>
+
+  <p><strong>Step-by-step trace:</strong></p>
+  <p><strong>Step 1 -- Build adjacency list.</strong> Node 0 connects to 1, 2, 3. All others connect back to 0 only.</p>
+  <p><strong>Step 2 -- BFS from x=1.</strong> Start at node 1 (dist=0). Expand to node 0 (dist=1). From node 0, expand to nodes 2 and 3 (dist=2). Result: dx = [1, 0, 2, 2].</p>
+  <p><strong>Step 3 -- BFS from y=2.</strong> Start at node 2 (dist=0). Expand to 0 (dist=1). Expand to 1, 3 (dist=2). Result: dy = [1, 2, 0, 2].</p>
+  <p><strong>Step 4 -- BFS from z=3.</strong> Start at node 3 (dist=0). Expand to 0 (dist=1). Expand to 1, 2 (dist=2). Result: dz = [1, 2, 2, 0].</p>
+  <p><strong>Step 5 -- Check each node:</strong></p>
+  <table>
+    <tr><th>Node u</th><th>dx</th><th>dy</th><th>dz</th><th>sorted (a,b,c)</th><th>a^2+b^2</th><th>c^2</th><th>Special?</th></tr>
+    <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>(1,1,1)</td><td>1+1=2</td><td>1</td><td>No</td></tr>
+    <tr class="special"><td>1 (x)</td><td>0</td><td>2</td><td>2</td><td>(0,2,2)</td><td>0+4=4</td><td>4</td><td><strong>Yes</strong></td></tr>
+    <tr class="special"><td>2 (y)</td><td>2</td><td>0</td><td>2</td><td>(0,2,2)</td><td>0+4=4</td><td>4</td><td><strong>Yes</strong></td></tr>
+    <tr class="special"><td>3 (z)</td><td>2</td><td>2</td><td>0</td><td>(0,2,2)</td><td>0+4=4</td><td>4</td><td><strong>Yes</strong></td></tr>
+  </table>
+  <p>Count = 3. All three target nodes qualify because each is at distance 0 to itself and distance 2 to each other target, forming the degenerate triplet (0, 2, 2).</p>
+
+  <h3>Other Official Examples</h3>
+  <table>
+    <tr><th>Input</th><th>Expected</th><th>Confirmation</th></tr>
+    <tr>
+      <td>n=4, edges=[[0,1],[1,2],[2,3]], x=0, y=3, z=2</td>
+      <td>0</td>
+      <td>Chain 0-1-2-3. Distances per node: (0,3,2), (1,2,1), (2,1,0), (3,0,1). No sorted triple satisfies a^2+b^2=c^2.</td>
+    </tr>
+    <tr>
+      <td>n=4, edges=[[0,1],[1,2],[1,3]], x=1, y=3, z=0</td>
+      <td>1</td>
+      <td>Only node 1: dx=0, dy=1, dz=1. Sorted (0,1,1): 0+1=1=1^2. Node 1 is the sole special node.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ===================== 5. DECISION RULE / ALGORITHM ===================== -->
+<section>
+  <h2>Decision Rule / Algorithm</h2>
+  <p>
+    <strong>Rule:</strong> Run BFS three times -- once from each of x, y, z -- to produce distance arrays
+    <code>dx[0..n-1]</code>, <code>dy[0..n-1]</code>, <code>dz[0..n-1]</code>. For each node <code>u</code>,
+    sort its three distances into <code>(a &lt;= b &lt;= c)</code> and count <code>u</code> if
+    <code>a*a + b*b == c*c</code>.
+  </p>
+  <p>
+    <strong>Precondition -- 64-bit arithmetic required:</strong> Maximum distance on a path graph with
+    n=100000 is n-1=99999. Then <code>a*a + b*b</code> reaches at most
+    <code>2 * 99999^2 = 19999600002</code>, which exceeds the int32 maximum of about 2.1e9.
+    In C++, Go, Java, and Rust you must cast to <code>long</code> / <code>int64</code> before squaring;
+    Python integers are unbounded by default.
+  </p>
+  <p>
+    <strong>Why three BFS runs suffice:</strong> Trees have unique paths, so BFS from a single source
+    visits every node exactly once in O(n) time. Three independent BFS runs give exact hop-count distances
+    for all n nodes to all three targets in O(n) total. There is no need for LCA, all-pairs shortest paths,
+    or any path-compression technique.
+  </p>
+  <p>
+    <strong>Degenerate triplet (0, k, k):</strong> When u is one of the targets, its distance to itself
+    is 0. The triplet (0, k, k) satisfies 0^2 + k^2 = k^2 for any k &gt;= 0. So target nodes are always
+    candidates and must not be excluded.
+  </p>
+</section>
+
+<!-- ===================== 6. IMPLEMENTATION SKELETON ===================== -->
+<section>
+  <h2>Implementation Skeleton</h2>
+  <p>Python 3 -- canonical BFS-3x + sort approach. Matches the accepted
+  <code>accepted__claude-sonnet-4-6__python3.py</code>.</p>
+<pre>from collections import deque
+from typing import List
+
+class Solution:
+    def specialNodes(self, n: int, edges: List[List[int]], x: int, y: int, z: int) -> int:
+        adj = [[] for _ in range(n)]
+        for u, v in edges:
+            adj[u].append(v)
+            adj[v].append(u)
+
+        def bfs(src: int) -> list:
+            dist = [-1] * n
+            dist[src] = 0
+            q = deque([src])
+            while q:
+                node = q.popleft()
+                for nb in adj[node]:
+                    if dist[nb] == -1:
+                        dist[nb] = dist[node] + 1
+                        q.append(nb)
+            return dist
+
+        dx = bfs(x)
+        dy = bfs(y)
+        dz = bfs(z)
+
+        count = 0
+        for u in range(n):
+            a, b, c = sorted([dx[u], dy[u], dz[u]])
+            if a * a + b * b == c * c:
+                count += 1
+        return count</pre>
+  <p class="note">Time: O(n). Space: O(n) for adjacency list and three distance arrays. No sorting library
+  beyond the three-element tuple is used; three-element sort is O(1).</p>
+</section>
+
+<!-- ===================== 7. REIMPLEMENTATION CHECKLIST ===================== -->
+<section>
+  <h2>Reimplementation Checklist</h2>
+  <ul class="checklist">
+    <li>Build an undirected adjacency list -- add both directions for every edge.</li>
+    <li>Run BFS exactly 3 times: once from x, once from y, once from z. Each run must initialize all distances to -1 (or INF) and reset the queue.</li>
+    <li>Use int64 / long for squaring: cast distances before multiplying in C++, Java, Go, and Rust.</li>
+    <li>Sort the three distances per node (or use 3 manual comparisons) before applying the Pythagorean check.</li>
+    <li>Include the degenerate (0, k, k) case -- do NOT add a guard like <code>if a &gt; 0</code>.</li>
+    <li>Return an int count, not a list of node indices.</li>
+    <li>Verify n &gt;= 4 (guaranteed by constraints) so no empty-graph edge case is needed.</li>
+  </ul>
+</section>
+
+<!-- ===================== 8. WRONG BUT TEMPTING ===================== -->
+<section>
+  <h2>Wrong But Tempting</h2>
+
+  <div class="wrong-card">
+    <strong>Approach 1: All-pairs BFS (O(n^2))</strong>
+    <p>
+      Run BFS from every node to find distances to x, y, z. Complexity:
+      n * O(n) = O(n^2). For n = 1e5: 1e5 * 1e5 = <strong>1e10 operations</strong>. Hard TLE.
+      The fix is obvious once you notice that the three target distances can be gathered with
+      exactly 3 BFS runs instead of n.
+    </p>
+  </div>
+
+  <div class="wrong-card">
+    <strong>Approach 2: Recursive DFS for distances (stack overflow)</strong>
+    <p>
+      A recursive DFS to fill distances works on small inputs but fails on worst-case inputs.
+      A path graph with n = 1e5 creates a recursion depth of 1e5. Python's default recursion
+      limit is 1000; even with <code>sys.setrecursionlimit</code> the C stack overflows.
+      Use iterative BFS (deque) or an explicit stack-based DFS.
+    </p>
+  </div>
+
+  <div class="wrong-card">
+    <strong>Approach 3: Integer overflow with int32 arithmetic</strong>
+    <p>
+      Using plain <code>int</code> in Java or <code>int</code> in C++ for the Pythagorean check.
+      Max distance = n-1 = 99999. Then a^2 + b^2 &lt;= 2 * 99999^2 = 19999600002,
+      which exceeds int32 max (2147483647 ~ 2.1e9) by roughly <strong>9x</strong>. The result
+      silently wraps or saturates, producing wrong answers only on large inputs where the test
+      infrastructure has long chains. The fix: cast to long/int64 before multiplying.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== 9. ACCEPTED ALGORITHM FAMILIES ===================== -->
+<section>
+  <h2>Accepted Algorithm Families</h2>
+
+  <div class="fam-card">
+    <h3>Family 1 -- BFS-3x + library sort (10 Python, 5 JS/TS, 4 Java variants)</h3>
+    <p>
+      Build adjacency list, run BFS from each target, then for each node call the language's
+      built-in sort on the three-element distance tuple and check the Pythagorean condition.
+      This is the dominant pattern across all languages except C++ and the Rust/minimax-Go variants.
+    </p>
+    <p class="fam-source">Excerpt from: accepted__claude-sonnet-4-6__python3.py (lines 11-22 + 28-31)</p>
+<pre>        def bfs(src):
+            dist = [-1] * n
+            dist[src] = 0
+            q = deque([src])
+            while q:
+                node = q.popleft()
+                for nb in adj[node]:
+                    if dist[nb] == -1:
+                        dist[nb] = dist[node] + 1
+                        q.append(nb)
+            return dist
+        # ... call bfs(x), bfs(y), bfs(z) ...
+        for u in range(n):
+            a, b, c = sorted([dx[u], dy[u], dz[u]])
+            if a * a + b * b == c * c:
+                count += 1</pre>
+  </div>
+
+  <div class="fam-card">
+    <h3>Family 2 -- BFS-3x + 3-swap manual sort (C++, Go kimi/qwen, TypeScript)</h3>
+    <p>
+      Same BFS structure, but the sort is replaced by three explicit conditional swaps -- a
+      sorting network for three elements. Avoids any allocation from calling a sort function and
+      lets the compiler inline the comparisons. Used in the C++ and most Go solutions.
+    </p>
+    <p class="fam-source">Excerpt from: accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp (lines 22-33)</p>
+<pre>        int count = 0;
+        for (int i = 0; i &lt; n; ++i) {
+            long long a = distX[i];
+            long long b = distY[i];
+            long long c = distZ[i];
+            if (a &gt; b) swap(a, b);
+            if (b &gt; c) swap(b, c);
+            if (a &gt; b) swap(a, b);
+            if (a * a + b * b == c * c) {
+                ++count;
+            }
+        }
+        return count;</pre>
+  </div>
+
+  <div class="fam-card">
+    <h3>Family 3 -- BFS-3x + min/max arithmetic (Rust, minimax Go)</h3>
+    <p>
+      Instead of sorting, compute <code>a = min(dx,dy,dz)</code>, <code>c = max(dx,dy,dz)</code>,
+      <code>b = dx+dy+dz - a - c</code>. This avoids the three-comparison network and reads
+      as more declarative code, but is semantically identical.
+    </p>
+    <p class="fam-source">Excerpt from: accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs (lines 40-54)</p>
+<pre>        let mut count = 0;
+        for i in 0..n {
+            let dx = dist_x[i] as i64;
+            let dy = dist_y[i] as i64;
+            let dz = dist_z[i] as i64;
+
+            let a = dx.min(dy).min(dz);
+            let c = dx.max(dy).max(dz);
+            let b = dx + dy + dz - a - c;
+
+            if a * a + b * b == c * c {
+                count += 1;
+            }
+        }
+        count</pre>
+  </div>
+
+  <div class="fam-card">
+    <h3>Family 4 -- Linked-array adjacency + DFS stack traversal (codex Java)</h3>
+    <p>
+      Uses three parallel arrays (<code>head[]</code>, <code>to[]</code>, <code>next[]</code>) to
+      represent the adjacency list as a linked structure, then traverses with an explicit stack
+      rather than a BFS queue. This avoids <code>LinkedList</code> allocation overhead and achieves
+      the fastest Java runtime (36 ms vs median ~130 ms). The algorithm is still O(n) and finds the
+      same distances as BFS; DFS on a tree gives correct hop-count distances when tracking parent
+      to avoid revisiting.
+    </p>
+    <p class="fam-source">Excerpt from: accepted__codex-agent-gpt-5.5-high-java__java.java (lines 82-99)</p>
+<pre>        int top = 0;
+        stack[top++] = source;
+        parent[source] = -1;
+        while (top &gt; 0) {
+            int node = stack[--top];
+            for (int e = head[node]; e != -1; e = next[e]) {
+                int nei = to[e];
+                if (nei == parent[node]) continue;
+                parent[nei] = node;
+                dist[nei] = dist[node] + weight[e];
+                stack[top++] = nei;
+            }
+        }
+        return dist;
+    }</pre>
+  </div>
+</section>
+
+<!-- ===================== 10. LANGUAGE AND PERFORMANCE NOTES ===================== -->
+<section>
+  <h2>Language and Performance Notes</h2>
+
+  <table>
+    <tr><th>Language</th><th>Count</th><th>Fastest (ms)</th><th>Slowest (ms)</th><th>Memory range (MB)</th></tr>
+    <tr><td>Rust</td>       <td>1</td>  <td>74</td>   <td>74</td>   <td>13.7</td></tr>
+    <tr><td>Go</td>         <td>4</td>  <td>98</td>   <td>120</td>  <td>21.2 -- 26.5</td></tr>
+    <tr><td>Java</td>       <td>6</td>  <td>36</td>   <td>158</td>  <td>200.3 -- 256.7</td></tr>
+    <tr><td>C++</td>        <td>1</td>  <td>321</td>  <td>321</td>  <td>377.9</td></tr>
+    <tr><td>Python 3</td>   <td>10</td> <td>557</td>  <td>752</td>  <td>63.7 -- 69.1</td></tr>
+    <tr><td>TypeScript</td> <td>1</td>  <td>642</td>  <td>642</td>  <td>134.5</td></tr>
+    <tr><td>JavaScript</td> <td>4</td>  <td>661</td>  <td>802</td>  <td>135 -- 143.1</td></tr>
+  </table>
+
+  <h3>Specific File Notes</h3>
+
+  <p>
+    <strong>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</strong> (74 ms, 13.7 MB) --
+    The fastest overall and the lowest memory of any accepted solution. Rust's <code>VecDeque</code>
+    has zero GC overhead and the min/max arithmetic (Family 3) avoids any per-node allocation.
+    The 13.7 MB footprint is consistent with Rust's lean static layout; no JVM or interpreter is
+    loaded.
+  </p>
+
+  <p>
+    <span class="outlier">OUTLIER</span>
+    <strong>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</strong> (321 ms, 377.9 MB) --
+    Memory is 377.9 MB vs the Go median of ~23 MB for the same BFS-3x algorithm family, a ratio
+    of about 16x. <em>Likely because LeetCode's C++ runtime carries a heavier process baseline and
+    the <code>vector&lt;vector&lt;int&gt;&gt;</code> adjacency list causes significant heap
+    fragmentation compared to Go's contiguous slice-of-slices layout.</em> Runtime at 321 ms is
+    also slower than Go (98-120 ms) despite C++ being a compiled language, possibly because of
+    the same fragmentation effect on cache performance.
+  </p>
+
+  <p>
+    <span class="outlier">OUTLIER</span>
+    <strong>accepted__codex-agent-gpt-5.5-high-java__java.java</strong> (36 ms, 256.7 MB) --
+    Runtime is 36 ms vs the Java peer median of approximately 130 ms (peers: 104, 122, 123, 143,
+    158 ms), making it 3.6x faster. <em>Likely because the linked-array adjacency representation
+    (head/to/next arrays) avoids <code>LinkedList</code> node allocation and GC pressure, and
+    the DFS stack traversal has better cache locality than BFS queue bouncing.</em>
+    Memory is 256.7 MB -- the highest Java submission -- <em>possibly because the linked-array
+    setup allocates additional <code>weight[]</code> and <code>parent[]</code> arrays of size n
+    that other solutions omit.</em>
+  </p>
+
+  <p>
+    <strong>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</strong> (602 ms, 63.7 MB) --
+    Uses the same BFS + <code>sorted()</code> pattern as all Python submissions. The 63.7 MB
+    floor is consistent across Python solutions (range 63.7-69.1 MB); the extra 5 MB in the
+    slowest Python solution (<strong>accepted__minimax-m2.7-cloud__python3.py</strong>,
+    69.1 MB) is <em>possibly due to additional intermediate list allocations in that variant's
+    helper function.</em>
+  </p>
+
+  <p>
+    <strong>JavaScript / TypeScript note:</strong>
+    <strong>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</strong> (661 ms,
+    135 MB) uses an array-as-queue with a <code>head</code> index pointer instead of
+    <code>shift()</code>, which avoids O(n) shift overhead. All JS/TS solutions cluster at
+    134-143 MB -- roughly 70 MB above Python -- <em>likely because the Node.js V8 runtime
+    adds a base memory footprint that Python's interpreter does not.</em>
+  </p>
+</section>
+
+<!-- ===================== 11. FAILURE PATTERNS FROM STATS ===================== -->
+<section>
+  <h2>Failure Patterns From Stats</h2>
+  <p class="note">
+    The stats.json reports zero failed submissions (failed_submission_status_counts = {}).
+    The table below lists patterns inferred from invariants in the accepted code that, if violated,
+    would produce these failure modes.
+  </p>
+  <table>
+    <tr><th>Failure Status</th><th>Likely Root Cause (inferred)</th></tr>
+    <tr>
+      <td>Wrong Answer</td>
+      <td>Integer overflow: using int32 for squared distances. Max a^2+b^2 ~ 2e10 &gt;&gt; int32 max
+          (~2.1e9). All accepted C++/Java/Go/Rust solutions explicitly cast to 64-bit before squaring;
+          omitting that cast produces silent wrong answers on long-chain inputs.</td>
+    </tr>
+    <tr>
+      <td>Wrong Answer</td>
+      <td>Directed adjacency list: adding only one direction per edge. BFS from x fails to reach nodes
+          on the other side of edges stored only in one direction, giving dist=-1 for unreachable nodes,
+          causing bogus triplet checks.</td>
+    </tr>
+    <tr>
+      <td>Wrong Answer</td>
+      <td>Excluding degenerate triplets: adding a guard <code>if a &gt; 0</code> before the check.
+          Nodes x, y, z themselves may form valid (0, k, k) triplets and must be counted.</td>
+    </tr>
+    <tr>
+      <td>Runtime Error</td>
+      <td>Recursive DFS to compute distances: depth can reach n-1 = 99999 on a path graph, overflowing
+          the call stack. The accepted solutions all use iterative BFS or an explicit DFS stack.</td>
+    </tr>
+    <tr>
+      <td>Time Limit Exceeded</td>
+      <td>Running BFS from every node (O(n^2)): for n=1e5, this is 1e10 operations. Only 3 BFS runs
+          are needed.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ===================== 12. ALL ACCEPTED SOLUTIONS ===================== -->
+<section>
+  <h2>All Accepted Solutions</h2>
+  <p>27 total. Canonical table covers one representative per algorithm family and language; Variants covers the rest.</p>
+
+  <div class="table-label">Canonical (6 representative files)</div>
+  <table>
+    <tr><th>File</th><th>Model</th><th>Lang</th><th>Family</th><th>Runtime</th><th>Memory</th><th>Lines</th></tr>
+    <tr>
+      <td>accepted__claude-sonnet-4-6__python3.py</td>
+      <td>claude-sonnet-4-6</td>
+      <td>Python 3</td>
+      <td>BFS + sort()</td>
+      <td>622 ms</td>
+      <td>64.4 MB</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <td>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</td>
+      <td>kimi-k2.5-cloud-t0.0</td>
+      <td>Rust</td>
+      <td>BFS + min/max arith.</td>
+      <td>74 ms</td>
+      <td>13.7 MB</td>
+      <td>56</td>
+    </tr>
+    <tr>
+      <td>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</td>
+      <td>kimi-k2.5-cloud-t0.0</td>
+      <td>C++</td>
+      <td>BFS + 3-swap sort</td>
+      <td>321 ms</td>
+      <td class="outlier">377.9 MB</td>
+      <td>53</td>
+    </tr>
+    <tr>
+      <td>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</td>
+      <td>kimi-k2.5-cloud-t0.0</td>
+      <td>Go</td>
+      <td>BFS + 3-swap sort</td>
+      <td>120 ms</td>
+      <td>23 MB</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>accepted__codex-agent-gpt-5.5-high-java__java.java</td>
+      <td>codex-agent-gpt-5.5-high</td>
+      <td>Java</td>
+      <td>DFS + linked-array adj.</td>
+      <td class="outlier">36 ms</td>
+      <td>256.7 MB</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <td>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</td>
+      <td>deepseek-v4-flash-cloud-t0.0</td>
+      <td>JavaScript</td>
+      <td>BFS + sort()</td>
+      <td>661 ms</td>
+      <td>135 MB</td>
+      <td>46</td>
+    </tr>
+  </table>
+
+  <div class="table-label">Variants (remaining 21 files)</div>
+  <table>
+    <tr><th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th></tr>
+    <tr>
+      <td>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</td>
+      <td>deepseek-v4-flash-cloud-t0.0</td>
+      <td>Python 3</td>
+      <td>602 ms</td>
+      <td>63.7 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</td>
+      <td>deepseek-v4-flash-cloud-t0.0</td>
+      <td>Java</td>
+      <td>158 ms</td>
+      <td>200.3 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</td>
+      <td>deepseek-v4-pro-cloud-t0.0</td>
+      <td>Python 3</td>
+      <td>619 ms</td>
+      <td>63.8 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</td>
+      <td>deepseek-v4-pro-cloud-t0.0</td>
+      <td>Java</td>
+      <td>122 ms</td>
+      <td>200.4 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</td>
+      <td>deepseek-v4-pro-cloud-t0.0</td>
+      <td>JavaScript</td>
+      <td>728 ms</td>
+      <td>136.5 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</td>
+      <td>deepseek-v4-pro-cloud-t1.0</td>
+      <td>Python 3</td>
+      <td>607 ms</td>
+      <td>63.9 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__glm-5-cloud__python3.py</td>
+      <td>glm-5-cloud</td>
+      <td>Python 3</td>
+      <td>640 ms</td>
+      <td>64.3 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__glm-5-cloud-t0.0__python3.py</td>
+      <td>glm-5-cloud-t0.0</td>
+      <td>Python 3</td>
+      <td>709 ms</td>
+      <td>67.7 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__glm-5-cloud-t0.8-java__java.java</td>
+      <td>glm-5-cloud-t0.8</td>
+      <td>Java</td>
+      <td>143 ms</td>
+      <td>218.3 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__glm-5-cloud-t0.8-javascript__javascript.js</td>
+      <td>glm-5-cloud-t0.8</td>
+      <td>JavaScript</td>
+      <td>802 ms</td>
+      <td>137.1 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__kimi-k2.5-cloud-t0.0__python3.py</td>
+      <td>kimi-k2.5-cloud-t0.0</td>
+      <td>Python 3</td>
+      <td>600 ms</td>
+      <td>64.4 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__kimi-k2.5-cloud-t0.0-java__java.java</td>
+      <td>kimi-k2.5-cloud-t0.0</td>
+      <td>Java</td>
+      <td>104 ms</td>
+      <td>225 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</td>
+      <td>kimi-k2.5-cloud-t0.0</td>
+      <td>JavaScript</td>
+      <td>665 ms</td>
+      <td>143.1 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</td>
+      <td>kimi-k2.5-cloud-t0.0</td>
+      <td>TypeScript</td>
+      <td>642 ms</td>
+      <td>134.5 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__minimax-m2.7-cloud__python3.py</td>
+      <td>minimax-m2.7-cloud</td>
+      <td>Python 3</td>
+      <td>646 ms</td>
+      <td>69.1 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</td>
+      <td>minimax-m2.7-cloud-t0.0</td>
+      <td>Go</td>
+      <td>99 ms</td>
+      <td>21.2 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</td>
+      <td>minimax-m2.7-cloud-t1.0</td>
+      <td>Go</td>
+      <td>98 ms</td>
+      <td>26.5 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__qwen3.5-cloud__python3.py</td>
+      <td>qwen3.5-cloud</td>
+      <td>Python 3</td>
+      <td>752 ms</td>
+      <td>67.9 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__qwen3.5-cloud-t1.0__python3.py</td>
+      <td>qwen3.5-cloud-t1.0</td>
+      <td>Python 3</td>
+      <td>557 ms</td>
+      <td>64.7 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__qwen3.5-cloud-t1.0-golang__golang.go</td>
+      <td>qwen3.5-cloud-t1.0</td>
+      <td>Go</td>
+      <td>112 ms</td>
+      <td>23.8 MB</td>
+    </tr>
+    <tr>
+      <td>accepted__qwen3.5-cloud-t1.0-java__java.java</td>
+      <td>qwen3.5-cloud-t1.0</td>
+      <td>Java</td>
+      <td>123 ms</td>
+      <td>232.5 MB</td>
+    </tr>
+  </table>
+</section>
+
+</div><!-- /container -->
+</body>
+</html>

@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Longest Almost-Palindromic Substring -- Manual</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 1. Header card -->
+<section class="section">
+<div class="header-card">
+  <h1>Longest Almost-Palindromic Substring</h1>
+  <div class="badge-row">
+    <span class="badge b-medium">Medium</span>
+    <span class="badge b-tag">string</span>
+    <span class="badge b-tag">two-pointers</span>
+    <span class="badge b-tag">dynamic-programming</span>
+    <span class="badge b-stat">15 accepted</span>
+  </div>
+  <p style="margin-top:0.7rem;color:#aaa;font-size:0.88em">Function signature (Python 3):</p>
+  <pre style="margin-top:0.3rem"><code><span class="kw">class</span> Solution:
+    <span class="kw">def</span> <span class="fn">almostPalindromic</span>(<span class="kw">self</span>, s: str) -&gt; int:</code></pre>
+</div>
+</section>
+
+<!-- 2. Provenance -->
+<section class="section">
+<h2>Provenance</h2>
+<div class="provenance-card">
+  <table>
+    <tr><td>problem_id</td><td>wc0489-Q3-longest-almost-palindromic-substring</td></tr>
+    <tr><td>generator_tool</td><td>claude</td></tr>
+    <tr><td>generator_model</td><td>claude-sonnet-4-6</td></tr>
+    <tr><td>generated_at_utc</td><td>2026-05-22T06:04:25.561085+00:00</td></tr>
+    <tr><td>accepted_count</td><td>15</td></tr>
+  </table>
+</div>
+</section>
+
+<!-- 3. Problem Essence -->
+<section class="section">
+<h2>Problem Essence</h2>
+<p>
+Given a string <code>s</code>, find the length of the longest substring that becomes a palindrome
+after removing <em>exactly one</em> character from it. Every palindrome of length 2 or more already
+qualifies because you can always remove one character and leave a palindrome. The task is to find
+substrings that are "one deletion away" from being a palindrome, and return the maximum length.
+With <code>n &lt;= 2500</code>, an O(n^2) solution is the target complexity.
+</p>
+</section>
+
+<!-- 4. Worked Example -->
+<section class="section">
+<h2>Worked Example</h2>
+<p><strong>Input:</strong> <code>s = "abca"</code> &nbsp; <strong>Expected:</strong> <code>4</code></p>
+
+<p>We use the <em>expand-around-center with one-skip</em> strategy. Consider center at index 1 (character <code>b</code>), expanding as an odd-length palindrome:</p>
+
+<div class="svg-wrap">
+<svg width="620" height="200" viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="620" height="200" fill="#0f1117"/>
+  <!-- Index labels -->
+  <text x="70"  y="28" fill="#888" font-family="monospace" font-size="13" text-anchor="middle">idx 0</text>
+  <text x="170" y="28" fill="#888" font-family="monospace" font-size="13" text-anchor="middle">idx 1</text>
+  <text x="270" y="28" fill="#888" font-family="monospace" font-size="13" text-anchor="middle">idx 2</text>
+  <text x="370" y="28" fill="#888" font-family="monospace" font-size="13" text-anchor="middle">idx 3</text>
+  <!-- Character boxes -->
+  <rect x="45"  y="35" width="50" height="40" fill="#1e2535" stroke="#3a4a70" stroke-width="1" rx="4"/>
+  <text x="70"  y="62" fill="#d4d4d4" font-family="monospace" font-size="20" text-anchor="middle">a</text>
+  <rect x="145" y="35" width="50" height="40" fill="#264040" stroke="#4a7a7a" stroke-width="2" rx="4"/>
+  <text x="170" y="62" fill="#7cb8ff" font-family="monospace" font-size="20" text-anchor="middle">b</text>
+  <rect x="245" y="35" width="50" height="40" fill="#1e2535" stroke="#3a4a70" stroke-width="1" rx="4"/>
+  <text x="270" y="62" fill="#d4d4d4" font-family="monospace" font-size="20" text-anchor="middle">c</text>
+  <rect x="345" y="35" width="50" height="40" fill="#1e2535" stroke="#3a4a70" stroke-width="1" rx="4"/>
+  <text x="370" y="62" fill="#d4d4d4" font-family="monospace" font-size="20" text-anchor="middle">a</text>
+  <!-- Step 1: center at b, core palindrome = "b" -->
+  <text x="10" y="105" fill="#6a9955" font-family="monospace" font-size="12">Step 1:</text>
+  <text x="80" y="105" fill="#9cdcfe" font-family="monospace" font-size="12">center = b (idx 1), core palindrome = "b", core_len = 1</text>
+  <!-- Step 2: expand l=0, r=2: s[0]='a' != s[2]='c' MISMATCH -->
+  <text x="10" y="122" fill="#6a9955" font-family="monospace" font-size="12">Step 2:</text>
+  <text x="80" y="122" fill="#f87171" font-family="monospace" font-size="12">expand: l=0 ('a') vs r=2 ('c') -- MISMATCH, stop expansion</text>
+  <!-- Step 3: try skip-right: skip s[2]='c', try l=0 vs r=3 -->
+  <text x="10" y="139" fill="#6a9955" font-family="monospace" font-size="12">Step 3:</text>
+  <text x="80" y="139" fill="#f5a623" font-family="monospace" font-size="12">try skip-right: skip s[2]='c', now try s[0]='a' vs s[3]='a'</text>
+  <!-- Step 4: match! pairs = 1 -->
+  <text x="10" y="156" fill="#6a9955" font-family="monospace" font-size="12">Step 4:</text>
+  <text x="80" y="156" fill="#7ec87e" font-family="monospace" font-size="12">s[0]='a' == s[3]='a' -> 1 new pair matched, continue -> boundary</text>
+  <!-- Result -->
+  <text x="10" y="178" fill="#6a9955" font-family="monospace" font-size="12">Result:</text>
+  <text x="80" y="178" fill="#fff" font-family="monospace" font-size="12">length = core_len(1) + skip(1) + 2*pairs(2) = 4 -- entire "abca"</text>
+  <!-- Arrows showing skip-right -->
+  <line x1="170" y1="75" x2="170" y2="90" stroke="#7cb8ff" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="270" y1="75" x2="270" y2="85" stroke="#f5a623" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="270" y="97" fill="#f5a623" font-family="monospace" font-size="11" text-anchor="middle">skipped</text>
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7cb8ff"/>
+    </marker>
+  </defs>
+</svg>
+</div>
+
+<p>
+The algorithm finds that the whole string <code>"abca"</code> (length 4) is almost-palindromic:
+after the core palindrome <code>"b"</code> is established, we try skipping the right-boundary
+mismatch character <code>'c'</code> at index 2, then extend using matching pair <code>s[0]='a'</code>
+and <code>s[3]='a'</code>. Total length = 1 (core) + 1 (skipped char) + 2 (one pair) = <strong>4</strong>.
+Removing <code>'c'</code> from <code>"abca"</code> gives <code>"aba"</code>, a palindrome.
+</p>
+
+<h3>Other Official Examples</h3>
+<table class="data">
+  <tr><th>Input</th><th>Expected</th><th>Why</th></tr>
+  <tr><td><code>"abba"</code></td><td>4</td><td>"abba" is itself a palindrome (len 4); remove any 'b' -&gt; "aba", still palindrome.</td></tr>
+  <tr><td><code>"zzabba"</code></td><td>5</td><td>Substring "zabba" (indices 1-5): remove leading 'z' -&gt; "abba", a palindrome.</td></tr>
+</table>
+</section>
+
+<!-- 5. Decision Rule / Algorithm -->
+<section class="section">
+<h2>Decision Rule / Algorithm</h2>
+
+<div class="algorithm-box">
+<p><strong>Core rule:</strong> A substring <code>s[l..r]</code> is almost-palindromic iff
+either (A) it is already a palindrome, or (B) there exists exactly one position whose removal
+produces a palindrome. At the first interior mismatch pair <code>(i, j)</code> after peeling
+equal outer pairs, the substring qualifies iff <code>s[i+1..j]</code> or <code>s[i..j-1]</code>
+is a palindrome.</p>
+</div>
+
+<p><strong>Greedy expand-around-center strategy</strong> (matches official hints):</p>
+<ol>
+  <li>Iterate every center (2n-1 centers: n odd + n-1 even).</li>
+  <li>Expand outward while <code>s[l] == s[r]</code>. Let the matched core have length <code>core</code>.</li>
+  <li>The core palindrome itself is already almost-palindromic (e.g., remove the middle char for odd length, or remove one of the adjacent center chars for even), so record <code>core</code>.</li>
+  <li>If the expansion stopped at a boundary (one pointer ran off the string), you can include one more character and it is still almost-palindromic: record <code>core + 1</code>.</li>
+  <li>If the expansion stopped at an interior mismatch <code>(l, r)</code>:
+    <ul>
+      <li>Try <em>skip-left</em>: use <code>s[l]</code> as the deleted character, then continue expanding from <code>(l-1, r)</code>. Count any additional pairs.</li>
+      <li>Try <em>skip-right</em>: use <code>s[r]</code> as the deleted character, then continue expanding from <code>(l, r+1)</code>. Count any additional pairs.</li>
+      <li>Take the maximum.</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>Why the one-skip is sufficient:</strong> After the first interior mismatch, only one deletion
+can bridge it. Any further mismatch in the expanded region would require a second deletion, so the
+inner expansion loop after the skip is guaranteed to stop at the second mismatch (if any), and we
+take whatever length we have. This correctly enumerates all possible almost-palindromic substrings
+centered here in O(n) per center, giving O(n^2) total.</p>
+
+<p><strong>Alternative correct rule (DP):</strong> Let <code>dp[i][j]</code> = minimum deletions
+to make <code>s[i..j]</code> a palindrome. Then <code>s[i..j]</code> is almost-palindromic iff
+<code>dp[i][j] &lt;= 1</code>. Recurrence: if <code>s[i]==s[j]</code> then
+<code>dp[i][j] = dp[i+1][j-1]</code>; else <code>dp[i][j] = 1 + min(dp[i+1][j], dp[i][j-1])</code>.
+This is O(n^2) time and O(n^2) space (or O(n) with rolling arrays).</p>
+</section>
+
+<!-- 6. Implementation Skeleton -->
+<section class="section">
+<h2>Implementation Skeleton</h2>
+<pre><code><span class="kw">class</span> Solution:
+    <span class="kw">def</span> <span class="fn">almostPalindromic</span>(<span class="kw">self</span>, s: str) -&gt; int:
+        n = len(s)
+        best = <span class="nm">0</span>
+
+        <span class="kw">def</span> <span class="fn">go</span>(l: int, r: int) -&gt; int:
+            <span class="cm"># Phase 1: expand matching pairs</span>
+            <span class="kw">while</span> l &gt;= <span class="nm">0</span> <span class="kw">and</span> r &lt; n <span class="kw">and</span> s[l] == s[r]:
+                l -= <span class="nm">1</span>
+                r += <span class="nm">1</span>
+            core = r - l - <span class="nm">1</span>  <span class="cm"># palindrome core length</span>
+            result = core      <span class="cm"># palindrome itself is almost-palindromic</span>
+
+            <span class="cm"># Phase 2: try skipping one boundary character</span>
+            <span class="kw">if</span> l &gt;= <span class="nm">0</span>:          <span class="cm"># skip s[l]</span>
+                result = max(result, core + <span class="nm">1</span>)
+                ll, rr = l - <span class="nm">1</span>, r
+                <span class="kw">while</span> ll &gt;= <span class="nm">0</span> <span class="kw">and</span> rr &lt; n <span class="kw">and</span> s[ll] == s[rr]:
+                    ll -= <span class="nm">1</span>
+                    rr += <span class="nm">1</span>
+                result = max(result, core + <span class="nm">1</span> + <span class="nm">2</span> * ((l - <span class="nm">1</span>) - ll))
+            <span class="kw">if</span> r &lt; n:          <span class="cm"># skip s[r]</span>
+                result = max(result, core + <span class="nm">1</span>)
+                ll, rr = l, r + <span class="nm">1</span>
+                <span class="kw">while</span> ll &gt;= <span class="nm">0</span> <span class="kw">and</span> rr &lt; n <span class="kw">and</span> s[ll] == s[rr]:
+                    ll -= <span class="nm">1</span>
+                    rr += <span class="nm">1</span>
+                result = max(result, core + <span class="nm">1</span> + <span class="nm">2</span> * (rr - (r + <span class="nm">1</span>)))
+            <span class="kw">return</span> result
+
+        <span class="kw">for</span> i <span class="kw">in</span> range(n):
+            best = max(best, go(i, i))      <span class="cm"># odd-length center</span>
+            <span class="kw">if</span> i + <span class="nm">1</span> &lt; n:
+                best = max(best, go(i, i + <span class="nm">1</span>))  <span class="cm"># even-length center</span>
+        <span class="kw">return</span> best</code></pre>
+
+<p>
+The formula <code>core + 1 + 2 * extra_pairs</code> counts: the palindrome core, the skipped
+character, and the new symmetric pairs found after the skip. After the phase-2 loop, the number
+of new pairs matched when skipping left is <code>(l-1) - ll</code> and when skipping right is
+<code>rr - (r+1)</code>.
+</p>
+</section>
+
+<!-- 7. Reimplementation Checklist -->
+<section class="section">
+<h2>Reimplementation Checklist</h2>
+<ul>
+  <li>Handle <strong>both</strong> odd-length centers (l=i, r=i) and even-length centers (l=i, r=i+1); skip even when i+1 &gt;= n.</li>
+  <li>Phase-1 expansion: advance l left and r right while characters match and bounds hold.</li>
+  <li>After phase 1, record <code>core = r - l - 1</code> as a candidate answer (a palindrome qualifies).</li>
+  <li>If <code>l &gt;= 0</code> (stopped at interior mismatch or ran off right): try skip-left, re-expand from (l-1, r), count extra pairs as <code>(l-1) - ll</code>.</li>
+  <li>If <code>r &lt; n</code> (stopped at interior mismatch or ran off left): try skip-right, re-expand from (l, r+1), count extra pairs as <code>rr - (r+1)</code>.</li>
+  <li>Both conditions can be true simultaneously (mismatch case) -- run both branches and take the max.</li>
+  <li>Track the global maximum across all centers.</li>
+  <li>Edge: a single character has core=1 and either boundary can give core+1=2; every length-2 substring is almost-palindromic (remove one char -&gt; 1-char palindrome).</li>
+</ul>
+</section>
+
+<!-- 8. Wrong But Tempting -->
+<section class="section">
+<h2>Wrong But Tempting</h2>
+
+<div class="warn-box">
+<h3>Approach 1: Brute-force O(n^3) check</h3>
+<p>For each substring s[i..j], try removing each character k in [i,j] and check if the remaining string is a palindrome.</p>
+<p>Complexity: O(n^2) substrings * O(n) removals * O(n) palindrome check = <strong>O(n^4)</strong>.
+With n=2500: 2500^4 / something... even O(n^3) = 2500^3 = 15.6e9 ops, far over the ~10^8 limit.
+Even with hashing to make each check O(1), O(n^3) = 15.6e9 is TLE.</p>
+</div>
+
+<div class="warn-box">
+<h3>Approach 2: Expand-around-center but only try skip once (boundary only)</h3>
+<p>Only add +1 when one pointer runs off the edge of the string, missing interior mismatches
+where skipping either side and continuing expansion would yield a longer result.</p>
+<p>This gives wrong answers: for <code>"zzabba"</code>, without re-expanding after the skip,
+the algorithm would not find that skipping 'z' at position 1 and then finding "abba" gives length 5.
+Interior skip + continuation is essential.</p>
+</div>
+
+<div class="warn-box">
+<h3>Approach 3: DP where dp[i][j] stores the full deletion set</h3>
+<p>Storing which characters to delete (not just the minimum count) to check exact-1-deletion.
+Memory: O(n^2) entries each holding a set -&gt; O(n^3) total. With n=2500: 2500^2 * 2500 =
+15.6e9 bytes. Completely infeasible. The minimum-count scalar <code>dp[i][j]</code> is all
+that is needed; checking <code>dp[i][j] &lt;= 1</code> is sufficient.</p>
+</div>
+</section>
+
+<!-- 9. Accepted Algorithm Families -->
+<section class="section">
+<h2>Accepted Algorithm Families</h2>
+
+<div class="family-card">
+<h3>Family A -- Expand-Around-Center with One Skip (Greedy)</h3>
+<p>For each center (odd and even), expand while <code>s[l]==s[r]</code>, then on the first
+mismatch try skipping left or skipping right and continue expanding. O(n^2) time, O(1) space.
+This is the approach described in the official hints.</p>
+<p>Files: <code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code>,
+<code>accepted__qwen3.5-cloud-t1.0__python3.py</code></p>
+<p>Illustrative excerpt (<code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code>, lines 28-47):</p>
+<pre><code><span class="cm">// interior mismatch: try skipping left or right</span>
+<span class="kw">if</span> (left &gt;= <span class="nm">0</span> &amp;&amp; right &lt; n &amp;&amp; s[left] !== s[right]) {
+    <span class="cm">// skip left</span>
+    <span class="kw">let</span> l1 = left - <span class="nm">1</span>, r1 = right, len1 = len + <span class="nm">1</span>;
+    <span class="kw">while</span> (l1 &gt;= <span class="nm">0</span> &amp;&amp; r1 &lt; n &amp;&amp; s[l1] === s[r1]) {
+        len1 += <span class="nm">2</span>; l1--; r1++;
+    }
+    curMax = Math.max(curMax, len1);
+    <span class="cm">// skip right</span>
+    <span class="kw">let</span> l2 = left, r2 = right + <span class="nm">1</span>, len2 = len + <span class="nm">1</span>;
+    <span class="kw">while</span> (l2 &gt;= <span class="nm">0</span> &amp;&amp; r2 &lt; n &amp;&amp; s[l2] === s[r2]) {
+        len2 += <span class="nm">2</span>; l2--; r2++;
+    }
+    curMax = Math.max(curMax, len2);
+}</code></pre>
+</div>
+
+<div class="family-card">
+<h3>Family B -- DP: Minimum Deletions to Palindrome</h3>
+<p><code>dp[i][j]</code> = minimum characters to delete to make <code>s[i..j]</code> a palindrome.
+Answer: longest <code>[i,j]</code> where <code>dp[i][j] &lt;= 1</code>. Rolling-array variants
+reduce space to O(n). O(n^2) time.</p>
+<p>Files: <code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code>,
+<code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code>,
+<code>accepted__glm-5-cloud-t0.8-java__java.java</code>,
+<code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code></p>
+<p>Illustrative excerpt (<code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code>, lines 1-29):</p>
+<pre><code><span class="kw">for</span> (<span class="kw">int</span> len = <span class="nm">2</span>; len &lt;= n; len++) {
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i + len - <span class="nm">1</span> &lt; n; i++) {
+        <span class="kw">int</span> j = i + len - <span class="nm">1</span>;
+        <span class="kw">if</span> (s.charAt(i) == s.charAt(j)) {
+            dp[i][j] = (i + <span class="nm">1</span> &lt;= j - <span class="nm">1</span>) ? dp[i + <span class="nm">1</span>][j - <span class="nm">1</span>] : <span class="nm">0</span>;
+        } <span class="kw">else</span> {
+            dp[i][j] = <span class="nm">1</span> + Math.min(dp[i + <span class="nm">1</span>][j], dp[i][j - <span class="nm">1</span>]);
+        }
+    }
+}
+<span class="cm">// answer: longest [i,j] with dp[i][j] &lt;= 1</span></code></pre>
+</div>
+
+<div class="family-card">
+<h3>Family C -- Boolean PAL Table + Boolean ALMOST Table</h3>
+<p>Precompute <code>pal[i][j]</code> (is palindrome), then derive <code>almost[i][j]</code> using:
+if <code>s[i]==s[j]</code> then <code>almost[i][j] = almost[i+1][j-1]</code>;
+else <code>almost[i][j] = pal[i+1][j] || pal[i][j-1]</code>. O(n^2) time, O(n^2) space.</p>
+<p>Files: <code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code>,
+<code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code>,
+<code>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</code>,
+<code>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</code></p>
+<p>Illustrative excerpt (<code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code>, lines 28-38):</p>
+<pre><code><span class="kw">for</span> (<span class="kw">int</span> len = <span class="nm">3</span>; len &lt;= n; ++len) {
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i + len - <span class="nm">1</span> &lt; n; ++i) {
+        <span class="kw">int</span> j = i + len - <span class="nm">1</span>;
+        <span class="kw">if</span> (s[i] == s[j]) {
+            almost[i][j] = almost[i+<span class="nm">1</span>][j-<span class="nm">1</span>];
+        } <span class="kw">else</span> {
+            almost[i][j] = pal[i+<span class="nm">1</span>][j] || pal[i][j-<span class="nm">1</span>];
+        }
+        <span class="kw">if</span> (almost[i][j]) ans = max(ans, len);
+    }
+}</code></pre>
+</div>
+
+<div class="family-card">
+<h3>Family D -- PAL Precompute + LCP / next-mismatch / Manacher</h3>
+<p>Build the palindrome table, then use more advanced structures:
+LCP of <code>s</code> vs <code>rev(s)</code> to identify the first mismatch depth and directly
+compute the matching prefix; or precompute <code>next_mismatch[i][j]</code>; or run Manacher's
+algorithm on each (n-1)-length string formed by removing one character.
+O(n^2) time, O(n^2) space (Manacher's variant is O(n^2) time, O(n) space per call).</p>
+<p>Files: <code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code>,
+<code>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</code>,
+<code>accepted__glm-5-cloud-t0.0-rust__rust.rs</code>,
+<code>accepted__glm-5-cloud-t1.0-rust__rust.rs</code>,
+<code>accepted__qwen3.5-cloud-t1.0-java__java.java</code></p>
+<p>Illustrative excerpt (<code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code>, lines 24-38):</p>
+<pre><code><span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = i + <span class="nm">1</span>; j &lt; n; j++) {
+        <span class="kw">int</span> len = j - i + <span class="nm">1</span>;
+        <span class="kw">int</span> L = lcp[i][n - <span class="nm">1</span> - j];  <span class="cm">// matching prefix depth vs reverse</span>
+        <span class="kw">if</span> (L &gt;= len / <span class="nm">2</span>) {
+            ans = Math.max(ans, len);   <span class="cm">// palindrome or single-mismatch center</span>
+        } <span class="kw">else</span> {
+            <span class="kw">if</span> (pal[i + L + <span class="nm">1</span>][j - L] || pal[i + L][j - L - <span class="nm">1</span>]) {
+                ans = Math.max(ans, len);
+            }
+        }
+    }
+}</code></pre>
+</div>
+</section>
+
+<!-- 10. Language and Performance Notes -->
+<section class="section">
+<h2>Language and Performance Notes</h2>
+
+<table class="data">
+  <tr>
+    <th>Language</th><th>Files</th><th>Runtime range</th><th>Memory range</th><th>Notes</th>
+  </tr>
+  <tr>
+    <td>Python 3</td><td>2</td><td>560 ms -- 5427 ms</td><td>19.2 -- 19.3 MB</td>
+    <td>Wide runtime gap; see outlier below.</td>
+  </tr>
+  <tr>
+    <td>JavaScript</td><td>2</td><td>51 ms -- 588 ms</td><td>56.9 -- 60.1 MB</td>
+    <td>11x spread between flash and pro; see outlier below.</td>
+  </tr>
+  <tr>
+    <td>Java</td><td>5</td><td>325 ms -- 1708 ms</td><td>45.5 -- 283.6 MB</td>
+    <td>Large memory gap between O(n^2)-space and rolling approaches.</td>
+  </tr>
+  <tr>
+    <td>C++</td><td>1</td><td>1200 ms</td><td>352.3 MB</td>
+    <td>High memory relative to algorithm; see outlier below.</td>
+  </tr>
+  <tr>
+    <td>Go</td><td>2</td><td>466 -- 533 ms</td><td>32.9 -- 44.0 MB</td>
+    <td>Consistent; both use boolean pal + almost tables.</td>
+  </tr>
+  <tr>
+    <td>Rust</td><td>3</td><td>316 -- 1137 ms</td><td>8.1 -- 106.2 MB</td>
+    <td>Fastest overall; memory varies greatly by data types used.</td>
+  </tr>
+</table>
+
+<h3>Outliers</h3>
+
+<div class="outlier">
+  <strong>OUTLIER -- Python 3 runtime:</strong>
+  <code>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</code> at 5427 ms vs
+  <code>accepted__qwen3.5-cloud-t1.0__python3.py</code> at 560 ms (9.7x slower).
+  The deepseek solution allocates four fresh Python lists per length step (P_curr, A_curr,
+  then reassigns P_prev, A_prev), creating ~10M list objects for n=2500; likely causing
+  significant GC pressure and interpreter overhead versus the expand-around-center approach
+  which uses no list allocations in its inner loop.
+</div>
+
+<div class="outlier">
+  <strong>OUTLIER -- JavaScript runtime:</strong>
+  <code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code> at 588 ms vs
+  <code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code> at 51 ms (11.5x slower).
+  The pro solution allocates <code>new Array(n)</code> in every row of the DP outer loop;
+  likely because per-row heap allocation prevents V8 from keeping the hot data in CPU cache,
+  whereas the flash solution uses only scalar variables in its tight expand loop.
+</div>
+
+<div class="outlier">
+  <strong>OUTLIER -- C++ memory:</strong>
+  <code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code> at 352.3 MB vs Go solutions
+  at 32-44 MB using the same algorithmic family (3x+ vs Go peers).
+  The C++ solution uses <code>vector&lt;vector&lt;char&gt;&gt;</code> for both the pal and almost
+  tables; likely because 2500 separate inner heap allocations per table cause fragmented virtual
+  memory that LeetCode's measurement captures as part of the process footprint, whereas Go's
+  contiguous slice backing store is more compact.
+</div>
+
+<div class="outlier">
+  <strong>OUTLIER -- Rust memory:</strong>
+  <code>accepted__glm-5-cloud-t1.0-rust__rust.rs</code> at 106.2 MB vs
+  <code>accepted__glm-5-cloud-t0.0-rust__rust.rs</code> at 8.1 MB (13x more memory).
+  The t1.0 solution uses <code>Vec&lt;char&gt;</code> (4 bytes per char vs 1 byte for u8) and
+  stores a <code>next_mismatch</code> table as <code>Vec&lt;Vec&lt;(usize,usize)&gt;&gt;</code>
+  (16 bytes per entry for two usize values); likely the combination of 4x char overhead plus
+  the 16-byte-per-cell mismatch table accounts for the ~100 MB difference.
+</div>
+
+<div class="outlier">
+  <strong>OUTLIER -- Java memory (high group):</strong>
+  <code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code> (280.5 MB) and
+  <code>accepted__glm-5-cloud-t0.8-java__java.java</code> (280.0 MB) vs
+  <code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code> (46.9 MB) (6x more).
+  The high-memory solutions allocate <code>int[n][n]</code> (25 MB raw + JVM overhead);
+  likely the full 2D allocation triggers a larger JVM heap commitment, while the pro solution
+  uses rolling 1D arrays of size O(n), allowing the JVM to operate with a much smaller heap.
+</div>
+
+<div class="outlier">
+  <strong>OUTLIER -- Java runtime:</strong>
+  <code>accepted__qwen3.5-cloud-t1.0-java__java.java</code> at 1708 ms vs
+  <code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code> at 325 ms (5.3x slower).
+  The qwen3.5 solution runs Manacher's algorithm n times (once per removed character), building
+  and scanning a transformed string each iteration; likely the repeated string construction and
+  Manacher sweep for n=2500 accumulates into ~5x more work than a direct rolling DP pass.
+</div>
+</section>
+
+<!-- 11. Failure Patterns From Stats -->
+<section class="section">
+<h2>Failure Patterns From Stats</h2>
+
+<table class="data">
+  <tr><th>Status</th><th>Count</th><th>Likely Root Cause</th></tr>
+  <tr>
+    <td>Time Limit Exceeded</td>
+    <td>10</td>
+    <td>O(n^3) or O(n^4) algorithms -- e.g., brute-force substring enumeration combined with
+    O(n) per-removal palindrome check, or O(n^2) DP with a naive O(n) inner check.
+    For n=2500, only O(n^2) algorithms with small constants pass. Typical culprit: nested loops
+    with an extra per-substring palindrome verification step that repeats work already done
+    by DP recurrence.</td>
+  </tr>
+  <tr>
+    <td>Wrong Answer</td>
+    <td>2</td>
+    <td>Likely incomplete handling of the "exactly one deletion" constraint -- either counting
+    palindromes (zero deletions) as invalid, or allowing substrings of length 1 as the answer
+    (a single character cannot become a palindrome after removal since that leaves an empty string,
+    depending on the judge). Also possibly off-by-one in the expand-around-center length formula,
+    or failing to consider even-length palindrome centers.</td>
+  </tr>
+</table>
+</section>
+
+<!-- 12. All Accepted Solutions -->
+<section class="section">
+<h2>All Accepted Solutions</h2>
+
+<p class="subtable-label">Canonical (most representative across families and languages)</p>
+<table class="data">
+  <tr>
+    <th>File</th><th>Model</th><th>Lang</th><th>Family</th><th>Runtime</th><th>Memory</th><th>Lines</th>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0</td><td>JavaScript</td><td>A (expand+skip)</td>
+    <td>51 ms</td><td>56.9 MB</td><td>94</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0</td><td>Java</td><td>B (min-del DP)</td>
+    <td>466 ms</td><td>280.5 MB</td><td>30</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td><td>C++</td><td>C (pal+almost tables)</td>
+    <td>1200 ms</td><td>352.3 MB</td><td>41</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</code></td>
+    <td>minimax-m2.7-cloud-t1.0</td><td>Go</td><td>C (pal+almost tables)</td>
+    <td>466 ms</td><td>32.9 MB</td><td>52</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td><td>Rust</td><td>D (pal+LCP patterns)</td>
+    <td>316 ms</td><td>20.9 MB</td><td>58</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0</td><td>Java</td><td>B (min-del DP rolling)</td>
+    <td>325 ms</td><td>46.9 MB</td><td>37</td>
+  </tr>
+</table>
+
+<p class="subtable-label">Variants (all remaining accepted files)</p>
+<table class="data">
+  <tr>
+    <th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0__python3.py</code></td>
+    <td>qwen3.5-cloud-t1.0</td><td>Python 3</td><td>560 ms</td><td>19.2 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</code></td>
+    <td>deepseek-v4-pro-cloud-t1.0</td><td>Python 3</td><td>5427 ms</td><td>19.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0</td><td>JavaScript</td><td>588 ms</td><td>60.1 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.8-java__java.java</code></td>
+    <td>glm-5-cloud-t0.8</td><td>Java</td><td>428 ms</td><td>280.0 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td><td>Java</td><td>904 ms</td><td>283.6 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0-java__java.java</code></td>
+    <td>qwen3.5-cloud-t1.0</td><td>Java</td><td>1708 ms</td><td>45.5 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code></td>
+    <td>minimax-m2.7-cloud-t0.0</td><td>Go</td><td>533 ms</td><td>44.0 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.0-rust__rust.rs</code></td>
+    <td>glm-5-cloud-t0.0</td><td>Rust</td><td>1051 ms</td><td>8.1 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t1.0-rust__rust.rs</code></td>
+    <td>glm-5-cloud-t1.0</td><td>Rust</td><td>1137 ms</td><td>106.2 MB</td>
+  </tr>
+</table>
+</section>
+
+</div>
+</body>
+</html>

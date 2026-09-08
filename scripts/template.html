@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hard Half — beat the model on the hard half of LeetCode contests</title>
+<meta name="description" content="Ten recent LeetCode weekly-contest problems, Q3 and Q4 only, with a stopwatch and the record of which AI models actually solved each one.">
+<style>
+:root{--ink:#1b1b1f;--muted:#5f6470;--bg:#f7f6f2;--card:#ffffff;--line:#e3e1da;--accent:#0b6e4f;--warn:#b2452b;--soft:#eef3f0;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--ink:#e8e6e1;--muted:#a3a7b0;--bg:#15161a;--card:#1e2026;--line:#2e313a;--accent:#5ccf9f;--warn:#f08c6e;--soft:#23292a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Georgia,"Times New Roman",serif}
+.wrap{max-width:860px;margin:0 auto;padding:2rem 1.2rem 5rem}
+h1{font-size:2.1rem;line-height:1.15;margin:.2rem 0 .6rem}h2{font-size:1.35rem;margin:0 0 .3rem}h3{font-size:1rem;margin:1.2rem 0 .4rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.lede{font-size:1.1rem;color:var(--muted);max-width:640px}
+.rules{background:var(--soft);border:1px solid var(--line);padding:1rem 1.2rem;margin:1.4rem 0 2rem;border-radius:6px}
+.rules ol{margin:.4rem 0 0 1.2rem;padding:0}
+.ladder{list-style:none;padding:0;margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.3rem;margin:0 0 1rem}
+.card header{display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap}
+.rank{font:700 .8rem var(--mono);color:var(--muted)}.diff{font:600 .72rem var(--mono);padding:.1rem .45rem;border:1px solid var(--line);border-radius:4px;color:var(--muted)}
+.challenge{margin:.5rem 0 .2rem;font-weight:600}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:.3rem 0 .8rem}.bar i{display:block;height:100%;background:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem;margin:.2rem 0 .6rem}
+.chip{font:.74rem var(--mono);padding:.15rem .5rem;border-radius:999px;border:1px solid var(--line);color:var(--muted);cursor:default}
+.chip.all{border-color:var(--accent);color:var(--accent)}.chip.none{border-color:var(--warn);color:var(--warn)}
+details summary{cursor:pointer;color:var(--accent);font-weight:600;margin:.4rem 0}
+.statement{font-size:.95rem}.statement pre{background:var(--soft);padding:.6rem .8rem;overflow:auto;border-radius:4px;font-size:.85rem}.statement code{font-family:var(--mono);font-size:.9em}
+.controls{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin:.8rem 0 .4rem}
+button{font:600 .85rem system-ui,sans-serif;padding:.45rem .8rem;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}button:disabled{opacity:.45;cursor:default}
+.clock{font:700 1.1rem var(--mono);min-width:5.5ch}
+.verdict{font-size:.9rem;color:var(--muted);margin:.2rem 0}
+.reveal{display:none;border-top:1px dashed var(--line);margin-top:.9rem;padding-top:.6rem}.card.done .reveal{display:block}
+.reveal .tempting{font-size:.93rem}.reveal a{color:var(--accent)}
+.card.done .attempt{display:none}
+.summary{border-top:1px solid var(--line);margin-top:2rem;padding-top:1rem;color:var(--muted);font-size:.95rem}
+.note{font-size:.85rem;color:var(--muted)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main class="wrap">
+<p class="note">Hard Half · pilot · {{N}} problems</p>
+<h1>The models have already tried these. Your turn.</h1>
+<p class="lede">Ten problems from the hard half of recent LeetCode weekly contests, questions 3 and 4 only. Every one was submitted to LeetCode by a dozen AI models in up to seven languages, and the record of who got <em>Accepted</em> is below each problem. Start the clock, solve it however you solve things, then record what happened. Only then do you get the models' mistakes and the full manual.</p>
+<div class="rules">
+<strong>How this works.</strong>
+<ol>
+<li>Pick the lowest rung you have not cleared. The ladder is ordered by how many model attempts were accepted, so the first win comes early and the last rung is the one most models failed.</li>
+<li>Press <b>Start</b>, read, think, code wherever you like. Submit on LeetCode if you want a real verdict.</li>
+<li>Press <b>Passed</b>, <b>Failed</b> or <b>Gave up</b>. Your time and verdict stay in this browser only.</li>
+<li>The card then opens: what the models got wrong on this problem, and the link to the manual built from their accepted solutions.</li>
+</ol>
+</div>
+<ol class="ladder" id="ladder"></ol>
+<div class="summary" id="summary"></div>
+<p class="note">Source of the model record: an independent benchmark that submitted model-written solutions to LeetCode and kept the verdicts. Counts are <em>submissions</em>, one per model and language, not distinct models. Manuals are generated from accepted solutions and are the reference, not the answer key. Problem statements are LeetCode's; links go to the original problems.</p>
+</main>
+<script>
+const DATA = /*DATA*/;
+const KEY = 'hardhalf:attempts';
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } };
+const save = (o) => { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
+const fmt = (ms) => { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+const esc = (t) => t.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function chip(m) {
+  const cls = m.accepted === m.attempts ? 'all' : (m.accepted === 0 ? 'none' : '');
+  const langs = Object.entries(m.langs).map(([l, v]) => l + ' ' + v.accepted + '/' + v.attempts).join(', ');
+  return `<span class="chip ${cls}" title="${esc(langs)}">${esc(m.family)} ${m.accepted}/${m.attempts}</span>`;
+}
+function render() {
+  const att = load();
+  document.getElementById('ladder').innerHTML = DATA.map(p => {
+    const a = att[p.id];
+    const pct = Math.round(100 * p.rate);
+    const failedFams = p.models.filter(m => m.accepted < m.attempts).map(m => m.family);
+    return `<li class="card${a ? ' done' : ''}" data-id="${p.id}">
+<header><span class="rank">RUNG ${p.rank}</span><h2>${esc(p.title)}</h2><span class="diff">${esc(p.difficulty)}</span><span class="note">Weekly Contest ${p.contest || ''} · ${esc(p.position || '')}</span></header>
+<p class="challenge">${p.accepted} of ${p.attempts} model submissions were accepted (${pct}%).${failedFams.length ? ' Stumbled: ' + failedFams.map(esc).join(', ') + '.' : ' Nobody stumbled.'} Can you?</p>
+<div class="bar"><i style="width:${pct}%"></i></div>
+<div class="chips">${p.models.map(chip).join('')}</div>
+<details><summary>Problem statement</summary><div class="statement">${p.statement_html}</div><p class="note"><a href="${p.leetcode_url}" target="_blank" rel="noopener">Open on LeetCode</a> · function <code>${esc(p.function || '')}</code></p></details>
+<div class="attempt">
+<div class="controls"><button class="primary" data-act="start">Start</button><span class="clock" data-clock>00:00</span><button data-act="pass" disabled>Passed</button><button data-act="fail" disabled>Failed</button><button data-act="quit" disabled>Gave up</button></div>
+<p class="note">Solve it anywhere. The clock is for you, not for us.</p>
+</div>
+<div class="reveal">
+<p class="verdict">${a ? `You recorded <b>${esc(a.verdict)}</b> after ${fmt(a.ms)} on ${new Date(a.at).toLocaleDateString()}. <button data-act="reset">Try again</button>` : ''}</p>
+<h3>What the models got wrong here</h3>
+<div class="tempting">${p.tempting_html || '<p class="note">No section available for this problem.</p>'}</div>
+<h3>The manual</h3>
+<p>Built from every accepted model solution: the essence, the algorithm families that worked, and the failure patterns from the stats. <a href="${p.manual_url}" target="_blank" rel="noopener">Read the manual for ${esc(p.title)}</a></p>
+</div>
+</li>`;
+  }).join('');
+  const done = Object.values(att);
+  const passed = done.filter(x => x.verdict === 'passed').length;
+  document.getElementById('summary').textContent = done.length ? `${done.length} of ${DATA.length} rungs attempted, ${passed} passed. Median time ${fmt(median(done.map(x => x.ms)))}.` : 'No attempts recorded yet in this browser.';
+}
+function median(xs) { const s = [...xs].sort((a, b) => a - b); return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : 0; }
+const timers = {};
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-act]'); if (!b) return;
+  const card = b.closest('.card'); const id = card.dataset.id; const act = b.dataset.act;
+  if (act === 'start') {
+    timers[id] = { t0: Date.now(), iv: setInterval(() => { card.querySelector('[data-clock]').textContent = fmt(Date.now() - timers[id].t0); }, 500) };
+    card.querySelectorAll('button[data-act]').forEach(x => x.disabled = x.dataset.act === 'start');
+  } else if (act === 'reset') {
+    const att = load(); delete att[id]; save(att); render();
+  } else {
+    const t = timers[id]; if (!t) return; clearInterval(t.iv);
+    const att = load(); att[id] = { verdict: { pass: 'passed', fail: 'failed', quit: 'gave up' }[act], ms: Date.now() - t.t0, at: Date.now() }; save(att); delete timers[id]; render();
+    document.querySelector(`.card[data-id="${id}"]`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
+render();
+</script>
+</body>
+</html>

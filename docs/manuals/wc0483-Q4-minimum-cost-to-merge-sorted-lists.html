@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wc0483-Q4 — Minimum Cost to Merge Sorted Lists</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ═══════════════════════════════════════════════════════════ 1. HEADER CARD -->
+<section class="header-card">
+  <div class="badges">
+    <span class="badge badge-hard">Hard</span>
+    <span class="badge badge-lang">wc0483-Q4</span>
+    <span class="badge badge-count">24 Accepted</span>
+    <span class="badge badge-lang">Bitmask DP</span>
+  </div>
+  <h1>Minimum Cost to Merge Sorted Lists</h1>
+  <p style="color:#a5b4fc;font-size:.88rem;margin-top:.4rem">LeetCode Weekly Contest 483 · Q4</p>
+  <div class="sig-box">
+    <div style="color:#94a3b8;font-size:.72rem;margin-bottom:.3rem">Function signature (Python 3)</div>
+    <code style="background:transparent;color:#a5f3fc;padding:0">class Solution:<br>&nbsp;&nbsp;&nbsp;&nbsp;def minMergeCost(self, lists: List[List[int]]) -&gt; int:</code>
+    <div style="color:#94a3b8;font-size:.72rem;margin-top:.6rem">Other languages</div>
+    <code style="background:transparent;color:#86efac;padding:0">long long minMergeCost(vector&lt;vector&lt;int&gt;&gt;&amp; lists)  // C++</code><br>
+    <code style="background:transparent;color:#86efac;padding:0">public long minMergeCost(int[][] lists)              // Java</code><br>
+    <code style="background:transparent;color:#86efac;padding:0">func minMergeCost(lists [][]int) int64               // Go</code><br>
+    <code style="background:transparent;color:#86efac;padding:0">pub fn min_merge_cost(lists: Vec&lt;Vec&lt;i32&gt;&gt;) -&gt; i64  // Rust</code>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 2. PROVENANCE -->
+<section class="card">
+  <h2>Provenance</h2>
+  <div class="prov-grid">
+    <div class="prov-item"><div class="prov-label">Problem ID</div><div class="prov-value">wc0483-Q4-minimum-cost-to-merge-sorted-lists</div></div>
+    <div class="prov-item"><div class="prov-label">Generator Tool</div><div class="prov-value">claude</div></div>
+    <div class="prov-item"><div class="prov-label">Generator Model</div><div class="prov-value">claude-sonnet-4-6</div></div>
+    <div class="prov-item"><div class="prov-label">Generated At (UTC)</div><div class="prov-value">2026-05-17T07:55:01.643445+00:00</div></div>
+    <div class="prov-item"><div class="prov-label">Accepted Count</div><div class="prov-value">24</div></div>
+    <div class="prov-item"><div class="prov-label">Difficulty</div><div class="prov-value">Hard</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 3. PROBLEM ESSENCE -->
+<section class="card">
+  <h2>Problem Essence</h2>
+  <p>Given <em>n</em> ≤ 12 non-empty sorted lists, you may repeatedly pick any two lists <em>a</em> and <em>b</em>, pay cost <code>len(a) + len(b) + |median(a) − median(b)|</code>, and replace them with their merged sorted list. The median is defined as the <strong>left-middle element</strong> (index <code>(len−1)//2</code>). Find the merge order that minimises the total cost to reduce all lists to one.</p>
+  <p>Because any two lists can be merged at any step (not just adjacent ones), and the optimal split at each level is non-obvious, the problem requires searching over all 2<sup>n</sup> subset partitions — a classic bitmask DP setup. The small bound <em>n</em> ≤ 12 (giving 4096 masks and 531 441 submask transitions via the 3<sup>n</sup> identity) makes this tractable.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 4. WORKED EXAMPLE -->
+<section class="card">
+  <h2>Worked Example</h2>
+  <p><strong>Input:</strong> <code>lists = [[1,3,5], [2,4], [6,7,8]]</code> &nbsp;→&nbsp; <strong>Expected output: 18</strong></p>
+  <p>Label the three lists as L0=[1,3,5], L1=[2,4], L2=[6,7,8] with sizes 3, 2, 3 and medians 3, 2, 7.</p>
+
+  <h3>Mask precomputation (relevant masks only)</h3>
+  <table>
+    <tr><th>Mask (binary)</th><th>Lists included</th><th>Merged elements</th><th>size</th><th>median (idx=(size-1)//2)</th></tr>
+    <tr><td class="mono">001</td><td>L0</td><td>[1,3,5]</td><td>3</td><td>3 (idx 1)</td></tr>
+    <tr><td class="mono">010</td><td>L1</td><td>[2,4]</td><td>2</td><td>2 (idx 0)</td></tr>
+    <tr><td class="mono">100</td><td>L2</td><td>[6,7,8]</td><td>3</td><td>7 (idx 1)</td></tr>
+    <tr><td class="mono">011</td><td>L0, L1</td><td>[1,2,3,4,5]</td><td>5</td><td>3 (idx 2)</td></tr>
+    <tr><td class="mono">111</td><td>L0, L1, L2</td><td>[1,2,3,4,5,6,7,8]</td><td>8</td><td>4 (idx 3)</td></tr>
+  </table>
+
+  <h3>DP transitions</h3>
+  <div class="trace-step"><strong>dp[001] = dp[010] = dp[100] = 0</strong> — single lists cost nothing to "merge".</div>
+  <div class="trace-step">
+    <strong>dp[011]:</strong> only split is (001, 010).<br>
+    cost = dp[001] + dp[010] + size[011] + |med[001] − med[010]|<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; = 0 + 0 + 5 + |3 − 2| = <strong>6</strong>
+  </div>
+  <div class="trace-step">
+    <strong>dp[111]:</strong> three possible splits, we try all:<br>
+    • split (011, 100): dp[011]+dp[100]+size[111]+|med[011]−med[100]| = 6+0+8+|3−7| = <strong>18</strong><br>
+    • split (001, 110): dp[001]+dp[110]+8+|med[001]−med[110]| = 0+dp[110]+8+|3−4|<br>
+    &nbsp;&nbsp; dp[110]=0+0+5+|2−7|=10 → total = 0+10+8+1 = <strong>19</strong><br>
+    • split (010, 101): dp[010]+dp[101]+8+|med[010]−med[101]| = 0+dp[101]+8+|2−3|<br>
+    &nbsp;&nbsp; dp[101]=0+0+6+|3−7|=10 → total = 0+10+8+1 = <strong>19</strong><br>
+    Minimum = <strong>18</strong> ✓
+  </div>
+
+  <h3>Other Official Examples</h3>
+  <table>
+    <tr><th>Input</th><th>Output</th><th>Confirmation</th></tr>
+    <tr><td class="mono">[[1,1,5],[1,4,7,8]]</td><td>10</td><td>Only one merge: 3+4+|1−4|=10. ✓</td></tr>
+    <tr><td class="mono">[[1],[3]]</td><td>4</td><td>Only one merge: 1+1+|1−3|=4. ✓</td></tr>
+    <tr><td class="mono">[[1],[1]]</td><td>2</td><td>Only one merge: 1+1+|1−1|=2. ✓</td></tr>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 5. DECISION RULE -->
+<section class="card">
+  <h2>Decision Rule / Algorithm</h2>
+
+  <p><strong>Precondition:</strong> n ≤ 12 (so 2<sup>n</sup> = 4096 masks and 3<sup>n</sup> = 531 441 submask transitions fit in milliseconds). Total elements ≤ 2000.</p>
+
+  <p><strong>Core recurrence:</strong></p>
+  <pre><code>dp[mask] = 0                                    if popcount(mask) == 1
+dp[mask] = min over all proper splits (sub, comp=mask^sub) of:
+               dp[sub] + dp[comp] + size[mask] + |median[sub] − median[comp]|</code></pre>
+
+  <p><strong>Key simplification:</strong> Because <code>size[sub] + size[comp] = size[mask]</code> for any split, the length cost is constant per mask — only the median term varies with the split choice. This means we need to find the split that minimises <code>dp[sub] + dp[comp] + |median[sub] − median[comp]|</code>.</p>
+
+  <p><strong>Submask enumeration trick:</strong> All proper non-empty submasks of <code>mask</code> can be iterated with <code>sub = (mask-1) &amp; mask; while sub: sub = (sub-1) &amp; mask</code>. This visits each submask exactly once. The total number of (mask, sub) pairs over all masks equals 3<sup>n</sup> by the identity <code>∑_{k=0}^{n} C(n,k)·2<sup>k</sup> = 3<sup>n</sup></code>; for n=12 this is 531 441, confirming tractability.</p>
+
+  <p><strong>Answer:</strong> <code>dp[(1&lt;&lt;n) − 1]</code> — the full mask containing all lists.</p>
+
+  <div class="svg-wrap">
+    <svg width="460" height="235" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L7,3 z" fill="#94a3b8"/>
+        </marker>
+      </defs>
+      <rect width="460" height="235" fill="#f8fafc" rx="8"/>
+      <text x="230" y="18" text-anchor="middle" font-family="monospace" font-size="11" fill="#64748b">Bitmask DP dependency graph (n=3): arrows = "uses value of"</text>
+      <!-- Row labels -->
+      <text x="8" y="72" font-family="monospace" font-size="9" fill="#94a3b8">dp=0</text>
+      <text x="8" y="147" font-family="monospace" font-size="9" fill="#94a3b8">dp=?</text>
+      <text x="8" y="220" font-family="monospace" font-size="9" fill="#94a3b8">answer</text>
+      <!-- Singletons -->
+      <rect x="60" y="50" width="68" height="32" rx="6" fill="#3b82f6" stroke="#1d4ed8" stroke-width="1.5"/>
+      <text x="94" y="71" text-anchor="middle" font-family="monospace" font-size="13" fill="white" font-weight="bold">001</text>
+      <text x="94" y="44" text-anchor="middle" font-family="monospace" font-size="9" fill="#60a5fa">L0</text>
+      <rect x="196" y="50" width="68" height="32" rx="6" fill="#3b82f6" stroke="#1d4ed8" stroke-width="1.5"/>
+      <text x="230" y="71" text-anchor="middle" font-family="monospace" font-size="13" fill="white" font-weight="bold">010</text>
+      <text x="230" y="44" text-anchor="middle" font-family="monospace" font-size="9" fill="#60a5fa">L1</text>
+      <rect x="332" y="50" width="68" height="32" rx="6" fill="#3b82f6" stroke="#1d4ed8" stroke-width="1.5"/>
+      <text x="366" y="71" text-anchor="middle" font-family="monospace" font-size="13" fill="white" font-weight="bold">100</text>
+      <text x="366" y="44" text-anchor="middle" font-family="monospace" font-size="9" fill="#60a5fa">L2</text>
+      <!-- Pair masks -->
+      <rect x="100" y="122" width="68" height="32" rx="6" fill="#f97316" stroke="#c2410c" stroke-width="1.5"/>
+      <text x="134" y="143" text-anchor="middle" font-family="monospace" font-size="13" fill="white" font-weight="bold">011</text>
+      <rect x="196" y="122" width="68" height="32" rx="6" fill="#f97316" stroke="#c2410c" stroke-width="1.5"/>
+      <text x="230" y="143" text-anchor="middle" font-family="monospace" font-size="13" fill="white" font-weight="bold">101</text>
+      <rect x="292" y="122" width="68" height="32" rx="6" fill="#f97316" stroke="#c2410c" stroke-width="1.5"/>
+      <text x="326" y="143" text-anchor="middle" font-family="monospace" font-size="13" fill="white" font-weight="bold">110</text>
+      <!-- Full mask -->
+      <rect x="196" y="196" width="68" height="32" rx="6" fill="#10b981" stroke="#065f46" stroke-width="1.5"/>
+      <text x="230" y="217" text-anchor="middle" font-family="monospace" font-size="13" fill="white" font-weight="bold">111</text>
+      <!-- Arrows: singletons → pairs -->
+      <line x1="94" y1="82" x2="134" y2="122" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#arr)"/>
+      <line x1="230" y1="82" x2="140" y2="122" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#arr)"/>
+      <line x1="94" y1="82" x2="224" y2="122" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+      <line x1="366" y1="82" x2="236" y2="122" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+      <line x1="230" y1="82" x2="320" y2="122" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+      <line x1="366" y1="82" x2="326" y2="122" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+      <!-- Arrows: pairs → full -->
+      <line x1="134" y1="154" x2="220" y2="196" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#arr)"/>
+      <line x1="230" y1="154" x2="230" y2="196" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#arr)"/>
+      <line x1="326" y1="154" x2="242" y2="196" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#arr)"/>
+      <!-- Legend -->
+      <line x1="60" y1="228" x2="90" y2="228" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#arr)"/>
+      <text x="95" y="232" font-family="monospace" font-size="9" fill="#64748b">solid = one split path</text>
+      <line x1="230" y1="228" x2="260" y2="228" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+      <text x="265" y="232" font-family="monospace" font-size="9" fill="#64748b">dashed = another split</text>
+    </svg>
+    <p style="font-size:.78rem;color:#64748b;margin-top:.4rem">Each larger mask can be formed from multiple (sub, comp) splits; the DP picks the minimum-cost one.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 6. IMPLEMENTATION SKELETON -->
+<section class="card">
+  <h2>Implementation Skeleton</h2>
+  <p>Python 3 — incremental merge via lowest-set-bit trick (avoids re-sorting):</p>
+<pre><code>from typing import List
+
+class Solution:
+    def minMergeCost(self, lists: List[List[int]]) -> int:
+        n = len(lists)
+        full = (1 << n) - 1
+
+        # Build merged sorted array for every mask via the lowest-bit trick.
+        # merged[mask ^ lsb] is already computed when we process mask.
+        merged = [[] for _ in range(1 << n)]
+        size   = [0] * (1 << n)
+        med    = [0] * (1 << n)
+
+        for mask in range(1, 1 << n):
+            lsb  = mask & -mask                      # isolate one set bit
+            i    = lsb.bit_length() - 1              # its list index
+            prev = mask ^ lsb                        # mask without that list
+            a, b = merged[prev], lists[i]
+            c, p, q = [], 0, 0
+            while p < len(a) and q < len(b):
+                if a[p] <= b[q]: c.append(a[p]); p += 1
+                else:            c.append(b[q]); q += 1
+            c.extend(a[p:]); c.extend(b[q:])
+            merged[mask] = c
+            size[mask]   = len(c)
+            med[mask]    = c[(len(c) - 1) // 2]     # left-middle for even length
+
+        dp = [float('inf')] * (1 << n)
+        for i in range(n):
+            dp[1 << i] = 0                           # single list: zero merge cost
+
+        for mask in range(1, 1 << n):
+            if mask & (mask - 1) == 0:               # skip singletons
+                continue
+            sub = (mask - 1) & mask                  # start submask iteration
+            while sub > 0:
+                comp = mask ^ sub
+                if sub < comp:                       # count each unordered split once
+                    cost = (dp[sub] + dp[comp]
+                            + size[mask]             # size[sub]+size[comp] == size[mask]
+                            + abs(med[sub] - med[comp]))
+                    if cost < dp[mask]:
+                        dp[mask] = cost
+                sub = (sub - 1) & mask
+
+        return dp[full]
+</code></pre>
+  <p style="font-size:.82rem;color:#475569;margin-top:.4rem"><strong>Complexity:</strong> Precomputation O(2<sup>n</sup>·N) where N=total elements ≤ 2000. DP transitions O(3<sup>n</sup>). For n=12: ~8M merge ops + 531K DP steps.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 7. REIMPLEMENTATION CHECKLIST -->
+<section class="card">
+  <h2>Reimplementation Checklist</h2>
+  <ul class="checklist">
+    <li>Initialise <code>dp[1&lt;&lt;i] = 0</code> for every singleton mask <em>i</em> — a single list needs no merging.</li>
+    <li>Precompute <code>size[mask]</code> using <code>size[mask ^ lsb] + len(lists[i])</code> (lowest-bit trick avoids iterating all set bits).</li>
+    <li>Precompute <code>med[mask]</code> at index <code>(size[mask] − 1) // 2</code> — left-middle for even-length arrays per the problem definition.</li>
+    <li>Enumerate all proper non-empty submasks of <code>mask</code> with <code>sub = (mask−1) &amp; mask; while sub: sub = (sub−1) &amp; mask</code>.</li>
+    <li>Avoid double-counting each unordered split by processing only when <code>sub &lt; comp</code> (or equivalently <code>sub &lt; mask ^ sub</code>).</li>
+    <li>Use the constant-size shortcut: <code>size[sub] + size[comp] = size[mask]</code>, so the length term is the same for every split of the same mask.</li>
+    <li>Use 64-bit integers in C++/Java/Go/Rust — values up to 10<sup>9</sup>, lengths up to 2000, up to 11 merge levels: max cost ≈ 11·2000 + 11·2·10<sup>9</sup> requires &gt;32 bits.</li>
+    <li>Return <code>dp[(1&lt;&lt;n) − 1]</code> — the full mask.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 8. WRONG BUT TEMPTING -->
+<section class="card">
+  <h2>Wrong But Tempting</h2>
+
+  <div class="wrong-box">
+    <h4>1. Greedy — always merge the cheapest available pair</h4>
+    <p><strong>Complexity:</strong> O(n<sup>2</sup>) merges, each O(N log N) → O(n<sup>2</sup>·N·log N) = 144·2000·11 ≈ 3.2M ops — fast enough.</p>
+    <p><strong>Why it fails:</strong> Merging cheaply now can poison future medians. Example: lists [1],[2],[1000]. Greedy picks [1]+[2] (cost=3), leaving {[1,2],[1000]}; final cost 3+(2+1+998)=1004. But merging [2]+[1000] first (cost=1000), then [1]+[2,1000] (cost=1+2+|1−500|=502), total=1502 — greedy wins here but fails on carefully constructed inputs where the cheapest early merge shifts a median adversely. The median effect is non-linear and cannot be evaluated without trying all splits.</p>
+  </div>
+
+  <div class="wrong-box">
+    <h4>2. Interval / contiguous-segment DP — dp[i][j] = min cost to merge lists[i..j]</h4>
+    <p><strong>Complexity:</strong> O(n<sup>3</sup>) states and transitions = 12<sup>3</sup> = 1728 — trivially fast.</p>
+    <p><strong>Why it fails:</strong> This only explores merges of contiguous sub-arrays. The optimal strategy can merge non-adjacent lists first (e.g., L0 and L2 before L1), which an interval DP cannot express. Only a bitmask DP over arbitrary subsets is correct.</p>
+  </div>
+
+  <div class="wrong-box">
+    <h4>3. Bitmask DP but recomputing the median during each transition (no precomputation)</h4>
+    <p><strong>Complexity:</strong> Each of the 3<sup>n</sup>=531 441 transitions would need to find the median of the sub and comp masks by iterating over all elements — O(N) each → 531 441·2000 ≈ <strong>1.06 × 10<sup>9</sup></strong> operations → TLE (the 2 TLE submissions in this benchmark likely fell into this trap).</p>
+    <p><strong>Fix:</strong> Precompute <code>med[mask]</code> for all 2<sup>n</sup> masks before the DP; transitions then use O(1) lookups.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 9. ACCEPTED ALGORITHM FAMILIES -->
+<section class="card">
+  <h2>Accepted Algorithm Families</h2>
+
+  <div class="fam-grid">
+    <div class="fam-card">
+      <h4>Family A — Sort-on-Demand</h4>
+      <p>For each mask, collect all elements from the constituent lists and sort. Store <code>size[]</code> and <code>med[]</code>. Simple; O(2<sup>n</sup>·N log N) precomputation; low memory.</p>
+    </div>
+    <div class="fam-card">
+      <h4>Family B — Incremental Merge</h4>
+      <p>Build <code>merged[mask]</code> by merging <code>merged[mask^lsb]</code> with <code>lists[i]</code> via two-pointer. Reuses prior work; O(2<sup>n</sup>·N) but stores 2<sup>n</sup> arrays → higher memory.</p>
+    </div>
+    <div class="fam-card">
+      <h4>Family C — Binary Search (Coord. Compressed)</h4>
+      <p>Precompute <code>cnt[i][v]</code> = # elements ≤ compressed-value <em>v</em> in list <em>i</em>. Binary search on compressed values to find the k-th element for each mask. No merged arrays stored.</p>
+    </div>
+    <div class="fam-card">
+      <h4>Family D — Binary Search (Value Range)</h4>
+      <p>Binary search on the raw integer range [−10<sup>9</sup>, 10<sup>9</sup>] to find the k-th element across all lists in the mask, using <code>sort.Search</code> / <code>bisect_right</code> per list. Clean; O(2<sup>n</sup>·n·log(2×10<sup>9</sup>)) precomputation.</p>
+    </div>
+  </div>
+
+  <h3>Family A — illustrative excerpt</h3>
+  <p>Source: <span class="fname">accepted__claude-sonnet-4-6__python3.py</span></p>
+<pre><code>for mask in range(1, total_masks):
+    elements = []
+    for i in range(n):
+        if mask & (1 << i):
+            elements.extend(lists[i])
+    elements.sort()
+    size[mask] = len(elements)
+    med[mask]  = elements[(len(elements) - 1) // 2]
+</code></pre>
+
+  <h3>Family B — illustrative excerpt</h3>
+  <p>Source: <span class="fname">accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</span></p>
+<pre><code>for mask := 1; mask < size; mask++ {
+    low := mask & -mask
+    i   := bits.TrailingZeros(uint(low))
+    prev := mask ^ low
+    merged[mask] = mergeSorted(merged[prev], lists[i])
+    l := len(merged[mask])
+    length[mask] = l
+    median[mask] = merged[mask][(l-1)/2]
+}
+</code></pre>
+
+  <h3>Family C — illustrative excerpt</h3>
+  <p>Source: <span class="fname">accepted__kimi-k2.5-cloud-t0.0__python3.py</span></p>
+<pre><code># cnt[i][mid] = # elements <= all_vals[mid] in lists[i]
+for mask in range(1, 1 << n):
+    s = size[mask]; target = (s + 1) // 2
+    lo, hi = 0, m - 1
+    while lo < hi:
+        mid = (lo + hi) // 2
+        total = sum(cnt[i][mid] for i in bits_of(mask))
+        if total >= target: hi = mid
+        else:               lo = mid + 1
+    median[mask] = all_vals[lo]
+</code></pre>
+
+  <h3>Family D — illustrative excerpt</h3>
+  <p>Source: <span class="fname">accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</span></p>
+<pre><code>for mask := 1; mask < total; mask++ {
+    k := (lens[mask] - 1) / 2
+    lo, hi := -1000000000, 1000000000
+    for lo < hi {
+        mid := lo + (hi-lo)/2
+        cnt := 0
+        for i := 0; i < n; i++ {
+            if mask&(1<<i) != 0 {
+                idx := sort.Search(len(lists[i]),
+                    func(j int) bool { return lists[i][j] > mid })
+                cnt += idx
+            }
+        }
+        if cnt <= k { lo = mid + 1 } else { hi = mid }
+    }
+    medians[mask] = lo
+}
+</code></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 10. LANGUAGE AND PERFORMANCE NOTES -->
+<section class="card">
+  <h2>Language and Performance Notes</h2>
+  <table>
+    <tr><th>Language</th><th>Count</th><th>Runtime range</th><th>Memory range</th><th>Notes</th></tr>
+    <tr>
+      <td><strong>Python 3</strong></td><td>8</td>
+      <td>2 355 – 8 099 ms</td>
+      <td>20.1 – 63.2 MB</td>
+      <td>Interpreted overhead dominates. <span class="fname">accepted__kimi-k2.5-cloud-t0.0__python3.py</span> (2 355 ms) is fastest — binary-search median avoids creating large sorted lists per mask. <span class="fname">accepted__qwen3.5-cloud__python3.py</span> uses 63.2 MB <span class="outlier">OUTLIER</span> — ~3.1× median 20.35 MB; it stores full merged arrays for all 4096 masks in Python lists.</td>
+    </tr>
+    <tr>
+      <td><strong>Java</strong></td><td>5</td>
+      <td>220 – 260 ms</td>
+      <td>273.9 – 285.1 MB</td>
+      <td>Uniformly fast runtime; uniformly high memory (JVM baseline + array storage). <span class="fname">accepted__qwen3.5-cloud-t1.0-java__java.java</span> (220 ms) is fastest; <span class="fname">accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</span> uses 285.1 MB — highest in Java, likely because it stores <code>int[][]</code> merged arrays for all masks inside the JVM heap.</td>
+    </tr>
+    <tr>
+      <td><strong>Go</strong></td><td>4</td>
+      <td>350 – 1 888 ms</td>
+      <td>8.8 – 68.2 MB</td>
+      <td>Widest runtime and memory spread of any language. <span class="fname">accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</span> (8.8 MB) uses value-range binary search — no merged slices stored. <span class="fname">accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</span> (68.2 MB) <span class="outlier">OUTLIER</span> — 7.7× kimi's memory because it stores fully merged <code>[]int</code> slices for all 4096 masks. <span class="fname">accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</span> at 1 888 ms is 5.4× faster sibling's 350 ms — likely extra allocation or less-optimised merge path at temperature 1.0.</td>
+    </tr>
+    <tr>
+      <td><strong>C++</strong></td><td>1</td>
+      <td>2 346 ms</td>
+      <td>569 MB <span class="outlier">OUTLIER</span></td>
+      <td><span class="fname">accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</span> uses sort-on-demand (Family A): creates a fresh <code>vector&lt;int&gt;</code> per mask, sorts it, discards it. 569 MB is ~30× Rust's 18.6 MB and ~65× Go's minimum — the LeetCode judge measures peak RSS, and 4096 temporary vectors plus allocator metadata and peak-stack depth inflate the measurement dramatically for the naive approach. Runtime 2 346 ms matches Python — C++ speed is wasted on the O(2<sup>n</sup>·N log N) sort loop.</td>
+    </tr>
+    <tr>
+      <td><strong>Rust</strong></td><td>1</td>
+      <td>290 ms</td>
+      <td>18.6 MB</td>
+      <td><span class="fname">accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</span> uses incremental merge (Family B) but stores <code>Vec&lt;i32&gt;</code> for every mask — only 18.6 MB because Rust's allocator is compact and there is no GC overhead. Fast runtime despite storing all merged arrays.</td>
+    </tr>
+    <tr>
+      <td><strong>TypeScript</strong></td><td>1</td>
+      <td>228 ms</td>
+      <td>66.2 MB</td>
+      <td><span class="fname">accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</span> — surprisingly the fastest single-solution runtime across all languages (228 ms), likely due to V8 JIT warming up effectively for the tight submask loop. Memory 66.2 MB reflects stored merged arrays in JS heap.</td>
+    </tr>
+    <tr>
+      <td><strong>JavaScript</strong></td><td>4</td>
+      <td>1 049 – 2 398 ms</td>
+      <td>128 – 131.4 MB</td>
+      <td><span class="fname">accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</span> (2 398 ms) is 2.3× slower than the fastest JS solution — consistent with a more expensive median-computation path or extra intermediate arrays.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 11. FAILURE PATTERNS -->
+<section class="card">
+  <h2>Failure Patterns From Stats</h2>
+  <table>
+    <tr><th>Status</th><th>Count</th><th>Likely root cause (inferred from accepted invariants)</th></tr>
+    <tr>
+      <td><strong class="err">Time Limit Exceeded</strong></td>
+      <td>2</td>
+      <td>
+        Most likely: DP transitions without precomputed medians — recomputing the median of each submask by sorting or linear scan during every transition yields O(3<sup>n</sup>·N)≈10<sup>9</sup> ops. Accepted solutions all precompute <code>med[mask]</code> for every mask before the DP loop, making each transition O(1). A secondary cause: using a full sort per mask inside the DP transition loop instead of incremental merge.
+      </td>
+    </tr>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ 12. ALL ACCEPTED SOLUTIONS -->
+<section class="card">
+  <h2>All Accepted Solutions</h2>
+  <p style="font-size:.82rem;color:#475569;margin-bottom:.7rem">24 solutions total. Canonical table (6 most representative across families and languages), then Variants (remaining 18).</p>
+
+  <h3>Canonical</h3>
+  <table>
+    <tr><th>File</th><th>Model</th><th>Lang</th><th>Family</th><th>Runtime</th><th>Memory</th><th>Notes</th></tr>
+    <tr>
+      <td class="fname mono">accepted__claude-sonnet-4-6__python3.py</td>
+      <td class="mono">claude-sonnet-4-6</td><td>Python</td><td>A (sort)</td>
+      <td>3 108 ms</td><td>20.4 MB</td>
+      <td>Clearest reference; enumerate-and-sort per mask</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__kimi-k2.5-cloud-t0.0__python3.py</td>
+      <td class="mono">kimi-k2.5-cloud-t0.0</td><td>Python</td><td>C (coord-compress binary search)</td>
+      <td>2 355 ms</td><td>20.4 MB</td>
+      <td>Fastest Python; no merged arrays</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</td>
+      <td class="mono">minimax-m2.7-cloud-t0.0</td><td>Go</td><td>B (incremental merge)</td>
+      <td>350 ms</td><td>68.2 MB <span class="outlier">MEM</span></td>
+      <td>Fastest Go; stores merged slices</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</td>
+      <td class="mono">kimi-k2.5-cloud-t0.0</td><td>Go</td><td>D (value-range binary search)</td>
+      <td>580 ms</td><td>8.8 MB</td>
+      <td>Lowest memory across all solutions</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</td>
+      <td class="mono">kimi-k2.5-cloud-t0.0</td><td>Rust</td><td>B (incremental merge)</td>
+      <td>290 ms</td><td>18.6 MB</td>
+      <td>Compact memory despite storing all merged arrays</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__qwen3.5-cloud-t1.0-java__java.java</td>
+      <td class="mono">qwen3.5-cloud-t1.0</td><td>Java</td><td>B (incremental merge)</td>
+      <td>220 ms</td><td>277.3 MB</td>
+      <td>Fastest Java solution overall</td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top:1.1rem">Variants</h3>
+  <table class="compact">
+    <tr><th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th></tr>
+    <tr>
+      <td class="fname mono">accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</td>
+      <td class="mono">deepseek-v4-flash-cloud-t0.0</td><td>Java</td><td>260 ms</td><td>285.1 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</td>
+      <td class="mono">deepseek-v4-flash-cloud-t0.0</td><td>JS</td><td>2 398 ms</td><td>131.4 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</td>
+      <td class="mono">deepseek-v4-pro-cloud-t0.0</td><td>Java</td><td>253 ms</td><td>276.9 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</td>
+      <td class="mono">deepseek-v4-pro-cloud-t0.0</td><td>JS</td><td>1 049 ms</td><td>130.5 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__deepseek-v4-pro-cloud-t1.0__python3.py</td>
+      <td class="mono">deepseek-v4-pro-cloud-t1.0</td><td>Python</td><td>3 055 ms</td><td>20.2 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__glm-5-cloud__python3.py</td>
+      <td class="mono">glm-5-cloud</td><td>Python</td><td>3 503 ms</td><td>20.1 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__glm-5-cloud-t0.0__python3.py</td>
+      <td class="mono">glm-5-cloud-t0.0</td><td>Python</td><td>3 351 ms</td><td>20.1 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__glm-5-cloud-t0.8-java__java.java</td>
+      <td class="mono">glm-5-cloud-t0.8</td><td>Java</td><td>246 ms</td><td>273.9 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__glm-5-cloud-t0.8-javascript__javascript.js</td>
+      <td class="mono">glm-5-cloud-t0.8</td><td>JS</td><td>1 202 ms</td><td>128.0 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</td>
+      <td class="mono">kimi-k2.5-cloud-t0.0</td><td>C++</td><td>2 346 ms</td><td>569 MB <span class="outlier">MEM</span></td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__kimi-k2.5-cloud-t0.0-java__java.java</td>
+      <td class="mono">kimi-k2.5-cloud-t0.0</td><td>Java</td><td>260 ms</td><td>274.1 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</td>
+      <td class="mono">kimi-k2.5-cloud-t0.0</td><td>JS</td><td>1 167 ms</td><td>130.5 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</td>
+      <td class="mono">kimi-k2.5-cloud-t0.0</td><td>TS</td><td>228 ms</td><td>66.2 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__minimax-m2.7-cloud__python3.py</td>
+      <td class="mono">minimax-m2.7-cloud</td><td>Python</td><td>6 414 ms</td><td>52.8 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</td>
+      <td class="mono">minimax-m2.7-cloud-t1.0</td><td>Go</td><td>1 888 ms</td><td>59.4 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__qwen3.5-cloud__python3.py</td>
+      <td class="mono">qwen3.5-cloud</td><td>Python</td><td>6 287 ms</td><td>63.2 MB <span class="outlier">MEM</span></td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__qwen3.5-cloud-t1.0__python3.py</td>
+      <td class="mono">qwen3.5-cloud-t1.0</td><td>Python</td><td>8 099 ms</td><td>20.3 MB</td>
+    </tr>
+    <tr>
+      <td class="fname mono">accepted__qwen3.5-cloud-t1.0-golang__golang.go</td>
+      <td class="mono">qwen3.5-cloud-t1.0</td><td>Go</td><td>1 380 ms</td><td>12.0 MB</td>
+    </tr>
+  </table>
+</section>
+
+</div><!-- /wrap -->
+</body>
+</html>

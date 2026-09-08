@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wc0487-Q4 -- Longest Alternating Subarray After Removing At Most One Element</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     1. HEADER CARD
+     ============================================================ -->
+<div class="header-card">
+  <h1>Longest Alternating Subarray After Removing At Most One Element
+    <span class="badge hard">Hard</span>
+  </h1>
+  <div style="color:#8b949e;font-size:0.82rem;margin-top:0.3rem">
+    wc0487-Q4 &nbsp;|&nbsp; Topics: array, dynamic-programming, enumeration &nbsp;|&nbsp;
+    Accepted solutions: <strong style="color:#3fb950">21</strong>
+  </div>
+  <div class="sig">
+    <span style="color:#8b949e">Python 3:</span>&nbsp;
+    <span style="color:#e6edf3">def longestAlternating(self, nums: List[int]) -&gt; int:</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     2. PROVENANCE
+     ============================================================ -->
+<h2>Provenance</h2>
+<div class="provenance-card">
+  <div class="kv">
+    <span class="k">problem_id</span>
+    <span class="v">wc0487-Q4-longest-alternating-subarray-after-removing-at-most-one-element</span>
+    <span class="k">generator_tool</span>
+    <span class="v">claude</span>
+    <span class="k">generator_model</span>
+    <span class="v">claude-sonnet-4-6</span>
+    <span class="k">generated_at_utc</span>
+    <span class="v">2026-05-22T05:45:15.146328+00:00</span>
+    <span class="k">accepted_count</span>
+    <span class="v">21</span>
+    <span class="k">difficulty</span>
+    <span class="v">Hard</span>
+    <span class="k">topic_tags</span>
+    <span class="v">array, dynamic-programming, enumeration</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     3. PROBLEM ESSENCE
+     ============================================================ -->
+<h2>Problem Essence</h2>
+<p>
+  You are given an integer array <code>nums</code>. A subarray is <em>alternating</em>
+  if consecutive pairs strictly alternate between &lt; and &gt; -- equal adjacent elements
+  are forbidden. You may remove <strong>at most one</strong> element from the original array,
+  then pick any alternating contiguous subarray from the result. Return the maximum length
+  of such a subarray.
+</p>
+<p>
+  The key difficulty is that removing one element can bridge two previously incompatible
+  alternating segments if and only if the new adjacency (between the elements flanking the
+  removed one) continues the alternating pattern of both sides. A length-1 subarray is
+  always valid, so the answer is at least 1.
+</p>
+
+<!-- ============================================================
+     4. WORKED EXAMPLE + OTHER OFFICIAL EXAMPLES
+     ============================================================ -->
+<h2>Worked Example</h2>
+
+<p><strong>Input:</strong> <code>nums = [2, 1, 3, 2]</code> &nbsp;&nbsp;
+   <strong>Expected output:</strong> <code>4</code></p>
+
+<p>
+  Build two pairs of DP arrays (left-to-right and right-to-left), each tracking the
+  longest alternating subarray ending/starting at each index, split by whether the last
+  or first comparison step was "up" (prev &lt; curr) or "down" (prev &gt; curr).
+</p>
+
+<p><strong>Left-to-right pass</strong> -- <code>left_up[i]</code> and <code>left_down[i]</code>:</p>
+<pre>
+idx:       0    1    2    3
+value:     2    1    3    2
+           |    |    |    |
+step dir:  --  down  up  down
+left_up:   1    1    3    1
+left_down: 1    2    1    4
+</pre>
+
+<p>Trace:</p>
+<ul>
+  <li>i=0: base case, both = 1.</li>
+  <li>i=1: 2 &gt; 1 ("down") -- <code>left_down[1] = left_up[0]+1 = 2</code>, <code>left_up[1] = 1</code>.</li>
+  <li>i=2: 1 &lt; 3 ("up") -- <code>left_up[2] = left_down[1]+1 = 3</code>, <code>left_down[2] = 1</code>.</li>
+  <li>i=3: 3 &gt; 2 ("down") -- <code>left_down[3] = left_up[2]+1 = 4</code>, <code>left_up[3] = 1</code>.</li>
+</ul>
+
+<p>
+  No deletion is needed: <code>max(left_up + left_down) = 4</code>.
+  The entire array 2 &gt; 1 &lt; 3 &gt; 2 is already alternating.
+  Answer: <strong>4</strong>.
+</p>
+
+<!-- SVG: DP state diagram for [2,1,3,2] -->
+<svg width="580" height="190" viewBox="0 0 580 190" style="display:block;margin:1rem 0;border-radius:6px">
+  <rect width="580" height="190" fill="#161b22" rx="6"/>
+  <text x="14" y="24" fill="#8b949e" font-size="12" font-family="monospace">DP table for nums = [2, 1, 3, 2]</text>
+
+  <!-- column headers (indices) -->
+  <text x="100" y="48" fill="#79c0ff" font-size="13" font-family="monospace" text-anchor="middle">idx 0</text>
+  <text x="220" y="48" fill="#79c0ff" font-size="13" font-family="monospace" text-anchor="middle">idx 1</text>
+  <text x="340" y="48" fill="#79c0ff" font-size="13" font-family="monospace" text-anchor="middle">idx 2</text>
+  <text x="460" y="48" fill="#79c0ff" font-size="13" font-family="monospace" text-anchor="middle">idx 3</text>
+
+  <!-- value boxes -->
+  <rect x="70" y="54" width="60" height="28" rx="4" fill="#21262d" stroke="#388bfd" stroke-width="1.5"/>
+  <text x="100" y="73" fill="#e6edf3" font-size="15" font-family="monospace" text-anchor="middle">2</text>
+  <rect x="190" y="54" width="60" height="28" rx="4" fill="#21262d" stroke="#388bfd" stroke-width="1.5"/>
+  <text x="220" y="73" fill="#e6edf3" font-size="15" font-family="monospace" text-anchor="middle">1</text>
+  <rect x="310" y="54" width="60" height="28" rx="4" fill="#21262d" stroke="#388bfd" stroke-width="1.5"/>
+  <text x="340" y="73" fill="#e6edf3" font-size="15" font-family="monospace" text-anchor="middle">3</text>
+  <rect x="430" y="54" width="60" height="28" rx="4" fill="#21262d" stroke="#388bfd" stroke-width="1.5"/>
+  <text x="460" y="73" fill="#e6edf3" font-size="15" font-family="monospace" text-anchor="middle">2</text>
+
+  <!-- arrows between elements (down/up/down) -->
+  <!-- 2->1: down -->
+  <line x1="131" y1="68" x2="188" y2="68" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arr-d)"/>
+  <text x="160" y="64" fill="#f0883e" font-size="10" font-family="monospace" text-anchor="middle">down</text>
+  <!-- 1->3: up -->
+  <line x1="251" y1="68" x2="308" y2="68" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-u)"/>
+  <text x="280" y="64" fill="#3fb950" font-size="10" font-family="monospace" text-anchor="middle">up</text>
+  <!-- 3->2: down -->
+  <line x1="371" y1="68" x2="428" y2="68" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arr-d2)"/>
+  <text x="400" y="64" fill="#f0883e" font-size="10" font-family="monospace" text-anchor="middle">down</text>
+
+  <!-- left_up row -->
+  <text x="14" y="112" fill="#a5d6ff" font-size="11" font-family="monospace">left_up:</text>
+  <text x="100" y="112" fill="#8b949e" font-size="13" font-family="monospace" text-anchor="middle">1</text>
+  <text x="220" y="112" fill="#8b949e" font-size="13" font-family="monospace" text-anchor="middle">1</text>
+  <text x="340" y="112" fill="#3fb950" font-size="14" font-family="monospace" text-anchor="middle" font-weight="bold">3</text>
+  <text x="460" y="112" fill="#8b949e" font-size="13" font-family="monospace" text-anchor="middle">1</text>
+
+  <!-- left_down row -->
+  <text x="14" y="136" fill="#a5d6ff" font-size="11" font-family="monospace">left_down:</text>
+  <text x="100" y="136" fill="#8b949e" font-size="13" font-family="monospace" text-anchor="middle">1</text>
+  <text x="220" y="136" fill="#3fb950" font-size="13" font-family="monospace" text-anchor="middle">2</text>
+  <text x="340" y="136" fill="#8b949e" font-size="13" font-family="monospace" text-anchor="middle">1</text>
+  <text x="460" y="136" fill="#58a6ff" font-size="16" font-family="monospace" text-anchor="middle" font-weight="bold">4</text>
+
+  <!-- annotation -->
+  <text x="460" y="155" fill="#58a6ff" font-size="10" font-family="monospace" text-anchor="middle">&#60;-- ans</text>
+  <rect x="430" y="122" width="60" height="22" rx="3" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+
+  <!-- arrowhead markers -->
+  <defs>
+    <marker id="arr-d" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#f0883e"/>
+    </marker>
+    <marker id="arr-u" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#3fb950"/>
+    </marker>
+    <marker id="arr-d2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#f0883e"/>
+    </marker>
+  </defs>
+
+  <text x="14" y="178" fill="#8b949e" font-size="10" font-family="monospace">
+    max(left_up + left_down) = 4  -- no deletion needed
+  </text>
+</svg>
+
+<h3>Other Official Examples</h3>
+<table>
+  <tr>
+    <th>Input</th>
+    <th>Output</th>
+    <th>Confirmation</th>
+  </tr>
+  <tr>
+    <td><code>[3,2,1,2,3,2,1]</code></td>
+    <td><code>4</code></td>
+    <td>Remove index 3 (value 2); neighbors are nums[2]=1 and nums[4]=3, and 1 &lt; 3 so
+        the bridge is valid; left side ending at idx 2 contributes 2 (down-up), right side
+        starting at idx 4 contributes 2 (up-down), total 4.</td>
+  </tr>
+  <tr>
+    <td><code>[100000,100000]</code></td>
+    <td><code>1</code></td>
+    <td>Equal adjacent elements are never alternating; removing one element leaves a
+        single-element subarray of length 1; that is the best possible.</td>
+  </tr>
+</table>
+
+<!-- ============================================================
+     5. DECISION RULE / ALGORITHM
+     ============================================================ -->
+<h2>Decision Rule / Algorithm</h2>
+
+<p><strong>Precondition:</strong> <code>2 &lt;= n &lt;= 1e5</code>, values in [1, 1e5].
+   Equal adjacent elements break any alternating chain, so they must either be the deletion
+   target or terminate the chain.</p>
+
+<p><strong>Step 1 -- left pass.</strong> Compute <code>left_up[i]</code> and
+   <code>left_down[i]</code>: the length of the longest alternating subarray ending at <code>i</code>
+   where the last comparison was "up" (&lt;) or "down" (&gt;) respectively. Base: all 1.
+   Recurrence:</p>
+<pre>
+if nums[i-1] &lt; nums[i]:   left_up[i]   = left_down[i-1] + 1
+if nums[i-1] &gt; nums[i]:   left_down[i] = left_up[i-1]   + 1
+if nums[i-1] == nums[i]:  both reset to 1
+</pre>
+
+<p><strong>Step 2 -- right pass.</strong> Compute <code>right_up[i]</code> and
+   <code>right_down[i]</code> symmetrically, starting from the right.
+   <code>right_up[i]</code> = length of alternating subarray <em>starting</em> at <code>i</code>
+   where the first comparison is "up" (nums[i] &lt; nums[i+1]).</p>
+
+<p><strong>Step 3 -- no-deletion answer.</strong>
+   <code>ans = max over all i of max(left_up[i], left_down[i])</code>.</p>
+
+<p><strong>Step 4 -- try deleting each index r in [1, n-2].</strong>
+   The new adjacency is between <code>nums[r-1]</code> and <code>nums[r+1]</code>:</p>
+<pre>
+if nums[r-1] &lt; nums[r+1]:  -- new bridge is "up"
+    candidate = left_down[r-1] + right_down[r+1]
+    # left must end "down" so the bridge reverses it;
+    # right must start "down" for the same reason.
+
+if nums[r-1] &gt; nums[r+1]:  -- new bridge is "down"
+    candidate = left_up[r-1] + right_up[r+1]
+</pre>
+
+<p>
+  Why the bridge direction must match the opposite of each side's last/first step:
+  if the left side ends "down" (prev &gt; curr) and the bridge is "up" (curr &lt; next),
+  then the pattern at the junction is ...&gt; &lt;, which alternates correctly.
+  The same argument applies symmetrically to the right side.
+</p>
+
+<p><strong>Complexity:</strong> O(n) time, O(n) space. The rolling O(1)-space variant
+   (Family B below) folds both passes into one forward scan.</p>
+
+<!-- ============================================================
+     6. IMPLEMENTATION SKELETON
+     ============================================================ -->
+<h2>Implementation Skeleton</h2>
+<pre><code>from typing import List
+
+class Solution:
+    def longestAlternating(self, nums: List[int]) -&gt; int:
+        n = len(nums)
+
+        # --- left pass: alternating length ending at i ---
+        left_up   = [1] * n   # last step was "up"   (nums[i-1] &lt; nums[i])
+        left_down = [1] * n   # last step was "down"  (nums[i-1] &gt; nums[i])
+        for i in range(1, n):
+            if nums[i - 1] &lt; nums[i]:
+                left_up[i]   = left_down[i - 1] + 1
+            elif nums[i - 1] &gt; nums[i]:
+                left_down[i] = left_up[i - 1]   + 1
+            # else equal: both stay 1 (implicit from initialization)
+
+        # --- right pass: alternating length starting at i ---
+        right_up   = [1] * n   # first step is "up"   (nums[i] &lt; nums[i+1])
+        right_down = [1] * n   # first step is "down"  (nums[i] &gt; nums[i+1])
+        for i in range(n - 2, -1, -1):
+            if nums[i] &lt; nums[i + 1]:
+                right_up[i]   = right_down[i + 1] + 1
+            elif nums[i] &gt; nums[i + 1]:
+                right_down[i] = right_up[i + 1]   + 1
+
+        # --- no-deletion answer ---
+        ans = max(max(left_up), max(left_down))
+
+        # --- try deleting each interior index ---
+        for r in range(1, n - 1):
+            if nums[r - 1] &lt; nums[r + 1]:          # bridge is "up"
+                ans = max(ans, left_down[r - 1] + right_down[r + 1])
+            elif nums[r - 1] &gt; nums[r + 1]:        # bridge is "down"
+                ans = max(ans, left_up[r - 1]   + right_up[r + 1])
+            # else equal neighbors -- no valid bridge, skip
+
+        return ans
+</code></pre>
+
+<!-- ============================================================
+     7. REIMPLEMENTATION CHECKLIST
+     ============================================================ -->
+<h2>Reimplementation Checklist</h2>
+<ul class="checklist">
+  <li>Initialize all four DP arrays (left_up, left_down, right_up, right_down) to 1.</li>
+  <li>Left pass: extend left_up when nums[i-1] &lt; nums[i]; extend left_down when &gt;; reset
+      both to 1 when equal (NOT just the inactive direction).</li>
+  <li>Right pass: mirror image -- extend right_up when nums[i] &lt; nums[i+1]; extend
+      right_down when &gt;.</li>
+  <li>No-deletion answer: take max over the entire left_up and left_down arrays (right_
+      arrays give the same max, but left is sufficient).</li>
+  <li>Bridge merge loop runs from r=1 to r=n-2 (interior only -- endpoints have no
+      opposite neighbor after deletion).</li>
+  <li>Bridge "up" (nums[r-1] &lt; nums[r+1]) combines left_down[r-1] with right_down[r+1]
+      -- not left_up with right_up.</li>
+  <li>Equal bridge (nums[r-1] == nums[r+1]) contributes nothing beyond the no-deletion
+      answer; skip it explicitly.</li>
+  <li>Return ans; minimum possible answer is 1 (guaranteed by initialization and n &gt;= 2).</li>
+</ul>
+
+<!-- ============================================================
+     8. WRONG BUT TEMPTING
+     ============================================================ -->
+<h2>Wrong But Tempting</h2>
+
+<h3>1. Brute-force: try every deletion then every subarray</h3>
+<p>
+  For each of the n deletion choices, scan all O(n^2) subarrays for alternation.
+  Total: n * n^2 = n^3. At n = 1e5: 1e5 * 1e10 = 1e15 ops. Unacceptably slow by
+  a factor of ~1e9.
+</p>
+
+<h3>2. Single sliding window without DP precomputation</h3>
+<p>
+  Attempt to slide a window tracking "have I used my one skip?" at each failure point.
+  This works for many simpler deletion problems but fails here because after skipping
+  an element, the two flanking elements must form a valid bridge with the existing
+  alternating prefix <em>and</em> suffix independently -- a single running state cannot
+  capture both sides simultaneously. Wrong answers appear on inputs like [3,2,1,2,3,2,1]
+  where the deletion is not at the first failure site.
+</p>
+
+<h3>3. O(n^2) -- for each right endpoint, binary-search or linear-scan for best left</h3>
+<p>
+  Try all pairs (l, r) with at most one deletion inside. For each right endpoint,
+  scanning left is O(n); total O(n^2). At n = 1e5: 1e10 ops, still ~1e4x too slow
+  for a 2-second time limit. The required approach is O(n) via the DP precomputation.
+</p>
+
+<!-- ============================================================
+     9. ACCEPTED ALGORITHM FAMILIES
+     ============================================================ -->
+<h2>Accepted Algorithm Families</h2>
+
+<!-- Family 1 -->
+<div class="family-card">
+  <div class="family-title">Family 1 -- Bidirectional DP + Bridge Merge (O(n) time, O(n) space)</div>
+  <p>
+    The dominant strategy across all languages. Precompute four O(n) arrays (left_up,
+    left_down, right_up, right_down), then scan interior indices as deletion candidates.
+    For each candidate <code>r</code>, check whether <code>nums[r-1]</code> and
+    <code>nums[r+1]</code> form a valid bridge and merge the appropriate left/right values.
+    Some variants add a prefix-max array and a suffix-max array to also capture the
+    best alternating segment anywhere to the left/right of the deletion point, not just
+    the one touching it.
+  </p>
+  <p>
+    <strong>Approx. 16 of 21 solutions.</strong> Languages: Python3 (5/6), JavaScript (3/4),
+    TypeScript, Java (2/4), C++, Go (2/4), Rust.
+  </p>
+  <div class="excerpt-label">Excerpt -- accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js (lines 1-44)</div>
+<pre><code>var longestAlternating = function(nums) {
+    const n = nums.length;
+    if (n &lt;= 1) return n;
+    const up = new Array(n).fill(1);
+    const down = new Array(n).fill(1);
+    for (let i = 1; i &lt; n; i++) {
+        if (nums[i-1] &lt; nums[i])       up[i]   = down[i-1] + 1;
+        else if (nums[i-1] &gt; nums[i])  down[i] = up[i-1]   + 1;
+    }
+    const rUp = new Array(n).fill(1);
+    const rDown = new Array(n).fill(1);
+    for (let i = n-2; i &gt;= 0; i--) {
+        if (nums[i] &lt; nums[i+1])       rUp[i]   = rDown[i+1] + 1;
+        else if (nums[i] &gt; nums[i+1])  rDown[i] = rUp[i+1]   + 1;
+    }
+    let ans = 1;
+    for (let i = 0; i &lt; n; i++) ans = Math.max(ans, up[i], down[i]);
+    for (let p = 1; p &lt; n-1; p++) {
+        if (nums[p-1] &lt; nums[p+1]) ans = Math.max(ans, down[p-1] + rDown[p+1]);
+        else if (nums[p-1] &gt; nums[p+1]) ans = Math.max(ans, up[p-1] + rUp[p+1]);
+    }
+    return ans;
+};
+</code></pre>
+</div>
+
+<!-- Family 2 -->
+<div class="family-card">
+  <div class="family-title">Family 2 -- Forward Rolling DP with Deletion Budget (O(n) time, O(1) space)</div>
+  <p>
+    Instead of a right-to-left pass, maintain four rolling scalars:
+    <code>dp0_up</code>, <code>dp0_down</code> (best ending here with 0 deletions, last step up/down),
+    and <code>dp1_up</code>, <code>dp1_down</code> (same but with 1 deletion used).
+    At each index i, the "delete i-1" case bridges <code>dp0</code> from i-2 to i.
+    This is O(1) space. Some solutions use an explicit 2D array
+    <code>dp[n][2]</code> but the same DP recurrence.
+  </p>
+  <p>
+    <strong>Approx. 4-5 solutions:</strong> codex Java, kimi Go (rolling), minimax Go t1.0 (rolling),
+    qwen3.5 Java (2D array variant).
+  </p>
+  <div class="excerpt-label">Excerpt -- accepted__codex-agent-gpt-5.5-high-java__java.java (lines 19-55)</div>
+<pre><code>for (int i = 1; i &lt; n; i++) {
+    int up0 = 1, down0 = 1, up1 = invalid, down1 = invalid;
+    int s = compare(nums[i-1], nums[i]);
+    if (s &gt; 0) {
+        up0 = down0Prev + 1;
+        if (down1Prev &gt; 0) up1 = down1Prev + 1;
+    } else if (s &lt; 0) {
+        down0 = up0Prev + 1;
+        if (up1Prev &gt; 0) down1 = up1Prev + 1;
+    }
+    if (i &gt;= 2) {
+        int bridge = compare(nums[i-2], nums[i]);
+        if (bridge &gt; 0) up1   = Math.max(up1,   down0Prev2 + 1);
+        else if (bridge &lt; 0) down1 = Math.max(down1, up0Prev2 + 1);
+    }
+    ans = Math.max(ans, Math.max(Math.max(up0, down0), Math.max(up1, down1)));
+    up0Prev2 = up0Prev; down0Prev2 = down0Prev;
+    up0Prev = up0; down0Prev = down0;
+    up1Prev = up1; down1Prev = down1;
+}
+</code></pre>
+</div>
+
+<!-- Family 3 -->
+<div class="family-card">
+  <div class="family-title">Family 3 -- Bidirectional DP with Exhaustive Direction Enumeration</div>
+  <p>
+    Same four DP arrays as Family 1, but instead of the two-branch bridge check, the
+    merge loop explicitly iterates over all four combinations of (leftDir, rightDir)
+    and tests compatibility with <code>newDir</code> (the direction of the bridge).
+    This handles edge cases such as "full left + single right" or "single left + full right"
+    more explicitly at the cost of code complexity.
+  </p>
+  <p>
+    <strong>2-3 solutions:</strong> deepseek-v4-flash Java, minimax Python (also checks
+    partial combinations), minimax Go t0.0.
+  </p>
+  <div class="excerpt-label">Excerpt -- accepted__deepseek-v4-flash-cloud-t0.0-java__java.java (lines 56-69)</div>
+<pre><code>for (int leftDir = -1; leftDir &lt;= 1; leftDir += 2) {
+    int leftLen = (leftDir == 1) ? leftUp[leftIdx] : leftDown[leftIdx];
+    for (int rightDir = -1; rightDir &lt;= 1; rightDir += 2) {
+        int rightLen = (rightDir == 1) ? rightUp[rightIdx] : rightDown[rightIdx];
+        boolean ok = true;
+        if (leftLen  &gt; 1 &amp;&amp; newDir != -leftDir)  ok = false;
+        if (rightLen &gt; 1 &amp;&amp; newDir != -rightDir) ok = false;
+        if (ok) ans = Math.max(ans, leftLen + rightLen);
+    }
+}
+</code></pre>
+</div>
+
+<!-- ============================================================
+     10. LANGUAGE AND PERFORMANCE NOTES
+     ============================================================ -->
+<h2>Language and Performance Notes</h2>
+
+<table>
+  <tr>
+    <th>Lang</th>
+    <th>Count</th>
+    <th>Runtime range</th>
+    <th>Memory range</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td>Go</td>
+    <td>4</td>
+    <td>1 ms -- 62 ms</td>
+    <td>10.2 MB -- 14.2 MB</td>
+    <td>Widest runtime spread in the benchmark; see outlier note below.</td>
+  </tr>
+  <tr>
+    <td>Rust</td>
+    <td>1</td>
+    <td>19 ms</td>
+    <td>3.9 MB</td>
+    <td>Lowest memory of any solution; value-type arrays with no GC.</td>
+  </tr>
+  <tr>
+    <td>C++</td>
+    <td>1</td>
+    <td>75 ms</td>
+    <td><span class="outlier">305.3 MB</span></td>
+    <td>Memory outlier -- see below.</td>
+  </tr>
+  <tr>
+    <td>Java</td>
+    <td>4</td>
+    <td>20 ms -- 140 ms</td>
+    <td>177 MB -- 247.7 MB</td>
+    <td>Runtime outlier at 140 ms; see below.</td>
+  </tr>
+  <tr>
+    <td>JavaScript</td>
+    <td>4</td>
+    <td>96 ms -- 237 ms</td>
+    <td>86.3 MB -- 98.6 MB</td>
+    <td>Slowest JS is ~2.5x fastest; large code size correlates with slowness.</td>
+  </tr>
+  <tr>
+    <td>TypeScript</td>
+    <td>1</td>
+    <td>83 ms</td>
+    <td>89.5 MB</td>
+    <td>Comparable to fastest JS solutions; tsx adds minimal overhead.</td>
+  </tr>
+  <tr>
+    <td>Python3</td>
+    <td>6</td>
+    <td>781 ms -- 1525 ms</td>
+    <td>38.6 MB -- 39.4 MB</td>
+    <td>All solutions are memory-similar; runtime varies ~2x across models.</td>
+  </tr>
+</table>
+
+<h3>Outliers</h3>
+
+<div class="section-note">
+  <strong>C++ memory outlier:</strong>
+  <code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code> reports <span class="outlier">305.3 MB</span>
+  vs Go's median of ~12 MB -- a ratio of ~25x among same-family solutions.
+  likely because kimi-k2.5-cloud-t0.0-cpp allocates six separate <code>std::vector&lt;int&gt;</code>
+  arrays (up, down, rup, rdown, pref, suff) in addition to LeetCode's C++ process image and
+  STL allocator metadata, all of which are included in the RSS measurement.
+</div>
+
+<div class="section-note">
+  <strong>Java runtime outlier:</strong>
+  <code>accepted__qwen3.5-cloud-t1.0-java__java.java</code> runs in <span class="outlier">140 ms</span>
+  vs the Java median of ~44 ms -- a ratio of ~3.2x -- making it a borderline outlier.
+  likely because qwen3.5-cloud-t1.0-java uses two 2D arrays <code>int[][] up = new int[n][2]</code>
+  and <code>int[][] down = new int[n][2]</code>, which require n separate heap-allocated
+  int[2] objects and cause significantly more GC pressure and cache misses than the
+  flat 1D arrays used by codex-agent-gpt-5.5-high-java (20 ms).
+</div>
+
+<div class="section-note">
+  <strong>Go runtime spread:</strong>
+  <code>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</code> at <span class="outlier">1 ms</span>
+  vs <code>accepted__qwen3.5-cloud-t1.0-golang__golang.go</code> at 62 ms is a 62x spread within
+  the same language. The 1 ms result is possibly a LeetCode measurement artifact for very fast
+  Go programs that complete before the timing granularity threshold, rather than a genuine
+  algorithmic difference -- both solutions are O(n) DP with similar logic.
+</div>
+
+<!-- ============================================================
+     11. FAILURE PATTERNS FROM STATS
+     ============================================================ -->
+<h2>Failure Patterns From Stats</h2>
+
+<p>Total failed submissions: <strong>3 Wrong Answer</strong>.</p>
+
+<table>
+  <tr>
+    <th>Status</th>
+    <th>Count</th>
+    <th>Likely Root Cause (inferred from accepted code invariants)</th>
+  </tr>
+  <tr>
+    <td>Wrong Answer</td>
+    <td>3</td>
+    <td>
+      Three sub-patterns are plausible:
+      <ul style="margin-top:0.4rem">
+        <li>
+          <strong>Bridge direction reversed:</strong> combining <code>left_up[r-1] + right_up[r+1]</code>
+          when the bridge is "up" (nums[r-1] &lt; nums[r+1]) -- the correct pairing is
+          <code>left_down + right_down</code>. Every accepted Family-1 solution uses the
+          opposite direction for each side.
+        </li>
+        <li>
+          <strong>Equal-neighbor bridge not skipped:</strong> when nums[r-1] == nums[r+1]
+          there is no valid alternating bridge; failing to guard this generates a spurious
+          candidate equal to left_len + right_len for an invalid join.
+        </li>
+        <li>
+          <strong>Endpoint deletion not handled:</strong> when r == 0 or r == n-1, the deletion
+          removes an endpoint; the merge formula references out-of-bounds indices unless
+          guarded. Accepted solutions restrict the bridge loop to r in [1, n-2].
+        </li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<!-- ============================================================
+     12. ALL ACCEPTED SOLUTIONS
+     ============================================================ -->
+<h2>All Accepted Solutions</h2>
+
+<h3>Canonical (most representative across families and languages)</h3>
+<table>
+  <tr>
+    <th>File</th>
+    <th>Model</th>
+    <th>Lang</th>
+    <th>Runtime</th>
+    <th>Memory</th>
+    <th>Family</th>
+    <th>Why representative</th>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td>
+    <td>JavaScript</td>
+    <td>102 ms</td>
+    <td>92.9 MB</td>
+    <td>1</td>
+    <td>Shortest clean bidir DP (45 lines); ideal reference.</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0__python3.py</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td>
+    <td>Python3</td>
+    <td>833 ms</td>
+    <td>39.2 MB</td>
+    <td>1</td>
+    <td>Concise Python3 bidir DP with separate start arrays (47 lines).</td>
+  </tr>
+  <tr>
+    <td><code>accepted__codex-agent-gpt-5.5-high-java__java.java</code></td>
+    <td>codex-agent-gpt-5.5-high</td>
+    <td>Java</td>
+    <td>20 ms</td>
+    <td>177 MB</td>
+    <td>2</td>
+    <td>Best Java runtime; clean rolling O(1)-space DP.</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</code></td>
+    <td>minimax-m2.7-cloud-t1.0</td>
+    <td>Go</td>
+    <td>1 ms</td>
+    <td>10.8 MB</td>
+    <td>2</td>
+    <td>Fastest overall runtime; sign-based rolling DP in Go.</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td>
+    <td>Rust</td>
+    <td>19 ms</td>
+    <td>3.9 MB</td>
+    <td>1</td>
+    <td>Lowest memory; uses single left/right arrays with direction check at merge.</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0</td>
+    <td>Java</td>
+    <td>58 ms</td>
+    <td>180.2 MB</td>
+    <td>3</td>
+    <td>Only Family-3 representative with nested direction enumeration.</td>
+  </tr>
+</table>
+
+<h3>Variants (all remaining accepted files)</h3>
+<table>
+  <tr>
+    <th>File</th>
+    <th>Model</th>
+    <th>Lang</th>
+    <th>Runtime</th>
+    <th>Memory</th>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0</td>
+    <td>JavaScript</td>
+    <td>237 ms</td>
+    <td>98.6 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0</td>
+    <td>Python3</td>
+    <td>1525 ms</td>
+    <td>38.6 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0</td>
+    <td>JavaScript</td>
+    <td>96 ms</td>
+    <td>86.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</code></td>
+    <td>deepseek-v4-pro-cloud-t1.0</td>
+    <td>Python3</td>
+    <td>943 ms</td>
+    <td>39.1 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.0__python3.py</code></td>
+    <td>glm-5-cloud-t0.0</td>
+    <td>Python3</td>
+    <td>1192 ms</td>
+    <td>39.4 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code></td>
+    <td>glm-5-cloud-t0.8</td>
+    <td>JavaScript</td>
+    <td>104 ms</td>
+    <td>91.4 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td>
+    <td>C++</td>
+    <td>75 ms</td>
+    <td>305.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td>
+    <td>Go</td>
+    <td>7 ms</td>
+    <td>10.2 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td>
+    <td>Java</td>
+    <td>29 ms</td>
+    <td>180.6 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</code></td>
+    <td>kimi-k2.5-cloud-t0.0</td>
+    <td>TypeScript</td>
+    <td>83 ms</td>
+    <td>89.5 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud__python3.py</code></td>
+    <td>minimax-m2.7-cloud</td>
+    <td>Python3</td>
+    <td>1506 ms</td>
+    <td>39.4 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code></td>
+    <td>minimax-m2.7-cloud-t0.0</td>
+    <td>Go</td>
+    <td>55 ms</td>
+    <td>13.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0__python3.py</code></td>
+    <td>qwen3.5-cloud-t1.0</td>
+    <td>Python3</td>
+    <td>781 ms</td>
+    <td>39.1 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0-golang__golang.go</code></td>
+    <td>qwen3.5-cloud-t1.0</td>
+    <td>Go</td>
+    <td>62 ms</td>
+    <td>14.2 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0-java__java.java</code></td>
+    <td>qwen3.5-cloud-t1.0</td>
+    <td>Java</td>
+    <td>140 ms</td>
+    <td>247.7 MB</td>
+  </tr>
+</table>
+
+<p style="margin-top:1.5rem;color:#8b949e;font-size:0.78rem">
+  Generated by claude-sonnet-4-6 on 2026-05-22 |
+  Problem wc0487-Q4 | 21 accepted solutions across 7 languages
+</p>
+
+</body>
+</html>

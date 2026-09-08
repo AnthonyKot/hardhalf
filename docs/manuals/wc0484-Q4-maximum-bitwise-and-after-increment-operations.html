@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wc0484-Q4 -- Maximum Bitwise AND After Increment Operations</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ 1. HEADER CARD -->
+<div class="header-card">
+  <h1>Maximum Bitwise AND After Increment Operations</h1>
+  <span class="badge">Hard</span>
+  <span style="font-size:0.85rem;opacity:0.82;">Weekly Contest 484, Q4</span>
+  <br>
+  <span class="sig">def maximumAND(self, nums: List[int], k: int, m: int) -&gt; int</span>
+  <p style="margin-top:0.55rem;font-size:0.85rem;opacity:0.82;">
+    17 accepted solutions &nbsp;|&nbsp; languages: Python 3, Java, Go, JavaScript, TypeScript
+  </p>
+</div>
+
+<!-- ============================================================ 2. PROVENANCE -->
+<section id="provenance">
+<h2>Provenance</h2>
+<div class="card">
+<table style="width:auto">
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>problem_id</td><td><code>wc0484-Q4-maximum-bitwise-and-after-increment-operations</code></td></tr>
+<tr><td>generator_tool</td><td>claude</td></tr>
+<tr><td>generator_model</td><td>claude-sonnet-4-6</td></tr>
+<tr><td>generated_at_utc</td><td>2026-05-19T04:53:37.998039+00:00</td></tr>
+<tr><td>accepted_count</td><td>17</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ============================================================ 3. PROBLEM ESSENCE -->
+<section id="problem-essence">
+<h2>Problem Essence</h2>
+<p>
+Given an integer array <code>nums</code> and budgets <code>k</code> (total +1 increments available)
+and <code>m</code> (subset size required), choose any m elements -- after optimally spending at most k
+increments -- so that their bitwise AND is as large as possible.
+</p>
+<p>
+Because AND requires every chosen element to share a bit, maximizing the AND means aligning
+m elements to a common high-bit pattern. Incrementing an element past a bit boundary
+"rounds it up" and sets that bit, but also clears lower bits as a carry side-effect --
+so cost is not simply target minus current value.
+</p>
+<p>
+The key insight is that bits can be decided greedily from the most-significant downward:
+once a high bit is locked in, only candidates that can also set the next lower bit (with
+remaining budget) are worth considering.
+</p>
+</section>
+
+<!-- ============================================================ 4. WORKED EXAMPLE -->
+<section id="worked-example">
+<h2>Worked Example</h2>
+<h3>nums = [3, 1, 2], k = 8, m = 2 -&gt; 6</h3>
+
+<p>
+Run the greedy bit-by-bit loop from bit 30 down. Bits 30 through 3 produce candidates
+&gt;= 8 whose cheapest two elements already cost more than k=8 (e.g. candidate=8 needs
+5+6=11 ops). We pick up the trace at bit 2:
+</p>
+
+<div class="card">
+<table>
+<tr>
+  <th>Bit</th><th>Candidate (ans | 1&lt;&lt;b)</th>
+  <th>cost(3,c)</th><th>cost(1,c)</th><th>cost(2,c)</th>
+  <th>2-smallest sum</th><th>Accept?</th>
+</tr>
+<tr>
+  <td>2</td><td>4 = 100</td>
+  <td>1 (3-&gt;4)</td><td>3 (1-&gt;4)</td><td>2 (2-&gt;4)</td>
+  <td>1+2 = 3 &lt;= 8</td><td><b>YES</b> -- ans = 4</td>
+</tr>
+<tr>
+  <td>1</td><td>6 = 110</td>
+  <td>3 (3-&gt;6)</td><td>5 (1-&gt;6)</td><td>4 (2-&gt;6)</td>
+  <td>3+4 = 7 &lt;= 8</td><td><b>YES</b> -- ans = 6</td>
+</tr>
+<tr>
+  <td>0</td><td>7 = 111</td>
+  <td>4 (3-&gt;7)</td><td>6 (1-&gt;7)</td><td>5 (2-&gt;7)</td>
+  <td>4+5 = 9 &gt; 8</td><td>NO -- ans stays 6</td>
+</tr>
+</table>
+</div>
+
+<p>
+<b>Cost detail for cost(3, candidate=6):</b>
+3 = 011, 6 = 110.
+missing = 6 &amp; ~3 = 100 (bit 2 is the highest missing bit, b=2).
+Clear bits 0..2, set bit 2, OR in lower bits of mask:
+Y = (3 &amp; ~0b111) | 0b100 | (6 &amp; 0b011) = 0 | 4 | 2 = 6. Cost = 6 - 3 = 3.
+</p>
+
+<p>
+Final answer: <code>ans = 6</code>. Optimal: increment index 0 (3-&gt;6, cost 3) and
+index 2 (2-&gt;6, cost 4), total cost 7 &lt;= 8. AND(6, 6) = 6.
+</p>
+
+<!-- SVG diagram: cost computation for x=3, mask=6 -->
+<figure style="margin:1rem 0; text-align:center">
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="165" viewBox="0 0 500 165">
+  <text x="10" y="17" font-family="monospace" font-size="12" fill="#1e3a5f" font-weight="bold">Bit-cost computation: x=3 (011), mask=6 (110), b=2</text>
+
+  <!-- column headers -->
+  <text x="140" y="38" font-family="monospace" font-size="11" fill="#555" text-anchor="middle">bit 2</text>
+  <text x="210" y="38" font-family="monospace" font-size="11" fill="#555" text-anchor="middle">bit 1</text>
+  <text x="280" y="38" font-family="monospace" font-size="11" fill="#555" text-anchor="middle">bit 0</text>
+
+  <!-- row: x = 3 = 011 -->
+  <text x="10" y="62" font-family="monospace" font-size="11" fill="#333">x = 3 :</text>
+  <rect x="118" y="47" width="44" height="22" fill="#fdecea" stroke="#c0392b" stroke-width="1.5" rx="2"/>
+  <text x="140" y="63" font-family="monospace" font-size="14" text-anchor="middle" fill="#c0392b">0</text>
+  <rect x="188" y="47" width="44" height="22" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5" rx="2"/>
+  <text x="210" y="63" font-family="monospace" font-size="14" text-anchor="middle" fill="#27ae60">1</text>
+  <rect x="258" y="47" width="44" height="22" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5" rx="2"/>
+  <text x="280" y="63" font-family="monospace" font-size="14" text-anchor="middle" fill="#27ae60">1</text>
+
+  <!-- row: mask = 6 = 110 -->
+  <text x="10" y="98" font-family="monospace" font-size="11" fill="#333">mask=6:</text>
+  <rect x="118" y="81" width="44" height="22" fill="#eaf1fb" stroke="#1a6ebb" stroke-width="1.5" rx="2"/>
+  <text x="140" y="97" font-family="monospace" font-size="14" text-anchor="middle" fill="#1a6ebb">1</text>
+  <rect x="188" y="81" width="44" height="22" fill="#eaf1fb" stroke="#1a6ebb" stroke-width="1.5" rx="2"/>
+  <text x="210" y="97" font-family="monospace" font-size="14" text-anchor="middle" fill="#1a6ebb">1</text>
+  <rect x="258" y="81" width="44" height="22" fill="#f3f4f6" stroke="#aaa" stroke-width="1" rx="2"/>
+  <text x="280" y="97" font-family="monospace" font-size="14" text-anchor="middle" fill="#888">0</text>
+
+  <!-- annotation: highest missing bit -->
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#e65c00"/>
+    </marker>
+  </defs>
+  <text x="360" y="66" font-family="monospace" font-size="11" fill="#e65c00">highest missing</text>
+  <text x="360" y="80" font-family="monospace" font-size="11" fill="#e65c00">bit = 2</text>
+  <line x1="357" y1="70" x2="165" y2="70" stroke="#e65c00" stroke-width="1.5"
+        stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <!-- row: Y = 6 = 110 -->
+  <text x="10" y="140" font-family="monospace" font-size="11" fill="#333">Y = 6 :</text>
+  <rect x="118" y="123" width="44" height="22" fill="#fef9e7" stroke="#d68910" stroke-width="2" rx="2"/>
+  <text x="140" y="139" font-family="monospace" font-size="14" text-anchor="middle" fill="#8a6000">1</text>
+  <rect x="188" y="123" width="44" height="22" fill="#fef9e7" stroke="#d68910" stroke-width="2" rx="2"/>
+  <text x="210" y="139" font-family="monospace" font-size="14" text-anchor="middle" fill="#8a6000">1</text>
+  <rect x="258" y="123" width="44" height="22" fill="#f3f4f6" stroke="#aaa" stroke-width="1" rx="2"/>
+  <text x="280" y="139" font-family="monospace" font-size="14" text-anchor="middle" fill="#888">0</text>
+  <text x="330" y="139" font-family="monospace" font-size="12" fill="#333">  cost = 6 - 3 = 3</text>
+</svg>
+<p class="fig-note">Fig 1. Cost for x=3, mask=6: bit 2 is the highest missing bit. Clear bits 0..2, set bit 2, OR lower mask bits. Y=6, cost=3.</p>
+</figure>
+
+<h3>Other Official Examples</h3>
+<table>
+<tr><th>Input</th><th>Expected</th><th>Confirmation</th></tr>
+<tr>
+  <td>nums=[1,2,8,4], k=7, m=3</td><td>4</td>
+  <td>Bit 2 (candidate=4): costs [3,2,4,0], 3-smallest sum = 0+2+3 = 5 &lt;= 7, accept, ans=4. Bit 1 (candidate=6): costs [5,4,6,2], 3-smallest sum = 2+4+5 = 11 &gt; 7, reject. Bit 0 (candidate=5): 3-smallest sum &gt; 7, reject. Return 4. Correct.</td>
+</tr>
+<tr>
+  <td>nums=[1,1], k=3, m=2</td><td>2</td>
+  <td>Bit 1 (candidate=2): cost(1,2)=1 each, sum = 2 &lt;= 3, accept, ans=2. Bit 0 (candidate=3): cost(1,3)=2 each, sum = 4 &gt; 3, reject. Return 2. Correct.</td>
+</tr>
+</table>
+</section>
+
+<!-- ============================================================ 5. DECISION RULE / ALGORITHM -->
+<section id="decision-rule">
+<h2>Decision Rule / Algorithm</h2>
+
+<p><b>Greedy bit-scan from bit 30 down to bit 0.</b> Maintain <code>ans = 0</code>. At each bit <code>b</code>:</p>
+<ol>
+  <li>Form <code>candidate = ans | (1 &lt;&lt; b)</code> (carry previously accepted bits).</li>
+  <li>For every <code>x</code> in <code>nums</code>, compute <code>cost(x, candidate)</code>.</li>
+  <li>Sort costs ascending; if <code>sum(costs[:m]) &lt;= k</code>, set <code>ans = candidate</code>.</li>
+</ol>
+
+<p><b>Cost formula (O(1) per element).</b> If <code>(x &amp; mask) == mask</code>, cost = 0. Otherwise:</p>
+<ol>
+  <li>Find <code>b = highest bit in (mask &amp; ~x)</code> -- the highest bit mask requires that x lacks.</li>
+  <li>Compute <code>Y = (x with bits 0..b cleared) | (1 &lt;&lt; b) | (mask &amp; ((1&lt;&lt;b)-1))</code>.</li>
+  <li>Cost = Y - x (always &gt;= 0 by construction).</li>
+</ol>
+
+<p>
+Correctness of Y: clearing bits 0..b and then setting bit b is equivalent to rounding x
+up to the next multiple of 2^b (forcing the carry to produce a clean 1 at bit b).
+The lower bits of mask are then OR-ed in for free because those positions are now zero
+after the rounding. No cheaper Y exists because any smaller target with bit b set
+would require bits below b to be different from what mask demands.
+</p>
+
+<p>
+<b>Bit range precondition.</b> Iterating bits 30..0 is sufficient because
+<code>max(nums) &lt;= 10^9 &lt; 2^30</code> and <code>k &lt;= 10^9 &lt; 2^30</code>, so the
+maximum achievable element value is at most <code>2 * 10^9 &lt; 2^31</code>.
+Bit 30 is the highest bit that can ever appear in a cost-efficient answer.
+Using bit 31 with a signed 32-bit integer causes undefined behavior (signed overflow).
+</p>
+
+<p>
+<b>Complexity.</b> 31 iterations * O(n log n) sort = O(31 n log n) total.
+For n = 5 * 10^4: ~31 * 5*10^4 * 16 = ~2.5*10^7 ops.
+</p>
+</section>
+
+<!-- ============================================================ 6. IMPLEMENTATION SKELETON -->
+<section id="implementation-skeleton">
+<h2>Implementation Skeleton</h2>
+<pre><code>from typing import List
+
+class Solution:
+    def maximumAND(self, nums: List[int], k: int, m: int) -> int:
+        def min_cost(x, mask):
+            # Minimum +1 ops to make (x & mask) == mask
+            if (x & mask) == mask:
+                return 0
+            missing = mask & ~x              # bits required by mask but absent in x
+            b = missing.bit_length() - 1     # highest missing bit position
+            low = (1 << (b + 1)) - 1         # bitmask for bits 0..b
+            # Round x up past bit b, then OR in required lower bits of mask
+            y = (x & ~low) | (1 << b) | (mask & (low >> 1))
+            return y - x                     # guaranteed >= 0
+
+        ans = 0
+        for bit in range(30, -1, -1):        # bit 30 is enough (values < 2^31)
+            candidate = ans | (1 << bit)     # keep previously accepted bits
+            costs = sorted(min_cost(x, candidate) for x in nums)
+            if sum(costs[:m]) <= k:          # use int64-safe sum (Python handles it)
+                ans = candidate
+        return ans
+</code></pre>
+</section>
+
+<!-- ============================================================ 7. REIMPLEMENTATION CHECKLIST -->
+<section id="reimplementation-checklist">
+<h2>Reimplementation Checklist</h2>
+<ul>
+  <li>Start the bit loop at <b>30</b>, not 31 -- <code>1 &lt;&lt; 31</code> is a negative signed int
+      in Java and C++, producing an incorrect candidate.</li>
+  <li>Always form <code>candidate = ans | (1 &lt;&lt; bit)</code>, not just <code>1 &lt;&lt; bit</code> --
+      previously accepted bits must persist into the candidate.</li>
+  <li>Compute <code>missing = mask &amp; ~x</code> (not <code>mask ^ x</code>) -- XOR would include bits
+      x has that mask does not, giving a wrong highest-missing-bit.</li>
+  <li>Identify the highest missing bit with <code>bit_length() - 1</code> (Python),
+      <code>31 - numberOfLeadingZeros(missing)</code> (Java), or <code>bits.Len32(uint32(missing)) - 1</code> (Go).</li>
+  <li>After clearing bits 0..b and setting bit b, also OR in <code>mask &amp; ((1&lt;&lt;b)-1)</code> --
+      the lower bits of mask -- otherwise the cost function underestimates.</li>
+  <li>Sort and sum the <b>m smallest</b> costs, not the m largest or all n costs.</li>
+  <li>Accumulate the sum in a <b>64-bit type</b>: m up to 5*10^4 and each cost up to ~10^9
+      gives a max sum of ~5*10^13, which overflows a 32-bit int.</li>
+  <li>Return <code>ans</code> after the full loop, not the last <code>candidate</code> tested.</li>
+</ul>
+</section>
+
+<!-- ============================================================ 8. WRONG BUT TEMPTING -->
+<section id="wrong-but-tempting">
+<h2>Wrong But Tempting</h2>
+
+<h3>1. Brute-force subset enumeration</h3>
+<p>
+Try every C(n, m) subset, compute the minimum cost to align all m elements to the same
+bit pattern, keep the maximum AND. For n = 5*10^4 and m = 2:
+C(5*10^4, 2) = ~1.25*10^9 pairs. Even O(1) per pair is ~1.25*10^9 ops -- 10x over TLE.
+For m = 3: ~2.1*10^13 triples.
+</p>
+
+<h3>2. Binary search on the integer answer value</h3>
+<p>
+Binary search over [0, 2^31] with a can_achieve(T) feasibility predicate --
+31 iterations of O(n log n) = ~2.5*10^7 ops, comfortably fast.
+<b>But it is incorrect</b> because can_achieve(T) is not monotone in T.
+Counterexample: nums = [5], k = 0, m = 1.
+can_achieve(5) = True (5 already has all bits of 5), but can_achieve(3) = False
+(reaching 3's bit 1 from 5 requires incrementing 5 to 6, cost 1 &gt; 0).
+Binary search exploring mid=3 marks False and contracts hi=2; it returns 1 instead of 5.
+Among the 17 accepted solutions, the two glm-5 files use this approach and happened to
+pass LeetCode's provided test suite -- but this does not establish correctness on all
+valid inputs per the given constraints.
+</p>
+
+<h3>3. Greedy: sort nums descending, increment the top m</h3>
+<p>
+Pick the m largest elements and spend all k increments on them, hoping the AND converges.
+Fails because bit alignment matters more than raw value. A small element very close to a
+bit boundary may converge to the optimal AND target far cheaper than a large element
+misaligned with that boundary. Example: nums = [7, 8], k = 1, m = 2. The "top 2" are
+both chosen. AND(7, 8) = 0, and one increment cannot help. But with a targeted approach,
+no meaningful AND is achievable anyway -- but in larger examples, alignment-aware subset
+selection changes the winner entirely.
+</p>
+</section>
+
+<!-- ============================================================ 9. ACCEPTED ALGORITHM FAMILIES -->
+<section id="accepted-algorithm-families">
+<h2>Accepted Algorithm Families</h2>
+
+<h3>Family 1 -- Greedy bit-down, direct formula cost</h3>
+<p>
+The dominant approach across 10 of 17 solutions. For each element, a single arithmetic
+expression constructs Y from the highest missing bit. O(1) per element per bit iteration.
+Covers: claude-sonnet-4-6 (Py), deepseek-v4-pro t0.0/t1.0 (Py), deepseek-v4-pro (Java/JS),
+deepseek-v4-flash (Java), codex-gpt-5.5 (Java), qwen3.5 (Go).
+</p>
+<div class="excerpt">
+<p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.3rem;">
+  Source: <code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code>
+</p>
+<pre><code>private int costToReach(int x, int target) {
+    int missing = target & ~x;
+    if (missing == 0) return 0;
+    int highestBit = 31 - Integer.numberOfLeadingZeros(missing);
+    int mask = (1 << highestBit) - 1;
+    long y = ((x | mask) + 1L) | (target & mask);
+    return (int)(y - x);
+}</code></pre>
+</div>
+
+<h3>Family 2 -- Greedy bit-down, iterative bit-scan cost</h3>
+<p>
+Same outer greedy loop but cost is computed by iterating through the bits of mask from
+high to low, setting each required bit with a carry operation. O(31) per element rather
+than O(1), but simpler to reason about. Covers: kimi-k2.5 (Py, Java, Go, TS),
+minimax-m2.7 (Py, Go).
+</p>
+<div class="excerpt">
+<p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.3rem;">
+  Source: <code>accepted__kimi-k2.5-cloud-t0.0__python3.py</code>
+</p>
+<pre><code>def cost(x: int, mask: int) -> int:
+    if (x & mask) == mask:
+        return 0
+    y = x
+    temp = mask
+    while temp:
+        b = temp.bit_length() - 1
+        if ((y >> b) & 1) == 0:
+            y = ((y >> b) + 1) << b  # round up past bit b
+        temp ^= (1 << b)             # clear processed bit
+    return y - x</code></pre>
+</div>
+
+<h3>Family 3 -- Binary search on answer value</h3>
+<p>
+Wraps the same feasibility check in a binary search over [0, 2^31].
+Asymptotically equivalent to the greedy approach (31 * O(n log n)),
+but relies on can_achieve(T) being monotone in T -- a property that does not
+hold in general (see "Wrong But Tempting"). Passed LeetCode's test cases.
+Covers: glm-5 (Py, Java).
+</p>
+<div class="excerpt">
+<p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.3rem;">
+  Source: <code>accepted__glm-5-cloud-t0.0__python3.py</code>
+</p>
+<pre><code>lo, hi = 0, 2**31
+while lo < hi:
+    mid = (lo + hi + 1) // 2
+    if can_achieve(mid):
+        lo = mid
+    else:
+        hi = mid - 1
+return lo</code></pre>
+</div>
+
+<h3>Family 4 -- Greedy bit-down with incremental cost propagation</h3>
+<p>
+Maintains a per-element <code>costs[]</code> array from the previous accepted iteration.
+Elements already compatible with <code>ans</code> (cost = 0) get their new-bit cost
+recomputed from <code>nums[i]</code>; incompatible elements (cost &gt; 0) simply add
+the new bit value to their running cost. Avoids recomputing from scratch each iteration.
+Covers: qwen3.5 (Java only).
+</p>
+<div class="excerpt">
+<p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.3rem;">
+  Source: <code>accepted__qwen3.5-cloud-t1.0-java__java.java</code> (inner loop body)
+</p>
+<pre><code>for (int i = 0; i < n; i++) {
+    if (costs[i] == 0) {
+        if ((nums[i] & bitVal) != 0) {
+            currentCosts[i] = 0;
+        } else {
+            long maskLower = (1L << (b + 1)) - 1;
+            long val = (nums[i] & ~maskLower) | bitVal | ans;
+            currentCosts[i] = val - nums[i];
+        }
+    } else {
+        currentCosts[i] = costs[i] + bitVal;
+    }
+}</code></pre>
+</div>
+</section>
+
+<!-- ============================================================ 10. LANGUAGE AND PERFORMANCE NOTES -->
+<section id="language-and-performance-notes">
+<h2>Language and Performance Notes</h2>
+
+<table>
+<tr>
+  <th>Language</th><th>Count</th><th>Fastest</th><th>Slowest</th><th>Memory range</th>
+</tr>
+<tr><td>Go</td><td>3</td><td>89 ms</td><td>335 ms</td><td>8.7 -- 11.7 MB</td></tr>
+<tr><td>Java</td><td>6</td><td>86 ms</td><td>653 ms</td><td>48.5 -- 52.2 MB</td></tr>
+<tr><td>JavaScript</td><td>1</td><td>398 ms</td><td>398 ms</td><td>69.3 MB</td></tr>
+<tr><td>TypeScript</td><td>1</td><td>418 ms</td><td>418 ms</td><td>70.0 MB</td></tr>
+<tr><td>Python 3</td><td>6</td><td>677 ms</td><td>7606 ms</td><td>23.3 -- 26 MB</td></tr>
+</table>
+
+<p>
+<span class="outlier">OUTLIER -- Python runtime:</span>
+<code>accepted__minimax-m2.7-cloud__python3.py</code> runs at 7606 ms vs a Python peer
+median of ~1728 ms (4.4x). likely because its <code>_cost_superset</code> method
+processes every bit from MSB down in an explicit loop with a <code>greater</code> flag
+and multiple conditionals per bit, rather than using a single-expression formula -- the
+extra branch overhead and two helper-method calls per element compound in CPython's
+interpreted dispatch.
+</p>
+
+<p>
+<span class="outlier">OUTLIER -- Java runtime:</span>
+<code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code> runs at 653 ms vs a Java peer
+median of ~158 ms (4.1x). likely because its outer loop iterates bits 60..0 (61
+iterations instead of 31) and the inner <code>getMinV</code> helper also scans from 60 down to 0,
+doubling the necessary work; combined with per-iteration long[] allocation and extra
+conditional checks per bit, the constant factor stacks up.
+</p>
+
+<p>
+<b>Go efficiency:</b>
+<code>accepted__qwen3.5-cloud-t1.0-golang__golang.go</code> at 89 ms is the overall
+fastest, using <code>math/bits.Len32</code> for the highest-bit lookup (a single CPU
+instruction on modern hardware) and keeping all values in native int/int64 with no
+boxing overhead.
+</p>
+
+<p>
+<b>JavaScript and TypeScript memory:</b>
+<code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code> uses 69.3 MB
+and <code>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</code> uses 70 MB --
+roughly 6-8x the Go range of 8.7-11.7 MB -- likely because the V8/Node.js runtime
+baseline, heap allocations for Array objects, and the sort closure all add fixed overhead
+that dominates at this n=5*10^4 scale.
+</p>
+
+<p>
+<b>Java memory:</b> All six Java solutions cluster at 48.5--52.2 MB with no within-family
+outlier, reflecting the standard JVM heap baseline plus a small long[] allocation per
+iteration. The fastest Java solution
+(<code>accepted__qwen3.5-cloud-t1.0-java__java.java</code>, 86 ms) actually uses the
+most memory (52.2 MB) due to two cost arrays kept simultaneously in Family 4's
+incremental propagation scheme.
+</p>
+</section>
+
+<!-- ============================================================ 11. FAILURE PATTERNS FROM STATS -->
+<section id="failure-patterns-from-stats">
+<h2>Failure Patterns From Stats</h2>
+
+<table>
+<tr>
+  <th>Status</th><th>Count</th>
+  <th>Likely root cause (inferred from accepted code invariants)</th>
+</tr>
+<tr>
+  <td>Wrong Answer</td><td>4</td>
+  <td>
+    Three common mistakes:(a) Cost formula omits ORing the lower bits of mask after setting bit b --
+    the accepted code always adds <code>mask &amp; ((1&lt;&lt;b)-1)</code> to Y; skipping this produces
+    a Y that satisfies bit b but not the lower required bits, underestimating cost and
+    selecting infeasible subsets.<br>
+    (b) Using <code>mask ^ x</code> instead of <code>mask &amp; ~x</code> to compute missing bits --
+    XOR includes bits x has that mask does not, inflating the highest-missing-bit position.<br>
+    (c) Iterating to bit 31 with a signed 32-bit int where <code>1 &lt;&lt; 31</code> is negative,
+    producing a negative candidate and incorrect feasibility checks.
+  </td>
+</tr>
+<tr>
+  <td>Time Limit Exceeded</td><td>1</td>
+  <td>
+    likely from iterating bits 60..0 instead of 30..0 (as in
+    <code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code>) combined with an O(61)
+    inner scan per element -- approximately 4x the necessary work -- possibly
+    compounded by per-iteration long[] allocations that trigger additional GC pressure
+    at n = 5*10^4.
+  </td>
+</tr>
+</table>
+</section>
+
+<!-- ============================================================ 12. ALL ACCEPTED SOLUTIONS -->
+<section id="all-accepted-solutions">
+<h2>All Accepted Solutions</h2>
+
+<h3>Canonical</h3>
+<p>Six solutions representative of all four algorithm families and key languages:</p>
+<table>
+<tr>
+  <th>File</th><th>Model</th><th>Lang</th><th>Family</th><th>Runtime</th><th>Memory</th>
+</tr>
+<tr>
+  <td><code>accepted__claude-sonnet-4-6__python3.py</code></td>
+  <td>claude-sonnet-4-6</td><td>python3</td><td>F1 formula</td>
+  <td>1862 ms</td><td>26 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</code></td>
+  <td>deepseek-v4-pro-cloud-t0.0-java</td><td>java</td><td>F1 formula</td>
+  <td>109 ms</td><td>50.5 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__qwen3.5-cloud-t1.0-golang__golang.go</code></td>
+  <td>qwen3.5-cloud-t1.0-golang</td><td>golang</td><td>F1 formula</td>
+  <td>89 ms</td><td>8.7 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__glm-5-cloud-t0.0__python3.py</code></td>
+  <td>glm-5-cloud-t0.0</td><td>python3</td><td>F3 binary search</td>
+  <td>677 ms</td><td>23.3 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__qwen3.5-cloud-t1.0-java__java.java</code></td>
+  <td>qwen3.5-cloud-t1.0-java</td><td>java</td><td>F4 incremental</td>
+  <td>86 ms</td><td>52.2 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code></td>
+  <td>deepseek-v4-pro-cloud-t0.0-javascript</td><td>javascript</td><td>F1 formula</td>
+  <td>398 ms</td><td>69.3 MB</td>
+</tr>
+</table>
+
+<h3>Variants</h3>
+<table class="compact">
+<tr><th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th></tr>
+<tr>
+  <td><code>accepted__codex-agent-gpt-5.5-java__java.java</code></td>
+  <td>codex-agent-gpt-5.5-java</td><td>java</td><td>201 ms</td><td>48.9 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</code></td>
+  <td>deepseek-v4-flash-cloud-t0.0-java</td><td>java</td><td>115 ms</td><td>50.1 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</code></td>
+  <td>deepseek-v4-pro-cloud-t0.0</td><td>python3</td><td>1448 ms</td><td>23.4 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__deepseek-v4-pro-cloud-t1.0__python3.py</code></td>
+  <td>deepseek-v4-pro-cloud-t1.0</td><td>python3</td><td>1594 ms</td><td>23.4 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__glm-5-cloud-t0.8-java__java.java</code></td>
+  <td>glm-5-cloud-t0.8-java</td><td>java</td><td>303 ms</td><td>50.3 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__kimi-k2.5-cloud-t0.0__python3.py</code></td>
+  <td>kimi-k2.5-cloud-t0.0</td><td>python3</td><td>3427 ms</td><td>23.5 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code></td>
+  <td>kimi-k2.5-cloud-t0.0-golang</td><td>golang</td><td>335 ms</td><td>11.7 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__kimi-k2.5-cloud-t0.0-java__java.java</code></td>
+  <td>kimi-k2.5-cloud-t0.0-java</td><td>java</td>
+  <td><span class="outlier">653 ms</span></td><td>48.5 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</code></td>
+  <td>kimi-k2.5-cloud-t0.0-typescript</td><td>typescript</td><td>418 ms</td><td>70 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__minimax-m2.7-cloud__python3.py</code></td>
+  <td>minimax-m2.7-cloud</td><td>python3</td>
+  <td><span class="outlier">7606 ms</span></td><td>23.5 MB</td>
+</tr>
+<tr>
+  <td><code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code></td>
+  <td>minimax-m2.7-cloud-t0.0-golang</td><td>golang</td><td>214 ms</td><td>9.3 MB</td>
+</tr>
+</table>
+
+</section>
+
+</body>
+</html>

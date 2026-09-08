@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manual — wc0483-Q3 Minimum Cost to Make Two Binary Strings Equal</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================================================================
+     1. HEADER CARD
+     =================================================================== -->
+<div class="header-card">
+  <h1>Minimum Cost to Make Two Binary Strings Equal</h1>
+  <div class="meta-row">
+    <span class="badge badge-medium">Medium</span>
+    <span class="badge">wc0483-Q3</span>
+    <span class="badge badge-accepted">26 Accepted Solutions</span>
+    <span class="badge">Greedy · String</span>
+  </div>
+  <div class="sig-box">Python 3:   def minimumCost(self, s: str, t: str, flipCost: int, swapCost: int, crossCost: int) -&gt; int
+Java:       public long minimumCost(String s, String t, int flipCost, int swapCost, int crossCost)
+C++:        long long minimumCost(string s, string t, int flipCost, int swapCost, int crossCost)
+Go:         func minimumCost(s string, t string, flipCost int, swapCost int, crossCost int) int64
+Rust:       pub fn minimum_cost(s: String, t: String, flip_cost: i32, swap_cost: i32, cross_cost: i32) -&gt; i64
+JavaScript: var minimumCost = function(s, t, flipCost, swapCost, crossCost)
+TypeScript: function minimumCost(s: string, t: string, flipCost: number, swapCost: number, crossCost: number): number</div>
+</div>
+
+<!-- ===================================================================
+     2. PROVENANCE
+     =================================================================== -->
+<div class="section">
+  <h2>Provenance</h2>
+  <table class="prov-table">
+    <tbody>
+      <tr><td>problem_id</td><td>wc0483-Q3-minimum-cost-to-make-two-binary-strings-equal</td></tr>
+      <tr><td>generator_tool</td><td>claude</td></tr>
+      <tr><td>generator_model</td><td>claude-sonnet-4-6</td></tr>
+      <tr><td>generated_at_utc</td><td>2026-05-17T07:43:36.251499+00:00</td></tr>
+      <tr><td>accepted_count</td><td>26</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================================================================
+     3. PROBLEM ESSENCE
+     =================================================================== -->
+<div class="section">
+  <h2>Problem Essence</h2>
+  <p>Given two binary strings <code>s</code> and <code>t</code> of equal length, you must make them equal using three cost-bearing operations: flip any single bit in either string (cost <code>flipCost</code>), swap two positions <em>within</em> the same string (cost <code>swapCost</code>), or swap <code>s[i]</code> with <code>t[i]</code> at the same index across strings (cost <code>crossCost</code>).</p>
+  <p>Only positions where <code>s[i] ≠ t[i]</code> matter: positions where the strings already agree need no work. Each differing position is either a <strong>Type A</strong> mismatch (<code>s='0', t='1'</code>) or a <strong>Type B</strong> mismatch (<code>s='1', t='0'</code>); the key insight is that a within-string swap can simultaneously fix one Type A and one Type B position, while two same-type mismatches require an additional cross-swap to create an opposite pair first.</p>
+  <p>The problem reduces entirely to counting how many Type A and Type B mismatches exist, then greedily choosing the cheapest repair strategy for each category of pair, with no need to track which specific positions are involved.</p>
+</div>
+
+<!-- ===================================================================
+     4. WORKED EXAMPLE
+     =================================================================== -->
+<div class="section">
+  <h2>Worked Example</h2>
+  <p><strong>Input:</strong> <code>s = "01000"</code>, <code>t = "10111"</code>, <code>flipCost = 10</code>, <code>swapCost = 2</code>, <code>crossCost = 2</code> &nbsp;→&nbsp; <strong>Output: 16</strong></p>
+
+  <h3>Step 1 — Classify every position</h3>
+  <table>
+    <thead><tr><th>Index</th><th>s[i]</th><th>t[i]</th><th>Relation</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>0</td><td>1</td><td>differ</td><td><strong>A</strong> (s=0, t=1)</td></tr>
+      <tr><td>1</td><td>1</td><td>0</td><td>differ</td><td><strong>B</strong> (s=1, t=0)</td></tr>
+      <tr><td>2</td><td>0</td><td>1</td><td>differ</td><td><strong>A</strong></td></tr>
+      <tr><td>3</td><td>0</td><td>1</td><td>differ</td><td><strong>A</strong></td></tr>
+      <tr><td>4</td><td>0</td><td>1</td><td>differ</td><td><strong>A</strong></td></tr>
+    </tbody>
+  </table>
+  <p>Counts: <code>a = 4</code> (Type A), <code>b = 1</code> (Type B).</p>
+
+  <h3>Step 2 — Pair opposite-type mismatches</h3>
+  <p><code>paired = min(4, 1) = 1</code>. Cost per pair = <code>min(swapCost, 2·flipCost) = min(2, 20) = 2</code>. Subtotal: <code>1 × 2 = 2</code>.</p>
+
+  <h3>Step 3 — Handle remaining same-type mismatches</h3>
+  <p><code>remaining = |4 − 1| = 3</code>. We pair them in groups of two. Cost per pair of two = <code>min(crossCost + swapCost, 2·flipCost) = min(2+2, 20) = 4</code>. Full pairs: <code>⌊3/2⌋ = 1</code>. Subtotal: <code>1 × 4 = 4</code>.</p>
+
+  <h3>Step 4 — Lone leftover</h3>
+  <p><code>remaining % 2 = 1</code>, so pay <code>flipCost = 10</code> once. Subtotal: 10.</p>
+
+  <h3>Total: 2 + 4 + 10 = 16 ✓</h3>
+
+  <!-- SVG Diagram -->
+  <div class="svg-wrap">
+    <svg width="620" height="210" xmlns="http://www.w3.org/2000/svg"
+         style="font-family:monospace;font-size:12px;display:block;margin:auto">
+
+      <text x="310" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">
+        Mismatch Types and Repair Strategy (Example 1)
+      </text>
+
+      <!-- ---- Opposite pair (positions 0 & 1) ---- -->
+      <text x="90" y="36" text-anchor="middle" font-size="12" font-weight="bold" fill="#2060c0">Opposite Pair</text>
+      <text x="90" y="50" text-anchor="middle" font-size="11" fill="#666">(a=1, b=1)</text>
+
+      <rect x="30" y="58" width="38" height="26" rx="4" fill="#c8daff" stroke="#8899cc" stroke-width="0.7"/>
+      <text x="49" y="75" text-anchor="middle" font-weight="bold">s=0</text>
+      <rect x="30" y="90" width="38" height="26" rx="4" fill="#ffccb0" stroke="#cc8866" stroke-width="0.7"/>
+      <text x="49" y="107" text-anchor="middle" font-weight="bold">t=1</text>
+      <text x="49" y="128" text-anchor="middle" fill="#2060c0" font-weight="bold">A</text>
+
+      <rect x="80" y="58" width="38" height="26" rx="4" fill="#ffccb0" stroke="#cc8866" stroke-width="0.7"/>
+      <text x="99" y="75" text-anchor="middle" font-weight="bold">s=1</text>
+      <rect x="80" y="90" width="38" height="26" rx="4" fill="#c8daff" stroke="#8899cc" stroke-width="0.7"/>
+      <text x="99" y="107" text-anchor="middle" font-weight="bold">t=0</text>
+      <text x="99" y="128" text-anchor="middle" fill="#c04020" font-weight="bold">B</text>
+
+      <text x="138" y="80" text-anchor="middle" font-size="18" fill="#444">→</text>
+      <text x="138" y="96" text-anchor="middle" font-size="10" fill="#2060c0">within-swap</text>
+
+      <rect x="158" y="58" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="177" y="75" text-anchor="middle">s=1</text>
+      <rect x="158" y="90" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="177" y="107" text-anchor="middle">t=1</text>
+      <rect x="204" y="58" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="223" y="75" text-anchor="middle">s=0</text>
+      <rect x="204" y="90" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="223" y="107" text-anchor="middle">t=0</text>
+
+      <text x="120" y="155" text-anchor="middle" font-size="11" fill="#2060c0">Cost: min(swap, 2·flip)</text>
+      <text x="120" y="169" text-anchor="middle" font-size="11" fill="#2060c0">= min(2, 20) = <tspan font-weight="bold">2</tspan></text>
+
+      <!-- divider -->
+      <line x1="253" y1="30" x2="253" y2="185" stroke="#d0d7de" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- ---- Same-type pair (positions 2 & 3) ---- -->
+      <text x="370" y="36" text-anchor="middle" font-size="12" font-weight="bold" fill="#805000">Same-type Pair</text>
+      <text x="370" y="50" text-anchor="middle" font-size="11" fill="#666">(a=2, b=0)</text>
+
+      <rect x="270" y="58" width="38" height="26" rx="4" fill="#c8daff" stroke="#8899cc" stroke-width="0.7"/>
+      <text x="289" y="75" text-anchor="middle" font-weight="bold">s=0</text>
+      <rect x="270" y="90" width="38" height="26" rx="4" fill="#ffccb0" stroke="#cc8866" stroke-width="0.7"/>
+      <text x="289" y="107" text-anchor="middle" font-weight="bold">t=1</text>
+      <text x="289" y="128" text-anchor="middle" fill="#2060c0" font-weight="bold">A</text>
+
+      <rect x="320" y="58" width="38" height="26" rx="4" fill="#c8daff" stroke="#8899cc" stroke-width="0.7"/>
+      <text x="339" y="75" text-anchor="middle" font-weight="bold">s=0</text>
+      <rect x="320" y="90" width="38" height="26" rx="4" fill="#ffccb0" stroke="#cc8866" stroke-width="0.7"/>
+      <text x="339" y="107" text-anchor="middle" font-weight="bold">t=1</text>
+      <text x="339" y="128" text-anchor="middle" fill="#2060c0" font-weight="bold">A</text>
+
+      <text x="378" y="80" text-anchor="middle" font-size="18" fill="#444">→</text>
+      <text x="378" y="94" text-anchor="middle" font-size="10" fill="#805000">cross(i) +</text>
+      <text x="378" y="106" text-anchor="middle" font-size="10" fill="#805000">swap(i,j)</text>
+
+      <rect x="398" y="58" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="417" y="75" text-anchor="middle">s=0</text>
+      <rect x="398" y="90" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="417" y="107" text-anchor="middle">t=0</text>
+      <rect x="444" y="58" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="463" y="75" text-anchor="middle">s=1</text>
+      <rect x="444" y="90" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="463" y="107" text-anchor="middle">t=1</text>
+
+      <text x="370" y="155" text-anchor="middle" font-size="11" fill="#805000">Cost: min(cross+swap, 2·flip)</text>
+      <text x="370" y="169" text-anchor="middle" font-size="11" fill="#805000">= min(4, 20) = <tspan font-weight="bold">4</tspan></text>
+
+      <!-- divider -->
+      <line x1="492" y1="30" x2="492" y2="185" stroke="#d0d7de" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- ---- Lone mismatch (position 4) ---- -->
+      <text x="556" y="36" text-anchor="middle" font-size="12" font-weight="bold" fill="#c02020">Lone Mismatch</text>
+      <text x="556" y="50" text-anchor="middle" font-size="11" fill="#666">(odd leftover)</text>
+
+      <rect x="512" y="58" width="38" height="26" rx="4" fill="#c8daff" stroke="#8899cc" stroke-width="0.7"/>
+      <text x="531" y="75" text-anchor="middle" font-weight="bold">s=0</text>
+      <rect x="512" y="90" width="38" height="26" rx="4" fill="#ffccb0" stroke="#cc8866" stroke-width="0.7"/>
+      <text x="531" y="107" text-anchor="middle" font-weight="bold">t=1</text>
+      <text x="531" y="128" text-anchor="middle" fill="#2060c0" font-weight="bold">A</text>
+
+      <text x="566" y="80" text-anchor="middle" font-size="18" fill="#444">→</text>
+      <text x="566" y="96" text-anchor="middle" font-size="10" fill="#c02020">flip(i)</text>
+
+      <rect x="582" y="58" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="601" y="75" text-anchor="middle">s=1</text>
+      <rect x="582" y="90" width="38" height="26" rx="4" fill="#d4edda" stroke="#66aa77" stroke-width="0.7"/>
+      <text x="601" y="107" text-anchor="middle">t=1</text>
+
+      <text x="556" y="155" text-anchor="middle" font-size="11" fill="#c02020">Cost: flipCost</text>
+      <text x="556" y="169" text-anchor="middle" font-size="11" fill="#c02020">= <tspan font-weight="bold">10</tspan></text>
+
+      <!-- bottom rule + legend -->
+      <line x1="10" y1="182" x2="610" y2="182" stroke="#d0d7de" stroke-width="1"/>
+      <rect x="10" y="190" width="13" height="11" rx="2" fill="#c8daff" stroke="#8899cc" stroke-width="0.5"/>
+      <text x="27" y="200" font-size="11" fill="#555">0-bit</text>
+      <rect x="68" y="190" width="13" height="11" rx="2" fill="#ffccb0" stroke="#cc8866" stroke-width="0.5"/>
+      <text x="85" y="200" font-size="11" fill="#555">1-bit</text>
+      <rect x="126" y="190" width="13" height="11" rx="2" fill="#d4edda" stroke="#66aa77" stroke-width="0.5"/>
+      <text x="143" y="200" font-size="11" fill="#555">matched / fixed</text>
+    </svg>
+  </div>
+
+  <h3>Other Official Examples</h3>
+  <table>
+    <thead><tr><th>Example</th><th>Input Summary</th><th>Expected</th><th>Quick Verification</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>2</td>
+        <td><code>s="001"</code>, <code>t="110"</code>, flip=2, swap=100, cross=100</td>
+        <td>6</td>
+        <td>a=2, b=1 → paired=1, cost_pair=min(100,4)=4 → remaining=1, lone=2 → total 4+2=6. (Effectively flipping all 3 mismatches at flip=2 each; swap is too expensive at 100.)</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><code>s="1010"</code>, <code>t="1010"</code>, flip=5, swap=5, cross=5</td>
+        <td>0</td>
+        <td>No mismatches: a=0, b=0 → cost=0.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================================================================
+     5. DECISION RULE / ALGORITHM
+     =================================================================== -->
+<div class="section">
+  <h2>Decision Rule / Algorithm</h2>
+  <p><strong>Precondition:</strong> <code>n = len(s) = len(t)</code>, all costs are positive integers, <code>1 ≤ n ≤ 10⁵</code>.</p>
+
+  <p><strong>Step 1 — Count mismatches by type.</strong><br>
+  <code>a</code> = number of positions where <code>s[i]='0', t[i]='1'</code> (Type A).<br>
+  <code>b</code> = number of positions where <code>s[i]='1', t[i]='0'</code> (Type B).</p>
+
+  <p><strong>Step 2 — Fix opposite-type pairs.</strong><br>
+  <code>paired = min(a, b)</code>. A Type A and Type B at different indices can be simultaneously fixed by one within-string swap at cost <code>swapCost</code>, or by flipping both bits for cost <code>2·flipCost</code>. Choose the cheaper:<br>
+  <code>cost += paired × min(swapCost, 2·flipCost)</code></p>
+
+  <p><strong>Step 3 — Fix same-type pairs.</strong><br>
+  <code>r = |a − b|</code> mismatches of a single type remain. Two same-type mismatches can be fixed by: (i) cross-swapping one to create an opposite pair, then applying a within-string swap — cost <code>crossCost + swapCost</code>; or (ii) flipping both — cost <code>2·flipCost</code>:<br>
+  <code>cost += (r ÷ 2) × min(crossCost + swapCost, 2·flipCost)</code></p>
+
+  <p><strong>Step 4 — Lone leftover.</strong><br>
+  If <code>r</code> is odd, one isolated mismatch remains. The only option is to flip it:<br>
+  <code>cost += (r % 2) × flipCost</code></p>
+
+  <div class="note">
+    <strong>Why Step 2 before Step 3?</strong> The cost per opposite pair is <code>min(swap, 2·flip)</code>. The cost per same-type pair is <code>min(cross+swap, 2·flip)</code>. Since <code>crossCost ≥ 1 &gt; 0</code>, we have <code>cross+swap ≥ swap</code>, and also <code>2·flip ≥ 2·flip</code>, so <code>min(cross+swap, 2·flip) ≥ min(swap, 2·flip)</code>. Opposite pairs are always at least as cheap to fix, so exhausting them first is globally optimal.
+  </div>
+
+  <p><strong>Complexity:</strong> O(n) time (one pass to count), O(1) extra space. Final arithmetic is a handful of multiplications and comparisons on the three counts.</p>
+</div>
+
+<!-- ===================================================================
+     6. IMPLEMENTATION SKELETON
+     =================================================================== -->
+<div class="section">
+  <h2>Implementation Skeleton</h2>
+  <p>Python 3 — uses the verbatim signature from stats.json:</p>
+<pre>class Solution:
+    def minimumCost(self, s: str, t: str, flipCost: int, swapCost: int, crossCost: int) -> int:
+        # Count the two mismatch types in a single pass
+        a = 0  # s[i]='0', t[i]='1'
+        b = 0  # s[i]='1', t[i]='0'
+        for si, ti in zip(s, t):
+            if si != ti:
+                if si == '0':
+                    a += 1
+                else:
+                    b += 1
+
+        # Step 2: fix min(a,b) opposite-type pairs
+        paired = min(a, b)
+        cost = paired * min(swapCost, 2 * flipCost)
+
+        # Step 3: fix same-type pairs in groups of two
+        r = abs(a - b)
+        cost += (r // 2) * min(crossCost + swapCost, 2 * flipCost)
+
+        # Step 4: lone leftover (r is odd)
+        if r % 2 == 1:
+            cost += flipCost
+
+        return cost</pre>
+  <p>Note: All intermediate values fit in Python's arbitrary-precision integers, but in statically typed languages use <code>long</code> / <code>int64</code> — costs can reach <code>10⁹ × 10⁵ = 10¹⁴</code>.</p>
+</div>
+
+<!-- ===================================================================
+     7. REIMPLEMENTATION CHECKLIST
+     =================================================================== -->
+<div class="section">
+  <h2>Reimplementation Checklist</h2>
+  <ul class="checklist">
+    <li>Count <code>a</code> (Type A: s='0', t='1') and <code>b</code> (Type B: s='1', t='0') in a single O(n) pass; skip positions where <code>s[i] == t[i]</code>.</li>
+    <li>Compute <code>paired = min(a, b)</code> and add <code>paired × min(swapCost, 2·flipCost)</code> to the answer.</li>
+    <li>Compute <code>r = |a - b|</code> (same-type excess); add <code>(r ÷ 2) × min(crossCost + swapCost, 2·flipCost)</code>.</li>
+    <li>If <code>r</code> is odd, add exactly <code>flipCost</code> once for the lone remainder.</li>
+    <li>Use 64-bit integer arithmetic in Java, C++, Go, and Rust — the answer can exceed 2³¹ (up to ~10¹⁴); in Java cast costs to <code>long</code> before multiplication.</li>
+    <li>Return <code>0</code> immediately if both strings are already equal (a=0, b=0); no special-casing is needed since the formula evaluates to 0 automatically.</li>
+    <li>Verify against all three official examples: Example 2 exercises the path where <code>swapCost ≫ flipCost</code> (no swaps used), Example 3 is the zero-cost baseline.</li>
+  </ul>
+</div>
+
+<!-- ===================================================================
+     8. WRONG BUT TEMPTING
+     =================================================================== -->
+<div class="section">
+  <h2>Wrong But Tempting</h2>
+
+  <div class="wrong-item">
+    <div class="wrong-title">1. Flip every mismatch individually</div>
+    <p>Cost = <code>(a + b) × flipCost</code>. This is an O(n) upper bound but ignores paired operations entirely. When <code>swapCost = 1</code> and <code>flipCost = 100</code> with <code>a = b = 50000</code>, the naive cost is 10⁷ while the correct answer is 50000 × 1 = 50000 — 200× too expensive. The formula happens to be correct only when <code>swapCost ≥ 2·flipCost</code> and <code>crossCost + swapCost ≥ 2·flipCost</code> simultaneously.</p>
+  </div>
+
+  <div class="wrong-item">
+    <div class="wrong-title">2. DP over positions tracking a running imbalance</div>
+    <p>A natural DP state might be <code>(position i, net imbalance a−b seen so far)</code>, trying to decide at each step which operation to apply. This creates O(n) positions × O(n) imbalance values = O(n²) = 10¹⁰ states for n = 10⁵ — far too slow. The key reduction is that the specific positions of each mismatch type are interchangeable (any Type A can pair with any Type B), so only the global counts <code>a</code> and <code>b</code> matter, collapsing the entire problem to four arithmetic operations on two integers.</p>
+  </div>
+
+  <div class="wrong-item">
+    <div class="wrong-title">3. Always use cross+swap to fix same-type pairs, never flip</div>
+    <p>A solver might see that a cross swap converts Type A → Type B, enabling an opposite-pair swap, and use this unconditionally for all same-type pairs. When <code>crossCost = 10⁹, swapCost = 10⁹, flipCost = 1</code>, this approach pays <code>2 × 10⁹</code> per pair of same-type mismatches, while the correct answer is <code>2·flipCost = 2</code> — off by a factor of 10⁹. The fix is the single <code>min(crossCost + swapCost, 2·flipCost)</code> comparison. Arithmetic: n = 10⁵ same-type pairs × 2×10⁹ each = 2×10¹⁴, vs correct 10⁵ × 2 = 2×10⁵.</p>
+  </div>
+</div>
+
+<!-- ===================================================================
+     9. ACCEPTED ALGORITHM FAMILIES
+     =================================================================== -->
+<div class="section">
+  <h2>Accepted Algorithm Families</h2>
+
+  <!-- Family 1 -->
+  <div class="family-card fam1">
+    <div class="fam-title">Family 1 — Count + Min-Combinator Formula &nbsp;<span style="font-weight:400;font-size:12px;color:#555">(~22 solutions)</span></div>
+    <div class="fam-chips">
+      <span class="fam-chip">Python</span>
+      <span class="fam-chip">C++</span>
+      <span class="fam-chip">Rust</span>
+      <span class="fam-chip">TypeScript</span>
+      <span class="fam-chip">JavaScript (partial)</span>
+      <span class="fam-chip">Java (partial)</span>
+      <span class="fam-chip">Go (partial)</span>
+    </div>
+    <p>Count a and b, then express the answer as three terms connected by <code>min()</code> combinators. No branching on cost relationships; the formula is correct for all cost orderings. This is the canonical, most concise implementation.</p>
+    <p><em>Excerpt from <span class="fn">accepted__claude-sonnet-4-6__python3.py</span>:</em></p>
+<pre>a = sum(1 for si, ti in zip(s, t) if si == '0' and ti == '1')
+b = sum(1 for si, ti in zip(s, t) if si == '1' and ti == '0')
+cost = 0
+mixed = min(a, b)
+cost += mixed * min(swapCost, 2 * flipCost)
+remaining = abs(a - b)
+cost += (remaining // 2) * min(crossCost + swapCost, 2 * flipCost)
+if remaining % 2 == 1:
+    cost += flipCost
+return cost</pre>
+  </div>
+
+  <!-- Family 2 -->
+  <div class="family-card fam2">
+    <div class="fam-title">Family 2 — Explicit Branch Decomposition &nbsp;<span style="font-weight:400;font-size:12px;color:#555">(4 solutions)</span></div>
+    <div class="fam-chips">
+      <span class="fam-chip">Java</span>
+      <span class="fam-chip">Go</span>
+    </div>
+    <p>Uses explicit <code>if/else</code> to first check whether <code>swapCost ≥ 2·flipCost</code> (flip everything) and then whether <code>crossCost + swapCost ≥ 2·flipCost</code> (flip remaining or convert). Mathematically equivalent to Family 1 but structured as a decision tree. Slightly more verbose; found in kimi-k2.5 Java and minimax Go solutions.</p>
+    <p><em>Excerpt from <span class="fn">accepted__kimi-k2.5-cloud-t0.0-java__java.java</span>:</em></p>
+<pre>if (swapCost >= 2L * flipCost) {
+    return (count01 + count10) * (long) flipCost;
+}
+long pairs = Math.min(count01, count10);
+long cost = pairs * (long) swapCost;
+long diff = Math.abs(count01 - count10);
+if ((long) crossCost + swapCost >= 2L * flipCost) {
+    cost += diff * (long) flipCost;
+} else {
+    long k = diff / 2;
+    cost += k * ((long) crossCost + swapCost);
+    cost += (diff % 2) * (long) flipCost;
+}
+return cost;</pre>
+  </div>
+
+  <!-- Family 3 -->
+  <div class="family-card fam3">
+    <div class="fam-title">Family 3 — Candidate Enumeration &nbsp;<span style="font-weight:400;font-size:12px;color:#555">(2 solutions)</span></div>
+    <div class="fam-chips">
+      <span class="fam-chip">Python</span>
+      <span class="fam-chip">JavaScript</span>
+    </div>
+    <p>Models the problem as: how many cross-swaps <code>k</code> should we apply? Then evaluates cost as a function of <code>k</code> over a small candidate set rather than deriving the closed-form optimum analytically. Correct but circuitous — arrives at the same answer via a minimax over {0, −a, b, ⌊−d/2⌋, ⌊−d/2⌋+1}.</p>
+    <p><em>Excerpt from <span class="fn">accepted__deepseek-v4-flash-cloud-t0.0__python3.py</span>:</em></p>
+<pre>d = a - b
+p = min(swapCost, 2 * flipCost)   # cost per opposite pair
+candidates = {0, -a, b}
+k0 = -d // 2
+candidates.add(k0)
+candidates.add(k0 + 1)
+best = float('inf')
+for k in candidates:
+    if -a <= k <= b:
+        a2 = a + k
+        b2 = b - k
+        cost = crossCost * abs(k) + p * min(a2, b2) + flipCost * abs(a2 - b2)
+        if cost < best:
+            best = cost
+return best</pre>
+  </div>
+</div>
+
+<!-- ===================================================================
+     10. LANGUAGE AND PERFORMANCE NOTES
+     =================================================================== -->
+<div class="section">
+  <h2>Language and Performance Notes</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Language</th>
+        <th>Solutions</th>
+        <th>Runtime range</th>
+        <th>Memory range</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Rust</td>
+        <td>1</td>
+        <td>2 ms</td>
+        <td class="outlier">2.3 MB</td>
+        <td>Fastest memory by far. <span class="fn">accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</span> iterates bytes directly with <code>s.as_bytes()</code> — zero heap allocation, no GC, LLVM-optimized loop.</td>
+      </tr>
+      <tr>
+        <td>Go</td>
+        <td>4</td>
+        <td>0–5 ms</td>
+        <td>8.4–9.4 MB</td>
+        <td>Second fastest; <span class="fn">accepted__qwen3.5-cloud-t1.0-golang__golang.go</span> reports 0 ms. Go's runtime starts lean (8–9 MB), compiles to native code, and byte-iterates strings without allocation.</td>
+      </tr>
+      <tr>
+        <td>C++</td>
+        <td>1</td>
+        <td>10 ms</td>
+        <td>21.3 MB</td>
+        <td><span class="fn">accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</span> uses <code>long long</code> counters and index-based loop. Runtime matches compiled JS/Java; memory is the per-process baseline.</td>
+      </tr>
+      <tr>
+        <td>Java</td>
+        <td>5</td>
+        <td>7–13 ms</td>
+        <td>47.6–48.2 MB</td>
+        <td>JVM baseline dominates memory. <span class="fn">accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</span> is the slowest Java (13 ms) — identical logic to others; likely JIT warmup variance. Memory spread is only 0.6 MB across 5 solutions, confirming the JVM floor is ~48 MB.</td>
+      </tr>
+      <tr class="outlier">
+        <td>JavaScript</td>
+        <td>4</td>
+        <td>10–20 ms</td>
+        <td class="outlier">61.3–62.5 MB</td>
+        <td><strong>Memory outlier (≥3× median 20.2 MB).</strong> <span class="fn">accepted__glm-5-cloud-t0.8-javascript__javascript.js</span> uses 62.5 MB vs Go's 8.5 MB (7.4×). V8/Node.js pre-allocates a large heap and isolate regardless of algorithm complexity. <span class="fn">accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</span> is fastest JS at 10 ms using destructuring swap <code>[A, B] = [B, A]</code>.</td>
+      </tr>
+      <tr class="outlier">
+        <td>TypeScript</td>
+        <td>1</td>
+        <td>10 ms</td>
+        <td class="outlier">62.2 MB</td>
+        <td><strong>Memory outlier (≥3× median).</strong> <span class="fn">accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</span> at 62.2 MB mirrors JavaScript's Node.js baseline for the same reason.</td>
+      </tr>
+      <tr class="outlier">
+        <td>Python 3</td>
+        <td>10</td>
+        <td class="outlier">49–71 ms</td>
+        <td>19.9–20.3 MB</td>
+        <td><strong>Runtime outlier (4–6× cross-family median ~11.5 ms).</strong> All 10 Python solutions use the same O(n) algorithm, but CPython's per-character loop overhead in <code>zip()</code> comparisons is 4–6× slower than JVM or native code. <span class="fn">accepted__claude-sonnet-4-6__python3.py</span> at 71 ms is the slowest (uses <code>sum(generator)</code> twice); <span class="fn">accepted__deepseek-v4-flash-cloud-t0.0__python3.py</span> at 49 ms is fastest (single explicit loop). Memory is uniformly 19.9–20.3 MB (no outliers within Python).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">Cross-family median runtime (all 26 solutions): ~11.5 ms. JavaScript/TypeScript memory at ~62 MB is 3.0–3.1× the median memory (20.2 MB) — just above the 3× outlier threshold. Rust memory at 2.3 MB is 8.8× <em>below</em> the median, the most memory-efficient solution by a wide margin.</div>
+</div>
+
+<!-- ===================================================================
+     11. FAILURE PATTERNS FROM STATS
+     =================================================================== -->
+<div class="section">
+  <h2>Failure Patterns From Stats</h2>
+  <p>The stats.json records <code>failed_submission_status_counts: {}</code> — no failed submissions were logged for this problem across all models. The table below infers likely failure modes from the algorithm's invariants and the accepted code's properties.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Likely Status</th>
+        <th>Root Cause</th>
+        <th>How accepted solutions avoid it</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Wrong Answer</strong></td>
+        <td>Using 2·flipCost for opposite pairs and forgetting <code>min(swapCost, …)</code>, or forgetting that same-type pairs need the cross+swap option.</td>
+        <td>All accepted files explicitly take <code>min(swapCost, 2·flipCost)</code> and <code>min(crossCost+swapCost, 2·flipCost)</code> rather than using one cost unconditionally.</td>
+      </tr>
+      <tr>
+        <td><strong>Wrong Answer</strong></td>
+        <td>Pairing same-type mismatches without using <code>crossCost + swapCost</code> — treating all remaining mismatches as individually flippable only.</td>
+        <td>Step 3 in every accepted solution handles the same-type pairing with the <code>min</code> comparison; skipping it gives the right answer only when <code>crossCost + swapCost ≥ 2·flipCost</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Integer Overflow</strong> (Wrong Answer in Java/C++)</td>
+        <td>Using <code>int</code> for the answer — costs up to 10⁹ × 10⁵ = 10¹⁴, which overflows a 32-bit integer.</td>
+        <td>All Java solutions declare return type <code>long</code> and cast intermediate products: <code>(long) swapCost * count</code>. C++ uses <code>long long</code>. Rust/Go use <code>i64</code>/<code>int64</code> natively.</td>
+      </tr>
+      <tr>
+        <td><strong>Wrong Answer — Off by one</strong></td>
+        <td>Adding <code>flipCost</code> for every remaining same-type mismatch rather than every two, omitting the <code>// 2</code> integer division.</td>
+        <td>The formula is <code>(r // 2) * pair_cost + (r % 2) * flipCost</code>; every accepted solution applies <code>÷2</code> before the same-type pair cost and handles the lone remainder separately.</td>
+      </tr>
+      <tr>
+        <td><strong>Runtime Error</strong></td>
+        <td>Indexing out of bounds when using index-based loops with a manually tracked length, or mishandling empty strings.</td>
+        <td>All accepted solutions use <code>zip(s, t)</code> (Python), range-based loops, or length-guarded index loops — guaranteed to stay within bounds for any valid input.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================================================================
+     12. ALL ACCEPTED SOLUTIONS
+     =================================================================== -->
+<div class="section">
+  <h2>All Accepted Solutions</h2>
+  <p>26 accepted files (count &gt; 6): split into a Canonical subtable (6 representative solutions) and a Variants subtable (remaining 20).</p>
+
+  <h3>Canonical — Most Representative (6 solutions)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>Model</th>
+        <th>Lang</th>
+        <th>Runtime</th>
+        <th>Memory</th>
+        <th>Family</th>
+        <th>Why canonical</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="fn">accepted__claude-sonnet-4-6__python3.py</td>
+        <td>claude-sonnet-4-6</td>
+        <td>Python 3</td>
+        <td>71 ms</td>
+        <td>19.9 MB</td>
+        <td>1</td>
+        <td>Clearest Python expression of the formula; well-commented generator style</td>
+      </tr>
+      <tr>
+        <td class="fn">accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</td>
+        <td>kimi-k2.5-cloud-t0.0-cpp</td>
+        <td>C++</td>
+        <td>10 ms</td>
+        <td>21.3 MB</td>
+        <td>1</td>
+        <td>Only C++ solution; compact 23-line typed implementation</td>
+      </tr>
+      <tr>
+        <td class="fn">accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</td>
+        <td>kimi-k2.5-cloud-t0.0-rust</td>
+        <td>Rust</td>
+        <td>2 ms</td>
+        <td>2.3 MB</td>
+        <td>1</td>
+        <td>Only Rust solution; best memory (2.3 MB) across all 26 accepted files</td>
+      </tr>
+      <tr>
+        <td class="fn">accepted__deepseek-v4-flash-cloud-t0.0__python3.py</td>
+        <td>deepseek-v4-flash-cloud-t0.0</td>
+        <td>Python 3</td>
+        <td>49 ms</td>
+        <td>20.1 MB</td>
+        <td>3</td>
+        <td>Sole representative of candidate-k enumeration; fastest Python at 49 ms</td>
+      </tr>
+      <tr>
+        <td class="fn">accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</td>
+        <td>minimax-m2.7-cloud-t1.0-golang</td>
+        <td>Go</td>
+        <td>4 ms</td>
+        <td>8.5 MB</td>
+        <td>2</td>
+        <td>Explicit branch decomposition; shows the if/else decision tree clearly</td>
+      </tr>
+      <tr>
+        <td class="fn">accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</td>
+        <td>kimi-k2.5-cloud-t0.0-typescript</td>
+        <td>TypeScript</td>
+        <td>10 ms</td>
+        <td>62.2 MB</td>
+        <td>1</td>
+        <td>Only TypeScript solution; illustrates Node.js memory baseline outlier</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Variants — All Remaining (20 solutions)</h3>
+  <table class="compact">
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>Model</th>
+        <th>Lang</th>
+        <th>Runtime</th>
+        <th>Memory</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="fn">accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</td><td>deepseek-v4-flash-cloud-t0.0-java</td><td>Java</td><td>8 ms</td><td>48.2 MB</td></tr>
+      <tr><td class="fn">accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</td><td>deepseek-v4-flash-cloud-t0.0-javascript</td><td>JavaScript</td><td>14 ms</td><td>61.5 MB</td></tr>
+      <tr><td class="fn">accepted__deepseek-v4-pro-cloud-t0.0__python3.py</td><td>deepseek-v4-pro-cloud-t0.0</td><td>Python 3</td><td>58 ms</td><td>20.1 MB</td></tr>
+      <tr><td class="fn">accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</td><td>deepseek-v4-pro-cloud-t0.0-java</td><td>Java</td><td>13 ms</td><td>48.1 MB</td></tr>
+      <tr><td class="fn">accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</td><td>deepseek-v4-pro-cloud-t0.0-javascript</td><td>JavaScript</td><td>10 ms</td><td>61.3 MB</td></tr>
+      <tr><td class="fn">accepted__deepseek-v4-pro-cloud-t1.0__python3.py</td><td>deepseek-v4-pro-cloud-t1.0</td><td>Python 3</td><td>55 ms</td><td>19.9 MB</td></tr>
+      <tr><td class="fn">accepted__glm-5-cloud__python3.py</td><td>glm-5-cloud</td><td>Python 3</td><td>55 ms</td><td>20.3 MB</td></tr>
+      <tr><td class="fn">accepted__glm-5-cloud-t0.0__python3.py</td><td>glm-5-cloud-t0.0</td><td>Python 3</td><td>59 ms</td><td>20.1 MB</td></tr>
+      <tr><td class="fn">accepted__glm-5-cloud-t0.8-java__java.java</td><td>glm-5-cloud-t0.8-java</td><td>Java</td><td>9 ms</td><td>47.8 MB</td></tr>
+      <tr><td class="fn">accepted__glm-5-cloud-t0.8-javascript__javascript.js</td><td>glm-5-cloud-t0.8-javascript</td><td>JavaScript</td><td>20 ms</td><td>62.5 MB</td></tr>
+      <tr><td class="fn">accepted__kimi-k2.5-cloud-t0.0__python3.py</td><td>kimi-k2.5-cloud-t0.0</td><td>Python 3</td><td>51 ms</td><td>20.2 MB</td></tr>
+      <tr><td class="fn">accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</td><td>kimi-k2.5-cloud-t0.0-golang</td><td>Go</td><td>5 ms</td><td>9.4 MB</td></tr>
+      <tr><td class="fn">accepted__kimi-k2.5-cloud-t0.0-java__java.java</td><td>kimi-k2.5-cloud-t0.0-java</td><td>Java</td><td>8 ms</td><td>47.6 MB</td></tr>
+      <tr><td class="fn">accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</td><td>kimi-k2.5-cloud-t0.0-javascript</td><td>JavaScript</td><td>18 ms</td><td>61.9 MB</td></tr>
+      <tr><td class="fn">accepted__minimax-m2.7-cloud__python3.py</td><td>minimax-m2.7-cloud</td><td>Python 3</td><td>59 ms</td><td>20.2 MB</td></tr>
+      <tr><td class="fn">accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</td><td>minimax-m2.7-cloud-t0.0-golang</td><td>Go</td><td>5 ms</td><td>8.5 MB</td></tr>
+      <tr><td class="fn">accepted__qwen3.5-cloud__python3.py</td><td>qwen3.5-cloud</td><td>Python 3</td><td>62 ms</td><td>20.0 MB</td></tr>
+      <tr><td class="fn">accepted__qwen3.5-cloud-t1.0__python3.py</td><td>qwen3.5-cloud-t1.0</td><td>Python 3</td><td>51 ms</td><td>20.2 MB</td></tr>
+      <tr><td class="fn">accepted__qwen3.5-cloud-t1.0-golang__golang.go</td><td>qwen3.5-cloud-t1.0-golang</td><td>Go</td><td>0 ms</td><td>8.4 MB</td></tr>
+      <tr><td class="fn">accepted__qwen3.5-cloud-t1.0-java__java.java</td><td>qwen3.5-cloud-t1.0-java</td><td>Java</td><td>7 ms</td><td>47.9 MB</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

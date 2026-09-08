@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wc0485-Q4 -- Lexicographically Smallest String After Deleting Duplicate Characters</title>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- 1. HEADER CARD                                               -->
+<!-- ============================================================ -->
+<div class="header-card">
+  <h1>Lexicographically Smallest String After Deleting Duplicate Characters</h1>
+  <div style="margin:0.45rem 0;">
+    <span class="badge badge-hard">Hard</span>
+    <span class="badge badge-count">10 accepted</span>
+    <span style="font-size:0.8rem;color:#b0c8e0;">wc0485-Q4</span>
+  </div>
+  <div class="sig-box">Python 3:
+class Solution:
+    def lexSmallestAfterDeletion(self, s: str) -> str:
+
+C++:
+class Solution {
+public:
+    string lexSmallestAfterDeletion(string s) { ... }
+};
+
+Java:
+class Solution {
+    public String lexSmallestAfterDeletion(String s) { ... }
+}
+
+JavaScript:
+var lexSmallestAfterDeletion = function(s) { ... };
+
+TypeScript:
+function lexSmallestAfterDeletion(s: string): string { ... };
+
+Go:
+func lexSmallestAfterDeletion(s string) string { ... }
+
+Rust:
+impl Solution {
+    pub fn lex_smallest_after_deletion(s: String) -> String { ... }
+}</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 2. PROVENANCE                                                -->
+<!-- ============================================================ -->
+<h2>Provenance</h2>
+<table class="prov-table">
+  <tr><td>problem_id</td><td>wc0485-Q4-lexicographically-smallest-string-after-deleting-duplicate-characters</td></tr>
+  <tr><td>generator_tool</td><td>claude</td></tr>
+  <tr><td>generator_model</td><td>claude-sonnet-4-6</td></tr>
+  <tr><td>generated_at_utc</td><td>2026-05-20T07:45:22.486678+00:00</td></tr>
+  <tr><td>accepted_count</td><td>10</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 3. PROBLEM ESSENCE                                           -->
+<!-- ============================================================ -->
+<h2>Problem Essence</h2>
+<p>
+  Given a string <code>s</code> of lowercase letters, you may repeatedly delete one copy
+  of any letter that currently appears more than once. The operation preserves order and
+  can be applied any number of times. Return the lexicographically smallest string
+  reachable by any sequence of such deletions.
+</p>
+<p>
+  Every distinct letter in <code>s</code> must appear at least once in the result --
+  you can only delete a letter if a duplicate remains. Because duplicates provide
+  "free" deletions, the optimal strategy picks characters greedily from left to right,
+  always choosing the smallest letter whose selection still leaves every other
+  required letter reachable later in the string.
+</p>
+
+<!-- ============================================================ -->
+<!-- 4. WORKED EXAMPLE                                            -->
+<!-- ============================================================ -->
+<h2>Worked Example</h2>
+
+<p><strong>Input:</strong> <code>s = "aaccb"</code> &nbsp; <strong>Expected output:</strong> <code>"aacb"</code></p>
+
+<p>Precompute: distinct chars = {a, b, c}. Last occurrence indices: a->1, c->3, b->4.</p>
+
+<!-- SVG: greedy window steps for "aaccb" -->
+<svg width="600" height="210" viewBox="0 0 600 210" style="display:block;margin:0.8rem 0;background:#f9f9f4;border:1px solid #ccc;border-radius:5px;">
+  <text x="12" y="22" font-size="12" fill="#555" font-family="monospace">s = "aaccb"  greedy selection trace</text>
+
+  <!-- character boxes row -->
+  <g transform="translate(40, 40)">
+    <!-- index labels -->
+    <text x="15"  y="14" font-size="11" fill="#888" font-family="monospace" text-anchor="middle">0</text>
+    <text x="75"  y="14" font-size="11" fill="#888" font-family="monospace" text-anchor="middle">1</text>
+    <text x="135" y="14" font-size="11" fill="#888" font-family="monospace" text-anchor="middle">2</text>
+    <text x="195" y="14" font-size="11" fill="#888" font-family="monospace" text-anchor="middle">3</text>
+    <text x="255" y="14" font-size="11" fill="#888" font-family="monospace" text-anchor="middle">4</text>
+    <!-- boxes -->
+    <rect x="0"   y="20" width="30" height="30" rx="3" fill="#ddeeff" stroke="#6699cc" stroke-width="1.5"/>
+    <rect x="60"  y="20" width="30" height="30" rx="3" fill="#ddeeff" stroke="#6699cc" stroke-width="1.5"/>
+    <rect x="120" y="20" width="30" height="30" rx="3" fill="#ddeeff" stroke="#6699cc" stroke-width="1.5"/>
+    <rect x="180" y="20" width="30" height="30" rx="3" fill="#ddeeff" stroke="#6699cc" stroke-width="1.5"/>
+    <rect x="240" y="20" width="30" height="30" rx="3" fill="#ddeeff" stroke="#6699cc" stroke-width="1.5"/>
+    <!-- chars -->
+    <text x="15"  y="40" font-size="16" fill="#1a3a6a" font-family="monospace" text-anchor="middle">a</text>
+    <text x="75"  y="40" font-size="16" fill="#1a3a6a" font-family="monospace" text-anchor="middle">a</text>
+    <text x="135" y="40" font-size="16" fill="#1a3a6a" font-family="monospace" text-anchor="middle">c</text>
+    <text x="195" y="40" font-size="16" fill="#1a3a6a" font-family="monospace" text-anchor="middle">c</text>
+    <text x="255" y="40" font-size="16" fill="#1a3a6a" font-family="monospace" text-anchor="middle">b</text>
+  </g>
+
+  <!-- Step 1: window [0,1], pick a at 0 -->
+  <g transform="translate(40, 95)">
+    <text x="0" y="13" font-size="11" fill="#555" font-family="monospace">step 1:</text>
+    <rect x="52" y="0" width="90" height="20" rx="3" fill="none" stroke="#c05000" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="55" y="13" font-size="10" fill="#c05000" font-family="monospace">window [0,1]</text>
+    <rect x="0" y="0" width="30" height="20" rx="3" fill="#ffcc66" stroke="#c05000" stroke-width="2"/>
+    <text x="15" y="13" font-size="13" fill="#7a3000" font-family="monospace" text-anchor="middle">a</text>
+    <text x="155" y="13" font-size="10" fill="#333" font-family="monospace">pick a(0), need={b,c}, result="a"</text>
+  </g>
+
+  <!-- Step 2: window [1,3], pick a at 1 -->
+  <g transform="translate(40, 120)">
+    <text x="0" y="13" font-size="11" fill="#555" font-family="monospace">step 2:</text>
+    <rect x="112" y="0" width="90" height="20" rx="3" fill="none" stroke="#c05000" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="115" y="13" font-size="10" fill="#c05000" font-family="monospace">window [1,3]</text>
+    <rect x="60" y="0" width="30" height="20" rx="3" fill="#ffcc66" stroke="#c05000" stroke-width="2"/>
+    <text x="75" y="13" font-size="13" fill="#7a3000" font-family="monospace" text-anchor="middle">a</text>
+    <text x="215" y="13" font-size="10" fill="#333" font-family="monospace">pick a(1), need={b,c}, result="aa"</text>
+  </g>
+
+  <!-- Step 3: window [2,3], pick c at 2 -->
+  <g transform="translate(40, 145)">
+    <text x="0" y="13" font-size="11" fill="#555" font-family="monospace">step 3:</text>
+    <rect x="172" y="0" width="90" height="20" rx="3" fill="none" stroke="#c05000" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="175" y="13" font-size="10" fill="#c05000" font-family="monospace">window [2,3]</text>
+    <rect x="120" y="0" width="30" height="20" rx="3" fill="#ffcc66" stroke="#c05000" stroke-width="2"/>
+    <text x="135" y="13" font-size="13" fill="#7a3000" font-family="monospace" text-anchor="middle">c</text>
+    <text x="275" y="13" font-size="10" fill="#333" font-family="monospace">pick c(2), need={b}, result="aac"</text>
+  </g>
+
+  <!-- Step 4: window [3,4], pick b at 4 -->
+  <g transform="translate(40, 170)">
+    <text x="0" y="13" font-size="11" fill="#555" font-family="monospace">step 4:</text>
+    <rect x="232" y="0" width="90" height="20" rx="3" fill="none" stroke="#c05000" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="235" y="13" font-size="10" fill="#c05000" font-family="monospace">window [3,4]</text>
+    <rect x="240" y="0" width="30" height="20" rx="3" fill="#ffcc66" stroke="#c05000" stroke-width="2"/>
+    <text x="255" y="13" font-size="13" fill="#7a3000" font-family="monospace" text-anchor="middle">b</text>
+    <text x="338" y="13" font-size="10" fill="#333" font-family="monospace">pick b(4), need={}, result="aacb"</text>
+  </g>
+</svg>
+
+<p><strong>Step-by-step trace:</strong></p>
+<p>
+  Before each pick, compute <code>limit = min(last_occurrence[c]  for c in need)</code>. This is the
+  rightmost index we may choose at while still guaranteeing every remaining needed char has
+  at least one copy after our pick.
+</p>
+<ul>
+  <li><strong>Step 1:</strong> need={a,b,c}. limit = min(last[a]=1, last[b]=4, last[c]=3) = 1.
+    Scan a..z in [cur=0, limit=1]: 'a' at index 0 is in range. After picking it, suffix s[1:]="accb"
+    covers {a,c,b} -- all remaining needed chars are reachable. Pick 'a'. need={b,c}, cur=1, result="a".</li>
+  <li><strong>Step 2:</strong> need={b,c}. limit = min(last[b]=4, last[c]=3) = 3.
+    Scan a..z in [cur=1, 3]: 'a' at index 1 is in range and suffix s[2:]="ccb" covers {c,b}. Pick 'a'.
+    need={b,c} unchanged (a was already satisfied), cur=2, result="aa".</li>
+  <li><strong>Step 3:</strong> need={b,c}. limit = min(4, 3) = 3.
+    'a' exhausted (last 'a' was at 1 &lt; cur=2). 'b' at index 4 &gt; limit=3, skip.
+    'c' at index 2 &lt;= 3. After picking c(2), suffix s[3:]="cb" covers {b}. Pick 'c'.
+    need={b}, cur=3, result="aac".</li>
+  <li><strong>Step 4:</strong> need={b}. limit = last[b] = 4.
+    'b' at index 4 &lt;= 4. After picking b(4), suffix s[5:]="" -- no more chars needed. Pick 'b'.
+    need={}, result="aacb". Done.</li>
+</ul>
+<p>Result: <code>"aacb"</code>. Correct.</p>
+
+<h3>Other Official Examples</h3>
+<table>
+  <tr><th>Input</th><th>Expected</th><th>Confirmation</th></tr>
+  <tr>
+    <td><code>"z"</code></td>
+    <td><code>"z"</code></td>
+    <td>Only one distinct char, no duplicates exist, no deletion possible -- return "z" as-is.</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 5. DECISION RULE / ALGORITHM                                 -->
+<!-- ============================================================ -->
+<h2>Decision Rule / Algorithm</h2>
+
+<p>
+  <strong>Rule:</strong> Greedily build the result one character at a time. At each step,
+  compute a <em>deadline</em>: <code>limit = min over all still-needed chars c of last_occurrence(c)</code>.
+  This is the latest index you may pick at without permanently losing some needed char. Within
+  the window <code>[cur, limit]</code>, pick the lexicographically smallest available character
+  whose earliest occurrence in that window keeps all other needed chars reachable.
+</p>
+<p>
+  <strong>Preconditions:</strong>
+</p>
+<ul>
+  <li>Every distinct letter in the original string must appear exactly once in the final result at minimum
+    (duplicates of already-satisfied letters may optionally appear again if they fit before the current limit).</li>
+  <li>A character <code>c</code> at position <code>j</code> is "feasible" iff
+    <code>suffix_mask[j+1]</code> covers every still-needed char other than <code>c</code>.</li>
+</ul>
+<p>
+  <strong>Why the limit is tight:</strong> Suppose <code>limit = last_occurrence(x)</code> for some
+  needed char <code>x</code>. If we pick a position <code>j &gt; limit</code>, then <code>j &gt; last_occurrence(x)</code>,
+  meaning <code>x</code> has no remaining occurrence after <code>j</code> and can never be added -- contradiction.
+  Picking at or before <code>limit</code> guarantees <code>x</code> is still reachable.
+</p>
+<p>
+  <strong>Complexity:</strong> O(26 * n) time (at most 26 outer iterations, each scanning at most 26 letters
+  and advancing a pointer over n positions total), O(26 * n) space for the optional next-occurrence table
+  or O(n) space for the position-list variant.
+</p>
+
+<!-- ============================================================ -->
+<!-- 6. IMPLEMENTATION SKELETON                                   -->
+<!-- ============================================================ -->
+<h2>Implementation Skeleton</h2>
+
+<pre>
+class Solution:
+    def lexSmallestAfterDeletion(self, s: str) -> str:
+        n = len(s)
+        pos = [[] for _ in range(26)]   # positions of each letter
+        last = [-1] * 26                # last occurrence index
+        for i, ch in enumerate(s):
+            c = ord(ch) - 97
+            pos[c].append(i)
+            last[c] = i
+
+        need = [last[c] >= 0 for c in range(26)]  # True if c must appear in result
+        ptr  = [0] * 26   # next unconsumed position pointer per letter
+        cur  = 0          # current scan start
+        res  = []
+
+        while any(need):
+            # Deadline: picking past limit loses the most-constrained needed char
+            limit = min(last[c] for c in range(26) if need[c])
+
+            for c in range(26):
+                # Advance pointer to first occurrence at or after cur
+                while ptr[c] < len(pos[c]) and pos[c][ptr[c]] < cur:
+                    ptr[c] += 1
+                if ptr[c] >= len(pos[c]):
+                    continue
+                j = pos[c][ptr[c]]
+                if j > limit:
+                    continue  # no occurrence of c within deadline
+
+                # Feasibility: all other needed chars must still appear after j
+                ok = all(
+                    not need[d] or last[d] > j
+                    for d in range(26) if d != c
+                )
+                if ok:
+                    res.append(chr(c + 97))
+                    if need[c]:
+                        need[c] = False   # c is satisfied
+                    cur = j + 1
+                    ptr[c] += 1
+                    break
+
+        return ''.join(res)
+</pre>
+
+<div class="note">
+  The inner feasibility check (<code>last[d] &gt; j</code>) is equivalent to testing whether
+  <code>suffix_mask[j+1]</code> covers all remaining needed letters -- both views appear in
+  accepted solutions. The <code>last[d] &gt; j</code> form avoids precomputing suffix bitmasks.
+</div>
+
+<!-- ============================================================ -->
+<!-- 7. REIMPLEMENTATION CHECKLIST                                -->
+<!-- ============================================================ -->
+<h2>Reimplementation Checklist</h2>
+
+<ul class="checklist">
+  <li>Precompute the last occurrence index for every distinct letter in <code>s</code>.</li>
+  <li>Track a "need" set / bitmask of letters not yet placed in the result.</li>
+  <li>Before each pick, recompute <code>limit = min(last[c] for c in need)</code> -- this is your hard deadline.</li>
+  <li>Scan letters 'a' to 'z' in order; for each, find its earliest position at or after <code>cur</code>.</li>
+  <li>Accept the first letter whose earliest position is &lt;= <code>limit</code> AND whose suffix covers all
+      other still-needed letters (feasibility check).</li>
+  <li>After picking position <code>j</code>, set <code>cur = j + 1</code> and remove the letter from <code>need</code>
+      only if this was its last required inclusion.</li>
+  <li>Continue until <code>need</code> is empty; extra copies of already-satisfied letters can appear
+      naturally because they pass the feasibility check too.</li>
+  <li>Edge case: if <code>s</code> has only one character or all characters are distinct, return <code>s</code>
+      (the algorithm handles this correctly -- each letter is needed exactly once and no deletion is ever possible).</li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 8. WRONG BUT TEMPTING                                        -->
+<!-- ============================================================ -->
+<h2>Wrong But Tempting</h2>
+
+<div class="warn">
+  <strong>Approach 1: Apply "Remove Duplicate Letters" (LC 316) directly.</strong><br>
+  LC 316 builds the lexicographically smallest subsequence with exactly one copy of each letter.
+  For <code>"aaccb"</code> that gives <code>"acb"</code>, but the correct answer is <code>"aacb"</code>.
+  The difference: here we may keep multiple copies of a letter when doing so produces a
+  lexicographically smaller prefix. The constraint is only that we cannot reduce any letter below 1
+  copy, not that we must reduce it to exactly 1. Complexity of the wrong approach: O(n) time,
+  but systematically produces Wrong Answer whenever an extra copy of a small letter appears
+  before a needed larger letter.
+</div>
+
+<div class="warn">
+  <strong>Approach 2: Greedy scan for globally smallest char with no limit constraint.</strong><br>
+  At each step, scan <code>s[cur:]</code> for the smallest character and pick its first occurrence.
+  This ignores the deadline: for <code>"bac"</code>, need={a,b,c}; picking 'a' at index 1 sets
+  cur=2, but 'b' only exists at index 0 &lt; cur -- it can never be placed. Result: wrong or
+  infinite loop. Complexity: O(n) per step, O(26) steps = O(26n) ~ O(n). Fast but wrong;
+  14+ Wrong Answer verdicts in this benchmark confirm the feasibility check is mandatory.
+</div>
+
+<div class="warn">
+  <strong>Approach 3: O(n^2) naive feasibility check per candidate position.</strong><br>
+  At each of the at most n picks, for each candidate position j scan s[j:] (O(n)) to verify
+  every needed char is still present. Total: O(n) candidates * O(n) scan = O(n^2).
+  For n = 10^5: 10^5 * 10^5 = 10^10 ops -- TLE. The fix is to precompute either
+  <code>suffix_mask[i]</code> (bitmask, O(26n) space) or <code>last[c]</code> (O(26) space)
+  so each feasibility check is O(26) rather than O(n).
+</div>
+
+<!-- ============================================================ -->
+<!-- 9. ACCEPTED ALGORITHM FAMILIES                               -->
+<!-- ============================================================ -->
+<h2>Accepted Algorithm Families</h2>
+
+<div class="family-block">
+  <div class="family-header">Family A -- Greedy + last[] + limit (position-list variant)</div>
+  <div class="family-body">
+    <p>Files: <code>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</code>,
+    <code>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</code>,
+    <code>accepted__qwen3.5-cloud-t1.0__python3.py</code>,
+    <code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code>.</p>
+    <p>Precompute per-letter position lists and last-occurrence array. Each iteration: compute
+    <code>limit</code>, scan 'a'..'z' advancing per-letter pointers, accept first char with
+    position in [cur, limit] that passes the <code>last[d] &gt;= chosen_pos</code> feasibility check.</p>
+    <p><strong>Excerpt</strong> (from <code>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</code>, core loop):</p>
+<pre>
+while any(required):
+    for c in range(26):
+        while ptr[c] < len(pos[c]) and pos[c][ptr[c]] < cur_pos:
+            ptr[c] += 1
+        if ptr[c] >= len(pos[c]): continue
+        idx = pos[c][ptr[c]]
+        ok = True
+        for ch in range(26):
+            if required[ch] and last[ch] < idx:
+                ok = False
+                break
+        if ok:
+            res.append(chr(c + 97))
+            if required[c]: required[c] = False
+            ptr[c] += 1
+            cur_pos = idx + 1
+            break
+</pre>
+  </div>
+</div>
+
+<div class="family-block">
+  <div class="family-header">Family B -- Greedy + suffix bitmask + next-occurrence table</div>
+  <div class="family-body">
+    <p>Files: <code>accepted__minimax-m2.7-cloud__python3.py</code>,
+    <code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code>,
+    <code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code>,
+    <code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code>.</p>
+    <p>Precompute <code>suffixMask[i]</code> (26-bit OR over s[i:]) and <code>next[i][c]</code>
+    (smallest index &gt;= i of letter c). Feasibility check is a bitmask AND -- O(1) per candidate.
+    The Go solutions in this family use a 2D array <code>[n+1][26]int</code>.</p>
+    <p><strong>Excerpt</strong> (from <code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code>, main loop):</p>
+<pre>
+for need != 0 {
+    for c := 0; c < 26; c++ {
+        j := next[pos][c]
+        if j == -1 { continue }
+        union := suffixMask[j+1] | (1 << c)
+        if (union & need) == need {
+            res = append(res, byte('a'+c))
+            pos = j + 1
+            need &^= (1 << c)
+            break
+        }
+    }
+}
+</pre>
+  </div>
+</div>
+
+<div class="family-block">
+  <div class="family-header">Family C -- Monotonic Stack</div>
+  <div class="family-body">
+    <p>Files: <code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code>.</p>
+    <p>Maintains a monotonic stack similar to "Remove Duplicate Letters" (LC 316), but tracks
+    <code>inStack[c]</code> (copies of c currently on stack) and <code>count[c]</code> (remaining
+    copies not yet processed). A larger top is popped only if it has duplicates either remaining
+    in <code>count</code> or extra copies already on the stack. A post-processing pass removes
+    trailing duplicates. This is the most concise approach but the hardest to reason about
+    for correctness.</p>
+    <p><strong>Excerpt</strong> (from <code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code>):</p>
+<pre>
+for (const c of s) {
+    const idx = c.charCodeAt(0) - 'a'.charCodeAt(0);
+    while (stack.length > 0) {
+        const topIdx = stack[stack.length-1].charCodeAt(0) - 'a'.charCodeAt(0);
+        if (topIdx <= idx) break;
+        if (count[topIdx] > 0 || inStack[topIdx] > 1) {
+            stack.pop(); inStack[topIdx]--;
+        } else { break; }
+    }
+    stack.push(c); inStack[idx]++; count[idx]--;
+}
+while (stack.length > 0) {
+    const lastIdx = stack[stack.length-1].charCodeAt(0) - 'a'.charCodeAt(0);
+    if (inStack[lastIdx] > 1) { stack.pop(); inStack[lastIdx]--; }
+    else break;
+}
+</pre>
+  </div>
+</div>
+
+<div class="family-block">
+  <div class="family-header">Family D -- Sliding Window Minimum Deque</div>
+  <div class="family-body">
+    <p>Files: <code>accepted__claude-sonnet-4-6__python3.py</code>.</p>
+    <p>Maintains a monotonic deque of indices representing a sliding-window minimum over s.
+    The deque is expanded lazily up to the current <code>min_last</code> deadline and its
+    front (after discarding consumed positions) gives the leftmost minimum in [prev_pos+1, min_last].
+    Elegant O(n) amortized expansion, but functionally equivalent to Family A/B.</p>
+    <p><strong>Excerpt</strong> (from <code>accepted__claude-sonnet-4-6__python3.py</code>, main loop):</p>
+<pre>
+while unsatisfied:
+    min_last = min(last_occ[c] for c in unsatisfied)
+    while window_right < min_last:
+        window_right += 1
+        while dq and s[dq[-1]] > s[window_right]:
+            dq.pop()
+        dq.append(window_right)
+    while dq[0] <= prev_pos:
+        dq.popleft()
+    p = dq[0]
+    result.append(s[p])
+    unsatisfied.discard(s[p])
+    prev_pos = p
+</pre>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 10. LANGUAGE AND PERFORMANCE NOTES                           -->
+<!-- ============================================================ -->
+<h2>Language and Performance Notes</h2>
+
+<table>
+  <tr><th>Language</th><th>Count</th><th>Runtime range</th><th>Memory range</th></tr>
+  <tr><td>Python 3</td><td>5</td><td>838 ms -- 3170 ms</td><td>24.2 MB -- 43.9 MB</td></tr>
+  <tr><td>JavaScript</td><td>3</td><td>74 ms -- 92 ms</td><td>70.1 MB -- 81 MB</td></tr>
+  <tr><td>Go</td><td>2</td><td>143 ms -- 204 ms</td><td>64.2 MB -- 89 MB</td></tr>
+</table>
+
+<p><strong>No strict outliers</strong> (no solution reaches &gt;= 3x the language-median runtime or memory).</p>
+
+<h3>Specific file notes</h3>
+<ul>
+  <li>
+    <code>accepted__qwen3.5-cloud-t1.0__python3.py</code> -- fastest Python at 838 ms / 25.2 MB.
+    Uses the straightforward position-list + limit approach with a plain Python loop; likely benefits
+    from minimal object overhead (no extra data structures beyond lists and booleans).
+  </li>
+  <li>
+    <code>accepted__minimax-m2.7-cloud__python3.py</code> -- slowest Python at 3170 ms (2.7x the
+    median 1174 ms) and highest Python memory at 43.9 MB. It allocates a <code>next_idx</code> table
+    of n+1 rows each being a 26-element <code>array('i')</code>, and copies each row from the
+    previous one; this O(26n) allocation and row-copy loop likely dominates the runtime, possibly
+    because Python's object model makes per-row copies expensive even with <code>array('i')</code>.
+    Not a formal outlier (3170 &lt; 3x*1174 = 3522) but notably slower than peers using the same
+    algorithmic approach in Go or JavaScript.
+  </li>
+  <li>
+    <code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code> -- fastest Go at 143 ms / 64.2 MB.
+    Compact suffix-mask + next-table in pure Go with pre-allocated slice of <code>[26]int</code> arrays;
+    Go's value-type arrays avoid per-element pointer chasing, contributing to cache-friendly traversal.
+  </li>
+  <li>
+    <code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code> -- larger Go memory at 89 MB
+    vs. kimi's 64.2 MB (1.4x, below the outlier threshold). The minimax Go solution uses 82 lines
+    and a similar <code>nextPos</code> table; the extra memory is possibly due to an additional
+    <code>freq</code> array and the longer feasibility inner loop allocating slightly more on the
+    Go heap.
+  </li>
+  <li>
+    <code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code> -- fastest
+    JavaScript at 74 ms / 72.6 MB. Uses the last-occurrence feasibility check (no suffix-mask
+    precompute), and the simpler per-iteration inner scan is fast in V8 due to JIT-friendly
+    tight loops over 26-element arrays.
+  </li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 11. FAILURE PATTERNS FROM STATS                              -->
+<!-- ============================================================ -->
+<h2>Failure Patterns From Stats</h2>
+
+<table>
+  <tr><th>Status</th><th>Count</th><th>Likely root cause (inferred from accepted invariants)</th></tr>
+  <tr>
+    <td>Wrong Answer</td>
+    <td>13</td>
+    <td>
+      <ul style="margin:0;padding-left:1.2rem;">
+        <li>Missing feasibility check -- picking the smallest char greedily without verifying
+            every other needed char still appears in the suffix.</li>
+        <li>No limit / deadline computation -- picking past the last occurrence of a needed
+            char, making it impossible to include later.</li>
+        <li>Off-by-one in limit: using <code>limit = min(last[c]) - 1</code> or
+            <code>pos &lt; limit</code> instead of <code>pos &lt;= limit</code>, causing
+            valid positions to be skipped.</li>
+        <li>Treating the problem as strict deduplication (keep exactly one of each) rather
+            than allowing extra copies of already-satisfied letters.</li>
+        <li>Applying LC 316 "Remove Duplicate Letters" directly -- correct structure but
+            wrong invariant (produces "acb" for "aaccb" instead of "aacb").</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>Runtime Error</td>
+    <td>1</td>
+    <td>
+      Likely an index-out-of-bounds when advancing a pointer past the end of a position list,
+      or an infinite loop that times out -- e.g., failing to advance <code>ptr[c]</code> after
+      picking a position, so the same index is reconsidered and the <code>need</code> set never
+      empties.
+    </td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 12. ALL ACCEPTED SOLUTIONS                                   -->
+<!-- ============================================================ -->
+<h2>All Accepted Solutions</h2>
+
+<h3>Canonical (most representative across families and languages)</h3>
+<table>
+  <tr>
+    <th>File</th><th>Model</th><th>Lang</th><th>Family</th><th>Runtime</th><th>Memory</th><th>Lines</th>
+  </tr>
+  <tr>
+    <td><code>accepted__claude-sonnet-4-6__python3.py</code></td>
+    <td>claude-sonnet-4-6</td>
+    <td>Python 3</td>
+    <td>D -- deque sliding-window min</td>
+    <td>1001 ms</td>
+    <td>24.2 MB</td>
+    <td>36</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0__python3.py</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0</td>
+    <td>Python 3</td>
+    <td>A -- last[] + limit</td>
+    <td>1174 ms</td>
+    <td>25.5 MB</td>
+    <td>53</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud__python3.py</code></td>
+    <td>minimax-m2.7-cloud</td>
+    <td>Python 3</td>
+    <td>B -- suffix bitmask + next[]</td>
+    <td>3170 ms</td>
+    <td>43.9 MB</td>
+    <td>38</td>
+  </tr>
+  <tr>
+    <td><code>accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</code></td>
+    <td>kimi-k2.5-cloud-t0.0-golang</td>
+    <td>Go</td>
+    <td>B -- suffix bitmask + next[]</td>
+    <td>143 ms</td>
+    <td>64.2 MB</td>
+    <td>44</td>
+  </tr>
+  <tr>
+    <td><code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code></td>
+    <td>glm-5-cloud-t0.8-javascript</td>
+    <td>JavaScript</td>
+    <td>C -- monotonic stack</td>
+    <td>92 ms</td>
+    <td>70.1 MB</td>
+    <td>53</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0-javascript</td>
+    <td>JavaScript</td>
+    <td>B -- suffix bitmask + next[]</td>
+    <td>90 ms</td>
+    <td>81 MB</td>
+    <td>53</td>
+  </tr>
+</table>
+
+<h3>Variants (remaining accepted files)</h3>
+<table>
+  <tr><th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th></tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-pro-cloud-t0.0__python3.py</code></td>
+    <td>deepseek-v4-pro-cloud-t0.0</td>
+    <td>Python 3</td>
+    <td>1260 ms</td>
+    <td>25.3 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__qwen3.5-cloud-t1.0__python3.py</code></td>
+    <td>qwen3.5-cloud-t1.0</td>
+    <td>Python 3</td>
+    <td>838 ms</td>
+    <td>25.2 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</code></td>
+    <td>deepseek-v4-flash-cloud-t0.0-javascript</td>
+    <td>JavaScript</td>
+    <td>74 ms</td>
+    <td>72.6 MB</td>
+  </tr>
+  <tr>
+    <td><code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code></td>
+    <td>minimax-m2.7-cloud-t0.0-golang</td>
+    <td>Go</td>
+    <td>204 ms</td>
+    <td>89 MB</td>
+  </tr>
+</table>
+
+</body>
+</html>

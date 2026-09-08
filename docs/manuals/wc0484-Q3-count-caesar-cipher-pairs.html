@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Count Caesar Cipher Pairs – Manual</title>
+  <style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  color:#1a1a1a;
+  background:#f5f5ef;
+  padding:1.5rem;
+  max-width:980px;
+  margin:0 auto
+}
+.page,.container{width:100%}
+
+/* ── Typography ── */
+h1{font-size:1.5rem;font-weight:700;line-height:1.25}
+h2{font-size:1.08rem;font-weight:700;margin:2rem 0 0.6rem;
+   border-bottom:2px solid #d0d0c4;padding-bottom:0.3rem;color:#1a3a5c}
+h3{font-size:0.96rem;font-weight:700;margin:1.1rem 0 0.4rem;color:#2d6a9f}
+p{margin:0 0 0.65rem}
+a{color:#1a6a9e}
+ul,ol{margin:0.35rem 0 0.6rem 1.5rem}
+li{margin-bottom:0.2rem}
+hr{border:none;border-top:1px solid #d4d4c8;margin:1.2rem 0}
+
+/* ── Header card ── */
+.header-card,.hcard,header.header-card,section.header-card{
+  background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%);
+  color:#fff;
+  border-radius:10px;
+  padding:1.4rem 1.7rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.22)
+}
+.header-card h1,.hcard h1{color:#fff;margin-bottom:0.4rem;font-size:1.4rem}
+.header-card h2,.hcard h2{color:rgba(255,255,255,.75);border-bottom:none;font-size:0.85rem;margin:0}
+.header-card .meta,.hcard .meta{
+  display:flex;flex-wrap:wrap;gap:10px;font-size:0.84rem;opacity:.9;margin-top:0.45rem
+}
+
+/* ── Signature boxes ── */
+.sig-box,.sig-block,.sig,.sigbox{
+  background:rgba(0,0,0,0.24);
+  border-left:3px solid #f5a623;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin-top:0.85rem;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+  font-size:0.79rem;
+  color:#d0e8ff;
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+/* ── Badges & pills ── */
+.badge,.pill{
+  display:inline-block;
+  padding:0.13em 0.55em;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:.03em;
+  margin-right:0.3rem;
+  vertical-align:middle;
+  background:rgba(255,255,255,0.18);
+  color:#fff
+}
+/* Coloured variants — override white default when outside header */
+.badge-medium{background:#e8f2fd;color:#0b6bcb}
+.badge-hard{background:#fef2e8;color:#b54708}
+.badge-count,.badge-g,.badge-accepted,.badge-green{background:#e8f5e9;color:#2a6e2a}
+.badge-info,.badge-blue{background:#e8f2fd;color:#0b6bcb}
+.badge-lang,.badge-fn{background:#f0eff5;color:#4a4a6a}
+.badge.medium,.pill.medium{background:#e8f2fd;color:#0b6bcb}
+.badge.hard,.pill.hard{background:#fef2e8;color:#b54708}
+
+/* ── Section cards ── */
+section:not(.header-card){
+  background:#fff;
+  border-radius:8px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+section:not(.header-card)>h2:first-child{margin-top:0}
+
+/* ── Algorithm family cards ── */
+.fam,.fam-card,.family-block{
+  border:1px solid #c8c8bc;
+  border-radius:7px;
+  padding:0.9rem 1.1rem;
+  margin:0.8rem 0;
+  background:#fafaf5
+}
+.fam h3,.fam-card h3{color:#1a3a5c;margin-top:0}
+.family-header{
+  background:#2d3a4a;color:#fff;
+  padding:0.4rem 0.85rem;
+  border-radius:6px 6px 0 0;
+  font-weight:700;font-size:0.88rem;
+  margin:-0.9rem -1.1rem 0.9rem
+}
+.family-body{padding:0}
+.fam-source,.family-source{font-size:0.76rem;color:#777;font-style:italic;margin:0.25rem 0 0.5rem}
+
+/* ── Callout / note boxes ── */
+.note,.pnote,
+.callout,.callout.info,.callout.warn,
+.warn{
+  background:#fffbe6;
+  border-left:4px solid #d69e2e;
+  border-radius:0 5px 5px 0;
+  padding:0.55rem 0.9rem;
+  margin:0.6rem 0;
+  font-size:0.88em
+}
+.wrong,.wrong-card,.callout.danger{
+  background:#fff5f5;
+  border-left:4px solid #c53030;
+  border-radius:0 5px 5px 0;
+  padding:0.6rem 0.9rem;
+  margin:0.65rem 0
+}
+.wrong h3,.wrong-card h3,.callout.danger h3{color:#c53030;margin-top:0;font-size:0.92rem}
+.wrong strong,.wrong-card strong{color:#c53030}
+
+/* ── Trace / worked-example blocks ── */
+.trace,.trace-wrap{
+  background:#f0f8ff;
+  border:1px solid #b8d8f0;
+  border-radius:6px;
+  padding:0.8rem 1rem;
+  margin:0.65rem 0;
+  font-size:0.87em
+}
+.trace p{margin:0.15rem 0}
+.tk,.trace-step,.step-num{font-weight:700;color:#1a3a5c}
+.trace-op,.step-op{font-family:"Cascadia Code",Consolas,monospace;font-size:0.87em;color:#1a5080}
+.trace-note{font-size:0.87em;color:#1a1a1a}
+.trace-done{color:#2a6e2a;font-weight:700}
+.trace-row,.step-row{
+  display:grid;
+  grid-template-columns:60px 180px 1fr;
+  gap:8px;align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid #cce4f8
+}
+.trace-row:last-child,.step-row:last-child{border-bottom:none}
+
+/* ── Checklists ── */
+.checklist,.ck{list-style:none;padding-left:0;margin-left:0}
+.checklist li,.ck li{
+  padding:0.3rem 0 0.3rem 2.3em;
+  position:relative;
+  border-bottom:1px solid #e8e8de
+}
+.checklist li:last-child,.ck li:last-child{border-bottom:none}
+.checklist li::before,.ck li::before{
+  content:"[ ]";
+  position:absolute;left:0;
+  color:#666;font-weight:700;
+  font-family:"Cascadia Code",Consolas,monospace;
+  font-size:0.82em
+}
+
+/* ── Provenance tables & grids ── */
+.prov-grid,.provenance-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:4px 12px;
+  font-size:0.86em
+}
+.prov-label,dl.provenance-grid dt,.prov-grid dt{
+  font-weight:700;color:#555;font-family:monospace
+}
+.prov-value,dl.provenance-grid dd,.prov-grid dd{
+  font-family:monospace;color:#1a1a1a
+}
+.prov-item{padding:3px 0}
+.prov-table,.ptbl,table.prov-table{
+  width:100%;border-collapse:collapse;font-size:0.86em;margin:0.5rem 0
+}
+.prov-table td,.ptbl td{
+  padding:0.35rem 0.65rem;
+  border-bottom:1px solid #d8d8ce;
+  vertical-align:top
+}
+.prov-table td:first-child,.ptbl td:first-child{
+  font-weight:700;color:#444;width:38%;
+  font-family:"Cascadia Code",Consolas,monospace;
+  white-space:nowrap
+}
+.prov-card{
+  background:#f9f9f4;border:1px solid #d4d4c8;
+  border-radius:7px;padding:0.75rem 1rem;
+  font-size:0.86em
+}
+
+/* ── Code ── */
+pre{
+  background:#1c1c1c;color:#d4d4d4;
+  padding:1rem 1.1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-family:"Cascadia Code","Fira Code",Consolas,"Courier New",monospace;
+  font-size:0.82em;
+  line-height:1.5;
+  margin:0.7rem 0
+}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;border:none;border-radius:0}
+code{
+  background:#e4e4dc;
+  padding:0.1em 0.35em;
+  border-radius:3px;
+  font-size:0.87em;
+  font-family:"Cascadia Code",Consolas,"Courier New",monospace
+}
+.file-attr{font-size:0.75rem;color:#777;font-style:italic;margin:-0.4rem 0 0.6rem;padding-left:2px}
+
+/* ── Generic tables ── */
+table{border-collapse:collapse;width:100%;margin:0.6rem 0;font-size:0.86em}
+th{
+  background:#2d3748;color:#f0f0e8;
+  text-align:left;padding:0.42rem 0.7rem;
+  font-weight:600;font-size:0.84em
+}
+td{border-bottom:1px solid #d4d4ca;padding:0.36rem 0.7rem;vertical-align:top}
+tr:nth-child(even) td{background:#eeeee8}
+tr:hover td{background:#e6e6de}
+.table-label{
+  font-size:0.78rem;font-weight:700;color:#2d6a9f;
+  letter-spacing:.04em;margin:1rem 0 0.3rem;
+  text-transform:uppercase
+}
+
+/* ── SVG & diagrams ── */
+.diag,.svg-wrapper,.svg-wrap{
+  text-align:center;margin:1.2rem 0;
+  background:#f9f9f4;
+  border:1px solid #d0d0c4;
+  border-radius:6px;
+  padding:12px;
+  overflow-x:auto
+}
+svg{display:block;margin:0 auto}
+
+/* ── Misc helpers ── */
+.outlier{color:#c53030;font-weight:700}
+.foot{
+  text-align:center;font-size:0.77rem;color:#888;
+  margin-top:2.5rem;padding-top:0.65rem;
+  border-top:1px solid #ccc
+}
+.stats-mini{text-align:right;color:#888;font-size:0.85rem;line-height:1.9}
+.stats-mini strong{color:#1a1a1a}
+.slabel{font-weight:700;color:#1a3a5c;margin:0.9rem 0 0.25rem;font-size:0.9rem}
+.muted{color:#666}
+.perf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;margin:0.6rem 0
+}
+.perf-cell{
+  background:#f9f9f4;border:1px solid #d0d0c4;
+  border-radius:6px;padding:8px 12px;font-size:0.84em
+}
+.perf-cell b{display:block;font-size:1.05em}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  body{padding:0.9rem}
+  .header-card,.hcard{padding:1rem 1.1rem}
+  h1{font-size:1.2rem}
+  h2{font-size:1rem}
+  section:not(.header-card){padding:14px 16px}
+  table{display:block;overflow-x:auto}
+  .prov-grid,.provenance-grid{grid-template-columns:1fr}
+  .trace-row,.step-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ═══════════════════════════════════════
+       1. HEADER CARD
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="header-card">
+    <h2 style="display:none">Header card</h2>
+    <div class="header-card">
+      <h1>Count Caesar Cipher Pairs</h1>
+      <div>
+        <span class="tag">array</span>
+        <span class="tag">hash-table</span>
+        <span class="tag">math</span>
+        <span class="tag">string</span>
+        <span class="tag">counting</span>
+      </div>
+      <div class="meta">
+        <span class="badge medium">Medium</span>
+        <span class="badge accepted">28 accepted solutions</span>
+        <span class="badge">Problem ID: wc0484-Q3</span>
+      </div>
+      <div class="sig-block"><!-- Python 3 -->
+class Solution:
+    def countPairs(self, words: List[str]) -> int:
+
+<!-- Java -->
+class Solution {
+    public long countPairs(String[] words) { }
+}
+
+<!-- C++ -->
+class Solution {
+public:
+    long long countPairs(vector&lt;string&gt;&amp; words) { }
+};
+
+<!-- Go -->
+func countPairs(words []string) int64 { }
+
+<!-- Rust -->
+impl Solution {
+    pub fn count_pairs(words: Vec&lt;String&gt;) -&gt; i64 { }
+}
+
+<!-- JavaScript -->
+var countPairs = function(words) { };
+
+<!-- TypeScript -->
+function countPairs(words: string[]): number { };</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       2. PROVENANCE
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="provenance">
+    <h2>Provenance</h2>
+    <div class="prov-card">
+      <div class="prov-item"><div class="label">Problem ID</div><div class="value">wc0484-Q3-count-caesar-cipher-pairs</div></div>
+      <div class="prov-item"><div class="label">Generator Tool</div><div class="value">claude</div></div>
+      <div class="prov-item"><div class="label">Generator Model</div><div class="value">claude-sonnet-4-6</div></div>
+      <div class="prov-item"><div class="label">Generated At (UTC)</div><div class="value">2026-05-17T08:06:43.992292+00:00</div></div>
+      <div class="prov-item"><div class="label">Accepted Count</div><div class="value">28</div></div>
+      <div class="prov-item"><div class="label">Difficulty</div><div class="value">Medium</div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       3. PROBLEM ESSENCE
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="essence">
+    <h2>Problem Essence</h2>
+    <div class="card">
+      <p>You are given <code>n</code> strings, each of the same length <code>m</code>. Two strings are <strong>similar</strong> if one can be turned into the other by repeatedly shifting every character forward by one (cyclically, <code>'z'</code> wraps to <code>'a'</code>)&mdash;in other words, if they are Caesar-cipher rotations of each other.</p>
+      <p style="margin-top:10px">Count the number of ordered pairs <code>(i, j)</code> with <code>i &lt; j</code> where <code>words[i]</code> and <code>words[j]</code> are similar.</p>
+      <p style="margin-top:10px">The key insight is that two strings are similar if and only if they share the same <em>relative character structure</em>&mdash;the pattern of inter-character gaps mod 26 is shift-invariant, so it uniquely identifies a Caesar equivalence class.</p>
+      <p style="margin-top:10px">The constraint <code>n&thinsp;&times;&thinsp;m &le; 10<sup>5</sup></code> means the total character count is small regardless of the individual values of <code>n</code> and <code>m</code>, so an O(n&thinsp;&times;&thinsp;m) solution processes everything in one linear pass.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       4. WORKED EXAMPLE
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="worked-example">
+    <h2>Worked Example</h2>
+    <div class="card">
+      <h3>Input: <code>words = ["fusion", "layout"]</code> &rarr; Expected output: <code>1</code></h3>
+
+      <p style="margin-top:10px">We normalize each word by subtracting its first character's offset so that the first character maps to <code>'a'</code>.</p>
+
+      <h3 style="margin-top:16px">Normalizing "fusion" (first char = 'f', offset = 5)</h3>
+      <table class="step-table">
+        <thead><tr><th>Position</th><th>Char</th><th>Ord</th><th>(ord &minus; 5) mod 26</th><th>Normalized char</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td><code>f</code></td><td>5</td><td>(5&minus;5) mod 26 = 0</td><td><code>a</code></td></tr>
+          <tr><td>1</td><td><code>u</code></td><td>20</td><td>(20&minus;5) mod 26 = 15</td><td><code>p</code></td></tr>
+          <tr><td>2</td><td><code>s</code></td><td>18</td><td>(18&minus;5) mod 26 = 13</td><td><code>n</code></td></tr>
+          <tr><td>3</td><td><code>i</code></td><td>8</td><td>(8&minus;5) mod 26 = 3</td><td><code>d</code></td></tr>
+          <tr><td>4</td><td><code>o</code></td><td>14</td><td>(14&minus;5) mod 26 = 9</td><td><code>j</code></td></tr>
+          <tr><td>5</td><td><code>n</code></td><td>13</td><td>(13&minus;5) mod 26 = 8</td><td><code>i</code></td></tr>
+          <tr class="highlight"><td colspan="4">Key for "fusion"</td><td><code>"apndji"</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top:16px">Normalizing "layout" (first char = 'l', offset = 11)</h3>
+      <table class="step-table">
+        <thead><tr><th>Position</th><th>Char</th><th>Ord</th><th>(ord &minus; 11) mod 26</th><th>Normalized char</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td><code>l</code></td><td>11</td><td>(11&minus;11) mod 26 = 0</td><td><code>a</code></td></tr>
+          <tr><td>1</td><td><code>a</code></td><td>0</td><td>(0&minus;11+26) mod 26 = 15</td><td><code>p</code></td></tr>
+          <tr><td>2</td><td><code>y</code></td><td>24</td><td>(24&minus;11) mod 26 = 13</td><td><code>n</code></td></tr>
+          <tr><td>3</td><td><code>o</code></td><td>14</td><td>(14&minus;11) mod 26 = 3</td><td><code>d</code></td></tr>
+          <tr><td>4</td><td><code>u</code></td><td>20</td><td>(20&minus;11) mod 26 = 9</td><td><code>j</code></td></tr>
+          <tr><td>5</td><td><code>t</code></td><td>19</td><td>(19&minus;11) mod 26 = 8</td><td><code>i</code></td></tr>
+          <tr class="highlight"><td colspan="4">Key for "layout"</td><td><code>"apndji"</code></td></tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:12px">Both words produce the key <code>"apndji"</code>. The hash map sees one word already stored under that key, so it adds 1 to the answer. Result: <strong>1</strong>. ✓</p>
+
+      <!-- SVG diagram -->
+      <div class="svg-wrap" style="margin-top:18px">
+        <svg width="560" height="130" viewBox="0 0 560 130" aria-label="Normalization diagram showing fusion and layout mapping to the same key apndji">
+          <!-- Word boxes -->
+          <rect x="10" y="20" width="130" height="40" rx="8" fill="#16213e" />
+          <text x="75" y="45" text-anchor="middle" fill="#fff" font-family="monospace" font-size="16" font-weight="bold">"fusion"</text>
+          <text x="75" y="62" text-anchor="middle" fill="#aac4ff" font-family="monospace" font-size="11">offset = 5 (f)</text>
+
+          <rect x="10" y="78" width="130" height="40" rx="8" fill="#16213e" />
+          <text x="75" y="103" text-anchor="middle" fill="#fff" font-family="monospace" font-size="16" font-weight="bold">"layout"</text>
+          <text x="75" y="120" text-anchor="middle" fill="#aac4ff" font-family="monospace" font-size="11">offset = 11 (l)</text>
+
+          <!-- Arrows -->
+          <path d="M140 40 Q200 40 230 58" stroke="#3a7bd5" stroke-width="2" fill="none" marker-end="url(#arr)" />
+          <path d="M140 98 Q200 98 230 78" stroke="#3a7bd5" stroke-width="2" fill="none" marker-end="url(#arr)" />
+
+          <!-- Normalize labels -->
+          <text x="195" y="35" text-anchor="middle" fill="#3a7bd5" font-family="sans-serif" font-size="11">−5 mod 26</text>
+          <text x="195" y="110" text-anchor="middle" fill="#3a7bd5" font-family="sans-serif" font-size="11">−11 mod 26</text>
+
+          <!-- Key box -->
+          <rect x="248" y="43" width="150" height="44" rx="8" fill="#27ae60" />
+          <text x="323" y="62" text-anchor="middle" fill="#fff" font-family="monospace" font-size="15" font-weight="bold">key = "apndji"</text>
+          <text x="323" y="79" text-anchor="middle" fill="#d5f5e3" font-family="sans-serif" font-size="11">same canonical form</text>
+
+          <!-- Pair arrow -->
+          <path d="M398 65 L470 65" stroke="#f39c12" stroke-width="2.5" fill="none" marker-end="url(#yarr)" />
+          <rect x="475" y="47" width="80" height="36" rx="8" fill="#f39c12" />
+          <text x="515" y="68" text-anchor="middle" fill="#1a1a2e" font-family="sans-serif" font-size="13" font-weight="bold">+1 pair</text>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#3a7bd5" />
+            </marker>
+            <marker id="yarr" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#f39c12" />
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <h3 style="margin-top:10px">Other Official Examples</h3>
+      <table>
+        <thead><tr><th>Input</th><th>Output</th><th>Confirmation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">["ab","aa","za","aa"]</td>
+            <td><strong>2</strong></td>
+            <td>"ab" normalizes to (0,1) and "za" also normalizes to (0,1) because (z&rarr;a offset=25, a: (0&minus;25+26)%26=1) — one pair; "aa" at index 1 and "aa" at index 3 share key (0,0) — one pair; total = 2.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       5. DECISION RULE / ALGORITHM
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="algorithm">
+    <h2>Decision Rule / Algorithm</h2>
+    <div class="card">
+      <p><strong>Invariant:</strong> Two strings <code>s</code> and <code>t</code> are Caesar-similar iff there exists an integer <code>k</code> such that <code>t[i] = (s[i] + k) mod 26</code> for all <code>i</code>. Subtracting <code>s[0]</code> from every character of <code>s</code> (mod 26) yields a canonical key in which the first character is always <code>'a'</code>. Two words are similar iff their canonical keys are identical.</p>
+
+      <p style="margin-top:10px"><strong>Algorithm:</strong></p>
+      <ol style="margin-left:20px;margin-top:6px">
+        <li>For each word, compute its canonical key: <code>key[i] = (ord(word[i]) &minus; ord(word[0])) mod 26</code>, encoded as characters <code>'a'</code>&ndash;<code>'z'</code>.</li>
+        <li>Maintain a frequency map <code>freq[key] = count</code>. For each new word, before inserting, add <code>freq[key]</code> to the answer (each existing word with the same key pairs with this one).</li>
+        <li>Return the accumulated answer.</li>
+      </ol>
+
+      <p style="margin-top:12px"><strong>Correctness proof sketch:</strong> Any two similar strings <code>s, t</code> with common shift <code>k</code> have <code>t[i] &minus; t[0] = (s[i] + k) &minus; (s[0] + k) = s[i] &minus; s[0]</code> (all mod 26), so their canonical keys are equal. Conversely, equal keys imply <code>s[i] &minus; s[0] = t[i] &minus; t[0]</code> mod 26, so <code>t</code> is a shift of <code>s</code> by <code>t[0] &minus; s[0]</code>.</p>
+
+      <p style="margin-top:12px"><strong>Complexity:</strong> O(n&thinsp;&times;&thinsp;m) time and O(n&thinsp;&times;&thinsp;m) space. Given <code>n&thinsp;&times;&thinsp;m &le; 10<sup>5</sup></code>, this is at most 10<sup>5</sup> character operations total — extremely fast in all languages.</p>
+
+      <p style="margin-top:12px"><strong>Equivalent alternative:</strong> Instead of normalizing relative to the first character, one may store the sequence of consecutive differences <code>(word[i+1] &minus; word[i]) mod 26</code> for <code>i = 0 &hellip; m&minus;2</code>. This is an equally valid invariant (the differences are shift-independent), producing a key of length <code>m&minus;1</code>. Both approaches are used by accepted solutions.</p>
+
+      <p style="margin-top:12px"><strong>Counting pairs shortcut:</strong> If a canonical key appears <code>c</code> times, it contributes <code>c&thinsp;&times;&thinsp;(c&minus;1)&thinsp;/&thinsp;2</code> pairs. The incremental approach (adding <code>freq[key]</code> before incrementing) avoids a separate loop over the map and is simpler to implement correctly.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       6. IMPLEMENTATION SKELETON
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="skeleton">
+    <h2>Implementation Skeleton</h2>
+    <div class="card">
+      <span class="lang py">Python 3</span>
+      <pre><code>from typing import List
+from collections import defaultdict
+
+class Solution:
+    def countPairs(self, words: List[str]) -> int:
+        def canonical(word: str) -> tuple:
+            # Shift every char so the first char maps to 'a' (position 0).
+            offset = ord(word[0]) - ord('a')
+            return tuple((ord(c) - ord('a') - offset) % 26 for c in word)
+
+        freq: dict = defaultdict(int)
+        answer = 0
+        for word in words:
+            key = canonical(word)
+            # Every previously seen word with the same key pairs with this one.
+            answer += freq[key]
+            freq[key] += 1
+        return answer</code></pre>
+      <p class="note">Uses an incremental frequency map: no second pass needed. The tuple key is hashable in Python. For C++/Go/Rust, encode key as a string/byte slice instead.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       7. REIMPLEMENTATION CHECKLIST
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="checklist">
+    <h2>Reimplementation Checklist</h2>
+    <div class="card">
+      <ul class="checklist">
+        <li><span class="check-box"></span><span>Compute canonical key by subtracting <code>word[0]</code>'s offset (not <code>word[0]</code>'s absolute ordinal) from every character's ordinal, then take mod 26.</span></li>
+        <li><span class="check-box"></span><span>Apply <code>+ 26</code> before <code>mod 26</code> when the difference might be negative (e.g., <code>(a - z) mod 26</code> in languages without Python-style modulo).</span></li>
+        <li><span class="check-box"></span><span>Use a hashable representation for the key: tuple in Python, <code>string</code> in Go/Java/C++, <code>Vec&lt;u8&gt;</code> in Rust — not a raw array reference.</span></li>
+        <li><span class="check-box"></span><span>Count incrementally: add <code>freq[key]</code> to the answer <em>before</em> incrementing <code>freq[key]</code>, so you do not double-count or need a second pass.</span></li>
+        <li><span class="check-box"></span><span>Return type must be <code>long long</code> / <code>int64</code> / <code>i64</code> — with n up to 10<sup>5</sup>, the maximum pair count is ~5&thinsp;&times;&thinsp;10<sup>9</sup>, which overflows a 32-bit integer.</span></li>
+        <li><span class="check-box"></span><span>Handle the edge case of single-character words: their canonical key is always <code>(0,)</code> (or the empty string for the consecutive-differences variant), so they all group together correctly without special-casing.</span></li>
+        <li><span class="check-box"></span><span>Verify with sample 2: <code>["ab","aa","za","aa"]</code> should yield 2. Confirm "za" and "ab" share the same key, and the two "aa" entries share a key.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       8. WRONG BUT TEMPTING
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="wrong-tempting">
+    <h2>Wrong But Tempting</h2>
+    <div class="card">
+
+      <div class="tempt-card">
+        <h3>1. O(n²) brute-force pair comparison</h3>
+        <p>For every pair <code>(i, j)</code>, try all 26 shifts of <code>words[i]</code> and check equality with <code>words[j]</code>. Complexity: <code>O(n² &times; 26 &times; m)</code>. With <code>n = 10<sup>5</sup></code> (which is possible when <code>m = 1</code>), this gives <code>(10<sup>5</sup>)² &times; 26 = 2.6 &times; 10<sup>11</sup></code> operations — orders of magnitude too slow. The n×m constraint does not protect the n² factor.</p>
+      </div>
+
+      <div class="tempt-card">
+        <h3>2. Grouping words by their first character</h3>
+        <p>Count pairs only among words starting with the same letter, reasoning that a Caesar shift preserves the first character. This is incorrect: applying a non-zero shift changes the first character. For example, <code>"fusion"</code> (starts with 'f') and <code>"layout"</code> (starts with 'l') are similar via shift 6, but are in different groups. This approach would give 0 pairs for the first sample instead of 1.</p>
+      </div>
+
+      <div class="tempt-card">
+        <h3>3. Consecutive differences without mod 26</h3>
+        <p>Store signed differences <code>(word[i+1] &minus; word[i])</code> as the key. This fails on wrap-around pairs. For instance, <code>"za"</code> has signed difference <code>a &minus; z = &minus;25</code>, while <code>"ab"</code> has difference <code>b &minus; a = +1</code>. Without <code>mod 26</code>, <code>&minus;25 &ne; 1</code>, so the pair is missed — but <code>(&minus;25 + 26) mod 26 = 1</code> reveals they are in the same class. Sample 2 would return 1 instead of 2.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       9. ACCEPTED ALGORITHM FAMILIES
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="families">
+    <h2>Accepted Algorithm Families</h2>
+    <div class="card">
+
+      <!-- Family A -->
+      <div class="family-card">
+        <h3>Family A &mdash; Normalize-to-first (full-string key, length m)</h3>
+        <p>Subtract <code>word[0]</code>'s offset from every character so the first character maps to <code>'a'</code>. Encode the result as a string or tuple of length <code>m</code>. The resulting key is shift-invariant and uniquely identifies the equivalence class.</p>
+        <p class="note" style="margin-top:6px"><strong>Members:</strong> claude-sonnet-4-6 (py), kimi-k2.5-t0.0 (py), glm-5-cloud (py), glm-5-t0.0 (py), qwen3.5-cloud (py, both temps), all 7 Java solutions, kimi-k2.5-golang, qwen3.5-golang, minimax-t1.0-golang, kimi-ts.</p>
+        <p style="margin-top:8px"><strong>Illustrative excerpt</strong> from <code>accepted__codex-agent-gpt-5.5-java__java.java</code>:</p>
+        <pre><code>// Java – normalize all chars so first maps to 'a', then hash the string
+private String normalize(String word) {
+    char[] key = new char[word.length()];
+    int base = word.charAt(0) - 'a';
+    for (int i = 0; i &lt; word.length(); i++) {
+        int shifted = (word.charAt(i) - 'a' - base + 26) % 26;
+        key[i] = (char) ('a' + shifted);
+    }
+    return new String(key);
+}</code></pre>
+      </div>
+
+      <!-- Family B -->
+      <div class="family-card b">
+        <h3>Family B &mdash; Consecutive differences (key of length m&minus;1)</h3>
+        <p>Compute <code>(word[i+1] &minus; word[i]) mod 26</code> for each adjacent pair. This sequence is invariant under any uniform Caesar shift because the shift cancels out in subtraction. The key has length <code>m&minus;1</code> (length-1 words all get the empty key, grouping them correctly).</p>
+        <p class="note" style="margin-top:6px"><strong>Members:</strong> minimax-m2.7-cloud (py), deepseek-v4-pro-t1.0 (py), kimi-k2.5-javascript, deepseek-flash-javascript, deepseek-pro-javascript, minimax-t0.0-golang, kimi-rust.</p>
+        <p style="margin-top:8px"><strong>Illustrative excerpt</strong> from <code>accepted__minimax-m2.7-cloud__python3.py</code>:</p>
+        <pre><code># Python – consecutive character differences mod 26
+diff = []
+prev = ord(w[0])
+for ch in w[1:]:
+    cur = ord(ch)
+    diff.append((cur - prev + 26) % 26)
+    prev = cur
+key = tuple(diff)
+diff_counts[key] += 1</code></pre>
+      </div>
+
+      <!-- Family C -->
+      <div class="family-card c">
+        <h3>Family C &mdash; Brute-force canonical (try all 26 shifts, pick lex-min)</h3>
+        <p>For each word, generate all 26 Caesar rotations and take the lexicographically smallest as the canonical key. Correct, but costs O(26&thinsp;&times;&thinsp;m) per word instead of O(m). In practice this is 26&times; slower and causes a runtime outlier.</p>
+        <p class="note" style="margin-top:6px"><strong>Members:</strong> glm-5-cloud-t0.8 (JavaScript only).</p>
+        <p style="margin-top:8px"><strong>Illustrative excerpt</strong> from <code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code>:</p>
+        <pre><code>// JavaScript – try all 26 shifts, keep lex-minimum (OUTLIER: 9.8× slower)
+function canonicalForm(s) {
+    let minStr = s;
+    for (let shift = 1; shift &lt; 26; shift++) {
+        let shifted = '';
+        for (let i = 0; i &lt; s.length; i++) {
+            let code = (s.charCodeAt(i) - 97 + shift) % 26;
+            shifted += String.fromCharCode(code + 97);
+        }
+        if (shifted &lt; minStr) minStr = shifted;
+    }
+    return minStr;
+}</code></pre>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       10. LANGUAGE AND PERFORMANCE NOTES
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="performance">
+    <h2>Language and Performance Notes</h2>
+    <div class="card">
+
+      <!-- Summary table -->
+      <table>
+        <thead>
+          <tr><th>Language</th><th>#</th><th>Fastest</th><th>Slowest</th><th>Min Memory</th><th>Max Memory</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="lang go">Go</span></td><td>4</td><td class="mono">6 ms</td><td class="mono">23 ms</td><td class="mono">12.1 MB</td><td class="mono">14.1 MB</td></tr>
+          <tr><td><span class="lang rs">Rust</span></td><td>1</td><td class="mono">19 ms</td><td class="mono">19 ms</td><td class="mono">8.7 MB</td><td class="mono">8.7 MB</td></tr>
+          <tr><td><span class="lang cpp">C++</span></td><td>1</td><td class="mono">27 ms</td><td class="mono">27 ms</td><td class="mono">110.4 MB</td><td class="mono">110.4 MB</td></tr>
+          <tr><td><span class="lang java">Java</span></td><td>7</td><td class="mono">35 ms</td><td class="mono">56 ms</td><td class="mono">66.6 MB</td><td class="mono">69.7 MB</td></tr>
+          <tr><td><span class="lang ts">TypeScript</span></td><td>1</td><td class="mono">84 ms</td><td class="mono">84 ms</td><td class="mono">75.3 MB</td><td class="mono">75.3 MB</td></tr>
+          <tr><td><span class="lang js">JavaScript</span></td><td>4</td><td class="mono">71 ms</td><td class="mono">917 ms</td><td class="mono">75.1 MB</td><td class="mono">80.6 MB</td></tr>
+          <tr><td><span class="lang py">Python&nbsp;3</span></td><td>10</td><td class="mono">180 ms</td><td class="mono">393 ms</td><td class="mono">29.2 MB</td><td class="mono">29.8 MB</td></tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top:18px">Notable observations</h3>
+
+      <div class="outlier">
+        <strong>OUTLIER (runtime) — <code>accepted__glm-5-cloud-t0.8-javascript__javascript.js</code>: 917 ms.</strong><br>
+        JS peers (<code>kimi</code>=71 ms, <code>deepseek-pro</code>=85 ms, <code>deepseek-flash</code>=102 ms) have a median of ~93 ms. GLM runs at 917 ms &mdash; <strong>9.8&times; the peer median</strong>. Hypothesis: the brute-force-26-shifts algorithm (Family C) performs O(26&thinsp;&times;&thinsp;n&thinsp;&times;&thinsp;m) work and builds 26 intermediate strings per word, causing excessive GC pressure and string allocation overhead in the V8 engine.
+      </div>
+
+      <div class="outlier">
+        <strong>OUTLIER (memory) — <code>accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</code>: 110.4 MB.</strong><br>
+        The only C++ solution. Same-family compiled-language peers use 8.7 MB (Rust) and 12–14 MB (Go) — C++ at 110.4 MB is <strong>~8&times; the Go median</strong>. Hypothesis: <code>std::unordered_map&lt;std::string, int&gt;</code> incurs large per-bucket and per-node heap overhead versus Go's built-in map or Rust's <code>HashMap&lt;Vec&lt;u8&gt;, i64&gt;</code>, and LeetCode's memory measurement includes the full process RSS which is larger for C++ runtimes with default allocators.
+      </div>
+
+      <p style="margin-top:12px"><strong>Go throughput spread:</strong> <code>accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</code> achieves 6 ms while <code>accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</code> takes 23 ms — a 3.8&times; spread across what are algorithmically equivalent solutions in the same language. This reflects LeetCode's warm-up variance rather than a real algorithmic difference; both use the same normalize-and-count pattern.</p>
+
+      <p style="margin-top:10px"><strong>Python fastest:</strong> <code>accepted__minimax-m2.7-cloud__python3.py</code> at 180 ms is the fastest Python submission (median ≈ 359 ms). It uses the consecutive-differences Family B approach with explicit <code>prev/cur</code> tracking rather than a generator expression, which may avoid repeated <code>ord()</code> call overhead inside a tuple comprehension.</p>
+
+      <p style="margin-top:10px"><strong>Java memory uniformity:</strong> All 7 Java submissions land within 66.6–69.7 MB, a 3.1 MB spread, despite using slightly different key-generation strategies. The JVM heap baseline dominates the per-algorithm overhead at this problem size.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       11. FAILURE PATTERNS FROM STATS
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="failures">
+    <h2>Failure Patterns From Stats</h2>
+    <div class="card">
+      <p class="note" style="margin-bottom:10px">The <code>failed_submission_status_counts</code> field in stats.json is empty — all attempted submissions were accepted. However, based on the algorithm invariants and common mistakes in this problem class, the following patterns would cause failures:</p>
+      <table>
+        <thead><tr><th>Status</th><th>Likely Root Cause</th><th>Accepted Code Invariant That Rules It Out</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>wrong_answer</code></td>
+            <td>Using signed differences without <code>+26 mod 26</code>; groups wrap-around pairs like ("za","ab") incorrectly.</td>
+            <td>Every accepted solution applies <code>(diff + 26) % 26</code> or Python's built-in <code>% 26</code> (always non-negative).</td>
+          </tr>
+          <tr>
+            <td><code>wrong_answer</code></td>
+            <td>Grouping by first character instead of canonical key; misses cross-letter similar pairs like ("fusion","layout").</td>
+            <td>All accepted solutions normalize away the first-character identity before hashing.</td>
+          </tr>
+          <tr>
+            <td><code>wrong_answer</code></td>
+            <td>Returning <code>int</code> instead of <code>long</code> / <code>int64</code>; 32-bit overflow when n=10<sup>5</sup> all-identical strings gives ~5&times;10<sup>9</sup> pairs.</td>
+            <td>Java solutions use <code>long</code>; C++ uses <code>long long</code>; Go/Rust use <code>int64</code>/<code>i64</code>.</td>
+          </tr>
+          <tr>
+            <td><code>time_limit_exceeded</code></td>
+            <td>O(n²) brute-force pair comparison; with n=10<sup>5</sup> (m=1 case), 10<sup>10</sup> comparisons exceed the time limit.</td>
+            <td>All accepted solutions are O(n&times;m) with a single hash-map pass.</td>
+          </tr>
+          <tr>
+            <td><code>runtime_error</code></td>
+            <td>Accessing <code>word[0]</code> on an empty string (though constraints guarantee <code>m &ge; 1</code>, defensive code adds guards).</td>
+            <td>Constraints guarantee <code>m &ge; 1</code>; accepted solutions either guard or rely on the constraint.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       12. ALL ACCEPTED SOLUTIONS
+       ═══════════════════════════════════════ -->
+  <section class="section-anchor" id="all-solutions">
+    <h2>All Accepted Solutions</h2>
+    <div class="card">
+
+      <h3>Canonical (most representative across families and languages)</h3>
+      <table>
+        <thead><tr><th>File</th><th>Model</th><th>Lang</th><th>Family</th><th>Runtime</th><th>Memory</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="compact-file">accepted__claude-sonnet-4-6__python3.py</td>
+            <td>claude-sonnet-4-6</td>
+            <td><span class="lang py">Python</span></td>
+            <td>A</td>
+            <td class="mono">355 ms</td>
+            <td class="mono">29.8 MB</td>
+            <td>Cleanest Python; incremental count with defaultdict.</td>
+          </tr>
+          <tr>
+            <td class="compact-file">accepted__minimax-m2.7-cloud__python3.py</td>
+            <td>minimax-m2.7-cloud</td>
+            <td><span class="lang py">Python</span></td>
+            <td>B</td>
+            <td class="mono">180 ms</td>
+            <td class="mono">29.3 MB</td>
+            <td>Fastest Python; Family B consecutive-diff approach.</td>
+          </tr>
+          <tr>
+            <td class="compact-file">accepted__codex-agent-gpt-5.5-java__java.java</td>
+            <td>codex-agent-gpt-5.5-java</td>
+            <td><span class="lang java">Java</span></td>
+            <td>A</td>
+            <td class="mono">35 ms</td>
+            <td class="mono">67.2 MB</td>
+            <td>Fastest Java; incremental HashMap with normalize().</td>
+          </tr>
+          <tr>
+            <td class="compact-file">accepted__kimi-k2.5-cloud-t0.0-golang__golang.go</td>
+            <td>kimi-k2.5-cloud-t0.0</td>
+            <td><span class="lang go">Go</span></td>
+            <td>A</td>
+            <td class="mono">17 ms</td>
+            <td class="mono">14.1 MB</td>
+            <td>Family A with full-string normalized key.</td>
+          </tr>
+          <tr>
+            <td class="compact-file">accepted__kimi-k2.5-cloud-t0.0-rust__rust.rs</td>
+            <td>kimi-k2.5-cloud-t0.0-rust</td>
+            <td><span class="lang rs">Rust</span></td>
+            <td>A</td>
+            <td class="mono">19 ms</td>
+            <td class="mono">8.7 MB</td>
+            <td>Lowest memory of all solutions; Vec&lt;u8&gt; key.</td>
+          </tr>
+          <tr>
+            <td class="compact-file">accepted__glm-5-cloud-t0.8-javascript__javascript.js</td>
+            <td>glm-5-cloud-t0.8</td>
+            <td><span class="lang js">JS</span></td>
+            <td>C</td>
+            <td class="mono">917 ms ⚠</td>
+            <td class="mono">80.6 MB</td>
+            <td>Family C brute-force; runtime OUTLIER (9.8× peers).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top:22px">Variants (all remaining accepted files)</h3>
+      <table>
+        <thead><tr><th>File</th><th>Model</th><th>Lang</th><th>Runtime</th><th>Memory</th></tr></thead>
+        <tbody>
+          <tr><td class="compact-file">accepted__codex-agent-gpt-5.5-high-java__java.java</td><td>codex-agent-gpt-5.5-high-java</td><td><span class="lang java">Java</span></td><td class="mono">54 ms</td><td class="mono">67.2 MB</td></tr>
+          <tr><td class="compact-file">accepted__deepseek-v4-flash-cloud-t0.0__python3.py</td><td>deepseek-v4-flash-cloud-t0.0</td><td><span class="lang py">Python</span></td><td class="mono">393 ms</td><td class="mono">29.3 MB</td></tr>
+          <tr><td class="compact-file">accepted__deepseek-v4-flash-cloud-t0.0-java__java.java</td><td>deepseek-v4-flash-cloud-t0.0-java</td><td><span class="lang java">Java</span></td><td class="mono">56 ms</td><td class="mono">69.4 MB</td></tr>
+          <tr><td class="compact-file">accepted__deepseek-v4-flash-cloud-t0.0-javascript__javascript.js</td><td>deepseek-v4-flash-cloud-t0.0-javascript</td><td><span class="lang js">JS</span></td><td class="mono">102 ms</td><td class="mono">76.1 MB</td></tr>
+          <tr><td class="compact-file">accepted__deepseek-v4-pro-cloud-t0.0__python3.py</td><td>deepseek-v4-pro-cloud-t0.0</td><td><span class="lang py">Python</span></td><td class="mono">370 ms</td><td class="mono">29.3 MB</td></tr>
+          <tr><td class="compact-file">accepted__deepseek-v4-pro-cloud-t0.0-java__java.java</td><td>deepseek-v4-pro-cloud-t0.0-java</td><td><span class="lang java">Java</span></td><td class="mono">46 ms</td><td class="mono">68.4 MB</td></tr>
+          <tr><td class="compact-file">accepted__deepseek-v4-pro-cloud-t0.0-javascript__javascript.js</td><td>deepseek-v4-pro-cloud-t0.0-javascript</td><td><span class="lang js">JS</span></td><td class="mono">85 ms</td><td class="mono">76.2 MB</td></tr>
+          <tr><td class="compact-file">accepted__deepseek-v4-pro-cloud-t1.0__python3.py</td><td>deepseek-v4-pro-cloud-t1.0</td><td><span class="lang py">Python</span></td><td class="mono">307 ms</td><td class="mono">29.2 MB</td></tr>
+          <tr><td class="compact-file">accepted__glm-5-cloud__python3.py</td><td>glm-5-cloud</td><td><span class="lang py">Python</span></td><td class="mono">363 ms</td><td class="mono">29.7 MB</td></tr>
+          <tr><td class="compact-file">accepted__glm-5-cloud-t0.0__python3.py</td><td>glm-5-cloud-t0.0</td><td><span class="lang py">Python</span></td><td class="mono">362 ms</td><td class="mono">29.5 MB</td></tr>
+          <tr><td class="compact-file">accepted__glm-5-cloud-t0.8-java__java.java</td><td>glm-5-cloud-t0.8-java</td><td><span class="lang java">Java</span></td><td class="mono">54 ms</td><td class="mono">69.7 MB</td></tr>
+          <tr><td class="compact-file">accepted__kimi-k2.5-cloud-t0.0__python3.py</td><td>kimi-k2.5-cloud-t0.0</td><td><span class="lang py">Python</span></td><td class="mono">282 ms</td><td class="mono">29.4 MB</td></tr>
+          <tr><td class="compact-file">accepted__kimi-k2.5-cloud-t0.0-cpp__cpp.cpp</td><td>kimi-k2.5-cloud-t0.0-cpp</td><td><span class="lang cpp">C++</span></td><td class="mono">27 ms</td><td class="mono">110.4 MB ⚠</td></tr>
+          <tr><td class="compact-file">accepted__kimi-k2.5-cloud-t0.0-java__java.java</td><td>kimi-k2.5-cloud-t0.0-java</td><td><span class="lang java">Java</span></td><td class="mono">46 ms</td><td class="mono">66.6 MB</td></tr>
+          <tr><td class="compact-file">accepted__kimi-k2.5-cloud-t0.0-javascript__javascript.js</td><td>kimi-k2.5-cloud-t0.0-javascript</td><td><span class="lang js">JS</span></td><td class="mono">71 ms</td><td class="mono">75.1 MB</td></tr>
+          <tr><td class="compact-file">accepted__kimi-k2.5-cloud-t0.0-typescript__typescript.ts</td><td>kimi-k2.5-cloud-t0.0-typescript</td><td><span class="lang ts">TS</span></td><td class="mono">84 ms</td><td class="mono">75.3 MB</td></tr>
+          <tr><td class="compact-file">accepted__minimax-m2.7-cloud-t0.0-golang__golang.go</td><td>minimax-m2.7-cloud-t0.0</td><td><span class="lang go">Go</span></td><td class="mono">23 ms</td><td class="mono">13.4 MB</td></tr>
+          <tr><td class="compact-file">accepted__minimax-m2.7-cloud-t1.0-golang__golang.go</td><td>minimax-m2.7-cloud-t1.0</td><td><span class="lang go">Go</span></td><td class="mono">6 ms</td><td class="mono">13.6 MB</td></tr>
+          <tr><td class="compact-file">accepted__qwen3.5-cloud__python3.py</td><td>qwen3.5-cloud</td><td><span class="lang py">Python</span></td><td class="mono">355 ms</td><td class="mono">29.7 MB</td></tr>
+          <tr><td class="compact-file">accepted__qwen3.5-cloud-t1.0__python3.py</td><td>qwen3.5-cloud-t1.0</td><td><span class="lang py">Python</span></td><td class="mono">365 ms</td><td class="mono">29.5 MB</td></tr>
+          <tr><td class="compact-file">accepted__qwen3.5-cloud-t1.0-golang__golang.go</td><td>qwen3.5-cloud-t1.0</td><td><span class="lang go">Go</span></td><td class="mono">15 ms</td><td class="mono">12.1 MB</td></tr>
+          <tr><td class="compact-file">accepted__qwen3.5-cloud-t1.0-java__java.java</td><td>qwen3.5-cloud-t1.0</td><td><span class="lang java">Java</span></td><td class="mono">40 ms</td><td class="mono">67.5 MB</td></tr>
+        </tbody>
+      </table>
+
+      <p class="note" style="margin-top:10px">⚠ = outlier. Total: 6 canonical + 22 variants = 28 accepted solutions.</p>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
