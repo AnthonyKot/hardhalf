@@ -28,6 +28,7 @@ CORRECTIONS = {
          'With n=2500 that is about 3.9e13 operations; even O(n^3) = 2500^3 = 1.56e10 is far over the ~10^8 limit.'),
         ('Even with hashing to make each check O(1), O(n^3) = 15.6e9 is TLE.',
          'Even with hashing to make each check O(1), O(n^3) = 1.56e10 is TLE.'),
+        ('With n=2500: 2500^2 * 2500 = 15.6e9 bytes.', 'With n=2500: 2500^2 * 2500 = 1.56e10 bytes.'),
     ],
     'wc0484-Q4-maximum-bitwise-and-after-increment-operations': [
         ('AND(7, 8) = 0, and one increment cannot help. But with a targeted approach, no meaningful AND is achievable anyway -- but in larger examples, alignment-aware subset selection changes the winner entirely.',
