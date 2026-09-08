@@ -35,6 +35,11 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#fff}bu
 .card.done .attempt{display:none}
 .summary{border-top:1px solid var(--line);margin-top:2rem;padding-top:1rem;color:var(--muted);font-size:.95rem}
 .note{font-size:.85rem;color:var(--muted)}
+.strip{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 1.2rem}.strip a{font:700 .75rem var(--mono);width:2rem;height:2rem;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:6px;color:var(--muted);text-decoration:none}
+.strip a.passed{background:var(--accent);border-color:var(--accent);color:#fff}.strip a.failed,.strip a.gave{border-color:var(--warn);color:var(--warn)}
+.picker{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:.4rem 0 .6rem}.picker select{font:600 .85rem system-ui,sans-serif;padding:.35rem .5rem;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.solution pre{background:var(--soft);padding:.7rem .9rem;overflow:auto;border-radius:6px;font-size:.82rem;line-height:1.45}
+.next{margin-top:1rem;padding:.7rem .9rem;border-left:3px solid var(--accent);background:var(--soft)}
 a{color:var(--accent)}
 </style>
 </head>
@@ -44,13 +49,17 @@ a{color:var(--accent)}
 <h1>The models have already tried these. Your turn.</h1>
 <p class="lede">Ten problems from the hard half of recent LeetCode weekly contests, questions 3 and 4 only, and on every one of them at least one AI model failed. Each model's solutions were submitted to LeetCode in up to seven languages; the verdicts are under each problem. Start the clock, solve it wherever you solve things, record what happened, and the card opens: the idea that works, the mistakes the models made, and the full manual.</p>
 <p class="rules">Rungs run from the problem most model submissions passed to the one most failed. Start wherever the failures interest you. Your times and verdicts stay in this browser only. A count like <span class="chip">deepseek 5/7</span> means five of seven <em>submissions</em> accepted, one submission per language, so a family can pass in Python and fail in Java.</p>
+<div class="picker"><label for="lang">Reference solutions in</label><select id="lang"></select><span class="note">remembered in this browser</span></div>
+<div class="strip" id="strip"></div>
 <ol class="ladder" id="ladder"></ol>
 <div class="summary" id="summary"></div>
 <p class="note">Source of the model record: an independent benchmark that submitted model-written solutions to LeetCode and kept the verdicts. Counts are submissions, one per model and language, not distinct models. Manuals are generated from accepted solutions and are the reference, not the answer key. Problem statements are LeetCode's; links go to the original problems.</p>
 </main>
 <script>
 const DATA = /*DATA*/;
-const KEY = 'hardhalf:attempts';
+const KEY = 'hardhalf:attempts'; const LANGKEY = 'hardhalf:lang';
+const LANGS = { python3: 'Python', java: 'Java', cpp: 'C++', javascript: 'JavaScript', golang: 'Go' };
+const getLang = () => { try { return localStorage.getItem(LANGKEY) || 'python3'; } catch (e) { return 'python3'; } };
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } };
 const save = (o) => { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
 const fmt = (ms) => { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
@@ -60,13 +69,29 @@ function chip(m) {
   const langs = Object.entries(m.langs).map(([l, v]) => l + ' ' + v.accepted + '/' + v.attempts).join(', ');
   return `<span class="chip ${cls}" title="${esc(langs)}">${esc(m.family)} ${m.accepted}/${m.attempts}</span>`;
 }
+function solutionBlock(p) {
+  const sols = p.solutions || {}; const avail = Object.keys(sols); if (!avail.length) return '';
+  const want = getLang(); const lang = sols[want] ? want : (sols.python3 ? 'python3' : avail[0]); const s = sols[lang];
+  const other = lang !== want ? `<span class="note">No verified ${esc(LANGS[want] || want)} solution for this rung; showing ${esc(LANGS[lang] || lang)}.</span>` : '';
+  return `<h3>Reference solution · ${esc(LANGS[lang] || lang)}</h3>
+<p class="note">An accepted submission from the benchmark (${esc(s.model || 'model')}, LeetCode runtime ${esc(s.runtime_ms || '?')}), chosen for readability and re-run here against the sample tests: ${esc(s.verified || '')}. ${other} Other languages: ${avail.filter(l => l !== lang).map(l => esc(LANGS[l] || l)).join(', ') || 'none'} via the picker at the top.</p>
+<div class="solution"><pre><code>${esc(s.code || '')}</code></pre></div>`;
+}
+function nextBlock(p, att) {
+  const next = DATA.find(q => q.rank > p.rank && !att[q.id]) || DATA.find(q => !att[q.id]);
+  if (!next) return '<div class="next"><strong>That was the last rung.</strong> Every rung has a verdict in this browser. Clear one and try again, or wait for the ladder to grow.</div>';
+  return `<div class="next"><strong>Next:</strong> rung ${next.rank}, <a href="#r${next.id}">${esc(next.title)}</a>, ${next.accepted} of ${next.attempts} model submissions accepted.</div>`;
+}
 function render() {
   const att = load();
+  const sel = document.getElementById('lang'); const cur = getLang();
+  sel.innerHTML = Object.entries(LANGS).map(([k, v]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${v}</option>`).join('');
+  document.getElementById('strip').innerHTML = DATA.map(p => { const a = att[p.id]; const cls = a ? { passed: 'passed', failed: 'failed', 'gave up': 'gave' }[a.verdict] : ''; return `<a class="${cls}" href="#r${p.id}" title="${esc(p.title)}${a ? ' · ' + a.verdict : ''}">${p.rank}</a>`; }).join('');
   document.getElementById('ladder').innerHTML = DATA.map(p => {
     const a = att[p.id];
     const pct = Math.round(100 * p.rate);
     const failedFams = p.models.filter(m => m.accepted < m.attempts).map(m => `${m.family} ${m.accepted}/${m.attempts}`);
-    return `<li class="card${a ? ' done' : ''}" data-id="${p.id}">
+    return `<li class="card${a ? ' done' : ''}" data-id="${p.id}" id="r${p.id}">
 <header><span class="rank">RUNG ${p.rank}</span><h2>${esc(p.title)}</h2><span class="diff">${esc(p.difficulty)}</span><span class="note">Weekly Contest ${p.contest || ''} · ${esc(p.position || '')}</span></header>
 <p class="challenge">${p.accepted} of ${p.attempts} model submissions accepted (${pct}%). Stumbled: ${failedFams.map(esc).join(', ')}. Can you?</p>
 <div class="chips">${p.models.map(chip).join('')}</div>
@@ -78,12 +103,14 @@ function render() {
 <div class="reveal">
 <p class="verdict">${a ? `You recorded <b>${esc(a.verdict)}</b> after ${fmt(a.ms)} on ${new Date(a.at).toLocaleDateString()}. <button data-act="reset">Try again</button>` : ''}</p>
 <h3>The idea that works</h3>
-<div class="tempting">${p.essence_html || '<p class="note">No section available for this problem.</p>'}</div>
+<div class="tempting">${p.idea_html || '<p class="note">No section available for this problem.</p>'}</div>
 <h3>Wrong but tempting</h3>
-<p class="note">Generated from the model runs, not independently checked; two passages were corrected after review. Treat as leads, and verify against the manual.</p>
-<div class="tempting">${p.tempting_html || '<p class="note">No section available for this problem.</p>'}</div>
+${p.verified_on ? `<p class="note">Rewritten and checked by hand on ${p.verified_on}: every counterexample below was run.</p>` : `<p class="note">Generated from the model runs, not independently checked. Treat as leads, and verify against the manual.</p>`}
+<div class="tempting">${p.pitfalls_html || '<p class="note">No section available for this problem.</p>'}</div>
+${solutionBlock(p)}
 <h3>The manual</h3>
 <p>Built from every accepted model solution: the essence, the algorithm families that worked, and the failure patterns from the stats. <a href="${p.manual_url}" target="_blank" rel="noopener">Read the manual for ${esc(p.title)}</a></p>
+${nextBlock(p, att)}
 </div>
 </li>`;
   }).join('');
@@ -107,6 +134,7 @@ document.addEventListener('click', (e) => {
     document.querySelector(`.card[data-id="${id}"]`).scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 });
+document.getElementById('lang').addEventListener('change', (e) => { try { localStorage.setItem(LANGKEY, e.target.value); } catch (x) {} render(); });
 render();
 </script>
 </body>

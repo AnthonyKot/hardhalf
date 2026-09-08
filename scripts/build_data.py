@@ -83,6 +83,17 @@ for rank, pid in enumerate(LADDER, 1):
         'models': fams, 'accepted': tot_a, 'attempts': tot_n,
         'rate': round(tot_a / tot_n, 3) if tot_n else None,
     })
+# merge reviewed rung files (data/rungs/<pid>.json) written by the rung-review agents
+for p in out:
+    rf = os.path.join('data', 'rungs', p['id'] + '.json')
+    if os.path.exists(rf):
+        r = json.load(open(rf, encoding='utf-8'))
+        p['idea_html'] = r.get('idea_html') or p['essence_html']
+        p['pitfalls_html'] = r.get('pitfalls_html') or p['tempting_html']
+        p['solutions'] = r.get('solutions') or {}
+        p['verified_on'] = r.get('verified_on')
+    else:
+        p['idea_html'] = p['essence_html']; p['pitfalls_html'] = p['tempting_html']; p['solutions'] = {}; p['verified_on'] = None
 out.sort(key=lambda p: (-(p['rate'] or 0), p['id']))
 for i, p in enumerate(out, 1): p['rank'] = i
 json.dump(out, open('data/problems.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
