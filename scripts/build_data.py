@@ -26,6 +26,8 @@ CORRECTIONS = {
         ('Brute-force O(n^3) check', 'Brute-force O(n^4) check'),
         ('With n=2500: 2500^4 / something... even O(n^3) = 2500^3 = 15.6e9 ops, far over the ~10^8 limit.',
          'With n=2500 that is about 3.9e13 operations; even O(n^3) = 2500^3 = 1.56e10 is far over the ~10^8 limit.'),
+        ('Even with hashing to make each check O(1), O(n^3) = 15.6e9 is TLE.',
+         'Even with hashing to make each check O(1), O(n^3) = 1.56e10 is TLE.'),
     ],
     'wc0484-Q4-maximum-bitwise-and-after-increment-operations': [
         ('AND(7, 8) = 0, and one increment cannot help. But with a targeted approach, no meaningful AND is achievable anyway -- but in larger examples, alignment-aware subset selection changes the winner entirely.',
